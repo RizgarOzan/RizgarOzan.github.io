@@ -25,6 +25,8 @@
     --serif: 'Cormorant Garamond', Georgia, serif;
     --sans: 'Instrument Sans', 'Segoe UI', sans-serif;
     --mono: 'IBM Plex Mono', Consolas, monospace;
+    --t0: 1.15s; /* perde açıldıktan sonra hero'nun başlama anı */
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -43,6 +45,55 @@
 
   .wrap { max-width: 1440px; margin: 0 auto; }
 
+  /* ── perde (açılış) ──────────────────── */
+  .curtain { display: none; }
+  .js.motion .curtain {
+    display: block; position: fixed; inset: 0; z-index: 100; pointer-events: none;
+    animation: curtain-off 0s linear calc(var(--t0) + 0.9s) forwards;
+  }
+  .curtain-top, .curtain-bot {
+    position: absolute; left: 0; right: 0; height: 50%; background: var(--bg);
+    animation: 0.95s var(--ease) calc(var(--t0) - 0.25s) forwards;
+  }
+  .curtain-top { top: 0; height: calc(50% + 1px); animation-name: curtain-up; }
+  .curtain-bot { bottom: 0; animation-name: curtain-down; }
+  .curtain-seam {
+    position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--champ);
+    transform: scaleX(0); animation: seam 0.7s var(--ease) 0.15s forwards;
+    box-shadow: 0 0 18px rgba(214, 194, 154, 0.6);
+  }
+  @keyframes seam { to { transform: scaleX(1); } }
+  @keyframes curtain-up { to { transform: translateY(-101%); } }
+  @keyframes curtain-down { to { transform: translateY(101%); } }
+  @keyframes curtain-off { to { visibility: hidden; } }
+  .js.motion.seen { --t0: 0.05s; }
+  .js.motion.seen .curtain { display: none; }
+
+  /* ── ilerleme çizgisi + imleç ────────── */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 1px; width: 100%; z-index: 90;
+    background: var(--champ); transform-origin: left; transform: scaleX(var(--p, 0));
+    pointer-events: none; opacity: 0.9;
+  }
+  .cur { display: none; }
+  .js.motion.fine .cur {
+    display: block; position: fixed; top: 0; left: 0; z-index: 95; pointer-events: none;
+    width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%;
+    border: 1px solid var(--champ);
+    transition: width 0.3s var(--ease), height 0.3s var(--ease), margin 0.3s var(--ease), background-color 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+  .js.motion.fine .cur.live { opacity: 1; }
+  .js.motion.fine .cur.on {
+    width: 56px; height: 56px; margin: -28px 0 0 -28px;
+    background-color: rgba(214, 194, 154, 0.12);
+  }
+  .js.motion.fine .cur::after {
+    content: ""; position: absolute; left: 50%; top: 50%; width: 3px; height: 3px;
+    margin: -1.5px 0 0 -1.5px; border-radius: 50%; background: var(--champ);
+  }
+  .js.motion.fine body, .js.motion.fine a, .js.motion.fine button { cursor: none; }
+
   /* ── nav ─────────────────────────────── */
   header {
     display: flex; justify-content: space-between; align-items: center;
@@ -50,6 +101,13 @@
   }
   .mark { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: 0.1em; }
   nav { display: flex; gap: 40px; font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; }
+  nav a { position: relative; padding-bottom: 3px; }
+  nav a::after {
+    content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 100%;
+    background: var(--champ); transform: scaleX(0); transform-origin: right;
+    transition: transform 0.35s var(--ease);
+  }
+  nav a:hover::after { transform: scaleX(1); transform-origin: left; }
 
   /* ── hero ────────────────────────────── */
   .hero { position: relative; }
@@ -59,6 +117,8 @@
       radial-gradient(ellipse 860px 460px at 24% 8%, rgba(214, 194, 154, 0.09), transparent 62%),
       radial-gradient(ellipse 700px 400px at 88% 80%, rgba(143, 163, 184, 0.05), transparent 60%);
   }
+  .dust { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
+  .js.motion .dust { display: block; }
   .crop { position: absolute; width: 26px; height: 26px; pointer-events: none; }
   .crop.tl { top: 30px; left: 32px; border-top: 1px solid var(--champ-dim); border-left: 1px solid var(--champ-dim); }
   .crop.tr { top: 30px; right: 32px; border-top: 1px solid var(--champ-dim); border-right: 1px solid var(--champ-dim); }
@@ -80,6 +140,21 @@
     animation: sheen 8s ease-in-out infinite;
   }
   @keyframes sheen { 0% { background-position: 0% 0; } 50% { background-position: 100% 0; } 100% { background-position: 0% 0; } }
+  /* harf harf yükselme (JS harfleri böler) */
+  .name .ch { display: inline-block; }
+  .js.motion .name.split { overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .js.motion .name.split .ch {
+    transform: translateY(112%) rotate(4deg); transform-origin: left bottom;
+    animation: ch-up 1s var(--ease) calc(var(--t0) + var(--i) * 0.045s) forwards;
+  }
+  @keyframes ch-up { to { transform: none; } }
+  /* parıltı harflere iner: her harf kendi dalgasını biraz gecikmeli sürer */
+  .js.motion .name.sheen.split { background: none; animation: none; }
+  .js.motion .name.sheen.split .ch {
+    background: linear-gradient(110deg, #F2EFE9 0%, #D6C29A 28%, #9E8E6C 48%, #F2EFE9 68%, #D6C29A 100%);
+    background-size: 240% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: ch-up 1s var(--ease) calc(var(--t0) + var(--i) * 0.045s) forwards, sheen 8s ease-in-out calc(var(--i) * -0.5s) infinite;
+  }
   .hero-sub { display: flex; justify-content: space-between; align-items: flex-end; gap: 64px; margin-top: 36px; }
   .lede { font-size: 20px; line-height: 1.6; max-width: 540px; }
   .meta { font-family: var(--mono); font-size: 12px; line-height: 2.1; color: var(--muted); text-align: right; white-space: nowrap; }
@@ -88,32 +163,35 @@
     display: inline-flex; align-items: center; gap: 12px;
     background: var(--champ); color: var(--bg);
     font-weight: 600; font-size: 15px; letter-spacing: 0.02em; padding: 16px 30px;
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    transition: box-shadow 0.3s ease, transform 0.4s var(--ease);
   }
-  .btn:hover { color: var(--bg); box-shadow: 0 0 34px rgba(214, 194, 154, 0.35); transform: translateY(-1px); }
+  .btn:hover { color: var(--bg); box-shadow: 0 0 34px rgba(214, 194, 154, 0.35); }
   .btn svg { transition: transform 0.3s ease; }
   .btn:hover svg { transform: translateY(3px); }
   .ghost {
     display: inline-flex; align-items: center; gap: 10px;
     font-weight: 500; font-size: 15px; padding: 15px 28px;
     border: 1px solid rgba(242, 239, 233, 0.5);
-    transition: border-color 0.3s ease, color 0.25s ease;
+    transition: border-color 0.3s ease, color 0.25s ease, transform 0.4s var(--ease);
   }
   .ghost:hover { border-color: var(--champ); }
   .ghost svg { transition: transform 0.3s ease; }
   .ghost:hover svg { transform: translate(3px, -3px); }
   .ghost:hover svg path { stroke: var(--champ); }
+  .mag { will-change: transform; }
 
   /* ── diagonal band ───────────────────── */
   .band-wrap { position: relative; height: 124px; }
   .band {
-    position: absolute; left: -3%; right: -3%; top: 32px; transform: rotate(-2deg);
+    position: absolute; left: -3%; right: -3%; top: 32px;
+    transform: rotate(-2deg) skewX(var(--sk, 0deg));
     background: var(--panel);
     border-top: 1px solid rgba(214, 194, 154, 0.35);
     border-bottom: 1px solid rgba(214, 194, 154, 0.35);
     overflow: hidden; padding: 14px 0;
   }
   .band-track { display: flex; width: max-content; animation: mq 28s linear infinite; }
+  .js.motion .band-track { animation: none; }
   .band-track > span { white-space: nowrap; padding-right: 64px; font-family: var(--mono); font-size: 13px; letter-spacing: 0.22em; color: var(--champ); }
   @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
 
@@ -128,18 +206,32 @@
   .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 80px; }
 
   #projeler .grid-2 { margin-top: 58px; }
+  #projeler .grid-2 + .grid-2 { margin-top: 104px; }
+  .proj { position: relative; }
   .numeral {
     font-family: var(--serif); font-style: italic; font-weight: 400;
     font-size: clamp(96px, 14vw, 196px); line-height: 0.82;
     color: transparent; -webkit-text-stroke: 1.5px var(--champ-dim);
+    display: inline-block;
+    background: linear-gradient(to top, rgba(214, 194, 154, 0.22) 50%, transparent 50%);
+    background-size: 100% 200%; background-position: 0 0;
+    -webkit-background-clip: text; background-clip: text;
+    transition: background-position 1.6s var(--ease) 0.2s, transform 0.5s var(--ease);
+    transform: translate(calc(var(--px, 0) * -14px), calc(var(--py, 0) * -10px));
   }
+  .in .numeral { background-position: 0 100%; }
   .proj-title { font-family: var(--serif); font-weight: 600; font-size: clamp(36px, 4.4vw, 62px); line-height: 1.05; margin-top: -0.68em; position: relative; }
   .proj-title em { color: var(--champ); }
+  .proj-title .w { display: inline-block; overflow: hidden; padding: 0.06em 0.06em 0.18em 0.02em; margin: -0.06em -0.06em -0.18em -0.02em; vertical-align: top; }
+  .proj-title .w > span { display: inline-block; }
+  .js.motion .proj-title .w > span { transform: translateY(110%); transition: transform 0.9s var(--ease); transition-delay: calc(var(--i) * 0.08s); }
+  .js.motion .in .proj-title .w > span { transform: none; }
   .proj-desc { font-size: 17px; line-height: 1.65; color: var(--soft); max-width: 460px; margin-top: 20px; }
   .gold-link {
     display: inline-flex; align-items: center; gap: 10px;
     font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; color: var(--champ);
     margin-top: 28px; padding-bottom: 5px; position: relative;
+    transition: transform 0.4s var(--ease);
   }
   .gold-link::after {
     content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 100%;
@@ -150,8 +242,17 @@
   .gold-link svg { transition: transform 0.3s ease; }
   .gold-link:hover svg { transform: translate(3px, -3px); }
   .spec { display: flex; flex-direction: column; justify-content: center; }
-  .spec-row { display: flex; gap: 26px; border-top: 1px solid var(--hair); padding: 22px 0; }
+  .spec-row { display: flex; gap: 26px; border-top: 1px solid var(--hair); padding: 22px 0; position: relative; }
   .spec-row:last-child { border-bottom: 1px solid var(--hair); }
+  .js.motion .spec-row { border-color: transparent; }
+  .js.motion .spec-row::before, .js.motion .spec-row:last-child::after {
+    content: ""; position: absolute; left: 0; right: 0; height: 1px; background: var(--hair);
+    transform: scaleX(0); transform-origin: left; transition: transform 1s var(--ease);
+    transition-delay: calc(var(--i) * 0.12s);
+  }
+  .js.motion .spec-row::before { top: -1px; }
+  .js.motion .spec-row:last-child::after { bottom: -1px; transition-delay: calc(var(--i) * 0.12s + 0.12s); }
+  .js.motion .in .spec-row::before, .js.motion .in .spec-row:last-child::after { transform: scaleX(1); }
   .spec-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; color: var(--muted); width: 104px; flex-shrink: 0; padding-top: 3px; }
   .spec-val { font-size: 16px; line-height: 1.6; }
 
@@ -160,6 +261,11 @@
   .about-col p { margin: 0; font-size: 19px; line-height: 1.7; }
   .about-col p + p { color: var(--muted); }
   .about-col em { font-family: var(--serif); font-size: 1.1em; color: var(--champ); }
+  /* kaydırdıkça kelime kelime aydınlanma (JS kelimeleri böler) */
+  .js.motion .about-col .wd { color: var(--ivory); opacity: 0.16; transition: opacity 0.45s ease; }
+  .js.motion .about-col p + p .wd { color: var(--soft); }
+  .js.motion .about-col .wd.lit { opacity: 1; }
+  .js.motion .about-col .wd.lit em { color: var(--champ); }
 
   #iletisim { border-top: 1px solid var(--hair); padding-bottom: 42px; position: relative; }
   .contact-glow {
@@ -171,6 +277,18 @@
     font-size: clamp(26px, 6vw, 88px); margin-top: 14px; padding-right: 0.2em;
     overflow-wrap: anywhere;
   }
+  .email .c { display: inline-block; }
+  .js.motion .email:hover .c { animation: wave 0.7s var(--ease) calc(var(--i) * 28ms); }
+  @keyframes wave { 30% { transform: translateY(-0.14em); } 60% { transform: translateY(0.05em); } 100% { transform: none; } }
+  .copy-row { display: flex; align-items: center; gap: 18px; margin-top: 18px; flex-wrap: wrap; }
+  .copy {
+    display: none; font: 500 12px/1 var(--mono); letter-spacing: 0.16em; color: var(--muted);
+    background: none; border: 1px solid var(--hair); padding: 12px 18px; cursor: pointer;
+    transition: color 0.25s ease, border-color 0.25s ease;
+  }
+  .js .copy { display: inline-block; }
+  .copy:hover { color: var(--champ); border-color: var(--champ-dim); }
+  .copy.done { color: var(--champ); border-color: var(--champ); }
   footer {
     display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
     margin-top: 68px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--muted);
@@ -180,13 +298,14 @@
 
   /* ── motion ──────────────────────────── */
   @media (prefers-reduced-motion: no-preference) {
-    .js .rise { opacity: 0; transform: translateY(16px); animation: rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
-    .js .d1 { animation-delay: 0.05s; } .js .d2 { animation-delay: 0.18s; }
-    .js .d3 { animation-delay: 0.32s; } .js .d4 { animation-delay: 0.46s; }
+    .js .rise { opacity: 0; transform: translateY(16px); animation: rise 0.8s var(--ease) forwards; }
+    .js .d1 { animation-delay: calc(var(--t0) + 0.05s); } .js .d2 { animation-delay: calc(var(--t0) + 0.18s); }
+    .js .d3 { animation-delay: calc(var(--t0) + 0.5s); } .js .d4 { animation-delay: calc(var(--t0) + 0.64s); }
+    .js .name.rise { opacity: 1; transform: none; animation: none; }
     @keyframes rise { to { opacity: 1; transform: none; } }
     .hero-glow, .contact-glow { animation: glow 9s ease-in-out infinite alternate; }
     @keyframes glow { from { opacity: 0.5; } to { opacity: 1; } }
-    .js .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1); }
+    .js .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s var(--ease); }
     .js .reveal.in { opacity: 1; transform: none; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -215,8 +334,9 @@
     .cta-row { flex-direction: column; align-items: stretch; margin-top: 28px; }
     .btn, .ghost { justify-content: center; }
     .band-wrap { height: auto; }
-    .band { position: static; transform: none; left: 0; right: 0; padding: 10px 0; }
+    .band { position: static; transform: skewX(var(--sk, 0deg)); left: 0; right: 0; padding: 10px 0; }
     section { padding: 52px 24px; }
+    #projeler .grid-2 + .grid-2 { margin-top: 72px; }
     .proj-desc { font-size: 15px; }
     .spec-label { width: 68px; }
     .spec-val { font-size: 14px; }
@@ -225,6 +345,14 @@
 </style>
 </head>
 <body>
+
+<div class="curtain" aria-hidden="true">
+  <div class="curtain-top"></div>
+  <div class="curtain-bot"></div>
+  <div class="curtain-seam"></div>
+</div>
+<div class="progress" aria-hidden="true"></div>
+<div class="cur" aria-hidden="true"></div>
 
 <header>
   <div class="mark">RIZGAR OZAN</div>
@@ -239,6 +367,7 @@
 
   <div class="hero">
     <div class="hero-glow" aria-hidden="true"></div>
+    <canvas class="dust" aria-hidden="true"></canvas>
     <div class="crop tl" aria-hidden="true"></div>
     <div class="crop tr" aria-hidden="true"></div>
     <div class="crop bl" aria-hidden="true"></div>
@@ -255,13 +384,13 @@
           <div class="meta">UNITY / C#<br>REACT / JAVASCRIPT</div>
         </div>
         <div class="cta-row rise d4">
-          <a class="btn" href="#projeler">Projelere bak
+          <a class="btn mag" href="#projeler">Projelere bak
             <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#0B0B0D" stroke-width="1.7" aria-hidden="true"><path d="M8 2v11M3.5 8.5 8 13l4.5-4.5"></path></svg>
           </a>
-          <a class="ghost" href="https://github.com/RizgarOzan">GitHub
+          <a class="ghost mag" href="https://github.com/RizgarOzan">GitHub
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#F2EFE9" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
           </a>
-          <a class="ghost" href="https://www.linkedin.com/in/rizgarozan/">LinkedIn
+          <a class="ghost mag" href="https://www.linkedin.com/in/rizgarozan/">LinkedIn
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#F2EFE9" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
           </a>
         </div>
@@ -279,56 +408,129 @@
     </div>
   </div>
 
-  <section id="projeler" class="reveal">
-    <div class="sec-head">
+  <section id="projeler">
+    <div class="sec-head reveal">
       <h2>Projeler</h2>
       <div class="tag">SEÇİLİ İŞ</div>
     </div>
-    <div class="grid-2">
+
+    <div class="grid-2 reveal proj">
       <div>
         <div class="numeral" aria-hidden="true">01</div>
-        <h3 class="proj-title">Code-<em>Enigma</em></h3>
-        <p class="proj-desc" style="margin-bottom: 0;">Matematik odaklı, kişiselleştirilmiş akademik gelişim platformu. İlkhan Arda Akmaca ile birlikte geliştiriyoruz; arayüz dili Türkçe.</p>
-        <a class="gold-link" href="https://github.com/ilkhanarda/Code-Enigma">GITHUB'DA İNCELE
+        <h3 class="proj-title">Match3 <em>Lab</em></h3>
+        <p class="proj-desc" style="margin-bottom: 0;">Bir match-3 oyunu değil, match-3 tezgâhı: Unity'den bağımsız saf C# kural çekirdeği, elle yazılabilir seviye formatı ve seviye zorluğunu bot simülasyonuyla ölçen araç zinciri. Tarayıcıda oynanan WebGL demosu var.</p>
+        <a class="gold-link mag" href="https://github.com/RizgarOzan/match3-lab">GITHUB'DA İNCELE
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
         </a>
       </div>
       <div class="spec">
-        <div class="spec-row">
-          <div class="spec-label">ROL</div>
-          <div class="spec-val">Arayüz geliştirme — panel bileşenleri, akran karşılaştırma göstergeleri, filtre ve ayar kontrolleri</div>
-        </div>
-        <div class="spec-row">
+        <div class="spec-row" style="--i: 0;">
           <div class="spec-label">YAPI</div>
-          <div class="spec-val">React 19 · Vite · Tailwind CSS 4 · GSAP</div>
+          <div class="spec-val">C# / .NET · Unity 6 · xUnit · WebGL</div>
         </div>
-        <div class="spec-row">
-          <div class="spec-label">MODÜLLER</div>
-          <div class="spec-val">Kişisel panel · Ölçme-değerlendirme testleri · Video dersler</div>
+        <div class="spec-row" style="--i: 1;">
+          <div class="spec-label">ÖLÇÜM</div>
+          <div class="spec-val">6 seviye, her biri 1000 bot oyunuyla; açgözlü ve rastgele botun kazanma oranı zorluk eğrisini çiziyor</div>
+        </div>
+        <div class="spec-row" style="--i: 2;">
+          <div class="spec-label">ARAÇLAR</div>
+          <div class="spec-val">Komut satırı (validate · sim · curve · tune) · Unity seviye editörü · simülatör penceresi</div>
         </div>
       </div>
     </div>
-    <div class="grid-2">
+    <div class="grid-2 reveal proj">
       <div>
         <div class="numeral" aria-hidden="true">02</div>
-        <h3 class="proj-title">Bilim <em>Dedektifi</em></h3>
-        <p class="proj-desc" style="margin-bottom: 0;">Gizemli bir ölümü araştıran bir dedektifin gözünden ilerleyen eğitsel kısa macera. Hacettepe'de ders projesi olarak ekipçe geliştirdik; itch.io'da ücretsiz yayında.</p>
-        <a class="gold-link" href="https://rizgarozan.itch.io/bilim-dedektifi">ITCH.IO'DA İNCELE
+        <h3 class="proj-title">TMP Glyph <em>Audit</em></h3>
+        <p class="proj-desc" style="margin-bottom: 0;">TextMeshPro fontlarının çizemediği her metni — sahnelerde, prefab'larda ve yalnız çalışma anında görünen metin dosyalarında — proje çapında bulan Unity paketi. TMP'nin gerçek fallback zincirini izler; editör penceresi ve CI çıkış kodları verir.</p>
+        <a class="gold-link mag" href="https://github.com/RizgarOzan/tmp-glyph-audit">GITHUB'DA İNCELE
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
         </a>
       </div>
       <div class="spec">
-        <div class="spec-row">
+        <div class="spec-row" style="--i: 0;">
+          <div class="spec-label">TÜR</div>
+          <div class="spec-val">Açık kaynak Unity paketi (UPM, git URL ile kurulur)</div>
+        </div>
+        <div class="spec-row" style="--i: 1;">
+          <div class="spec-label">YAPI</div>
+          <div class="spec-val">C# · TextMeshPro · Unity 2023.2+ · saf C# çekirdek + editör katmanı</div>
+        </div>
+        <div class="spec-row" style="--i: 2;">
+          <div class="spec-label">TEST</div>
+          <div class="spec-val">18 xUnit + 4 EditMode testi; CI'da 0 / 1 / 2 çıkış kodu</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2 reveal proj">
+      <div>
+        <div class="numeral" aria-hidden="true">03</div>
+        <h3 class="proj-title">Turkish <em>RAG Eval</em></h3>
+        <p class="proj-desc" style="margin-bottom: 0;">Bir RAG hattının hangi parçası Türkçede maliyetini hak ediyor? 12 retrieval konfigürasyonunu, elle etiketlediğim 58 soruluk Türkçe altın set üzerinde ölçtüm; sonuçlar yeniden üretilebilir.</p>
+        <a class="gold-link mag" href="https://github.com/RizgarOzan/turkish-rag-eval">GITHUB'DA İNCELE
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
+        </a>
+      </div>
+      <div class="spec">
+        <div class="spec-row" style="--i: 0;">
+          <div class="spec-label">YAPI</div>
+          <div class="spec-val">Python · BM25 · dense embedding · hybrid RRF · 3 chunking stratejisi</div>
+        </div>
+        <div class="spec-row" style="--i: 1;">
+          <div class="spec-label">BULGU</div>
+          <div class="spec-val">5 karakterlik önek kökleme tek başına nDCG'yi %23–29 artırıyor; morfolojik analizör gerekmiyor</div>
+        </div>
+        <div class="spec-row" style="--i: 2;">
+          <div class="spec-label">METRİK</div>
+          <div class="spec-val">nDCG@10 · Recall@5 · MRR · P95 gecikme</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2 reveal proj">
+      <div>
+        <div class="numeral" aria-hidden="true">04</div>
+        <h3 class="proj-title">Bilim <em>Dedektifi</em></h3>
+        <p class="proj-desc" style="margin-bottom: 0;">Gizemli bir ölümü araştıran bir dedektifin gözünden ilerleyen eğitsel kısa macera. Hacettepe'de ders projesi olarak ekipçe geliştirdik; itch.io'da ücretsiz yayında.</p>
+        <a class="gold-link mag" href="https://rizgarozan.itch.io/bilim-dedektifi">ITCH.IO'DA İNCELE
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
+        </a>
+      </div>
+      <div class="spec">
+        <div class="spec-row" style="--i: 0;">
           <div class="spec-label">DURUM</div>
           <div class="spec-val">Yayında — ücretsiz, Windows (indirilebilir)</div>
         </div>
-        <div class="spec-row">
+        <div class="spec-row" style="--i: 1;">
           <div class="spec-label">TÜR</div>
           <div class="spec-val">Eğitsel dedektif/gizem demosu</div>
         </div>
-        <div class="spec-row">
+        <div class="spec-row" style="--i: 2;">
           <div class="spec-label">EKİP</div>
           <div class="spec-val">Hacettepe ders projesi — ekip çalışması</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2 reveal proj">
+      <div>
+        <div class="numeral" aria-hidden="true">05</div>
+        <h3 class="proj-title">Code-<em>Enigma</em></h3>
+        <p class="proj-desc" style="margin-bottom: 0;">Matematik odaklı, kişiselleştirilmiş akademik gelişim platformu. İlkhan Arda Akmaca ile birlikte geliştiriyoruz; arayüz dili Türkçe.</p>
+        <a class="gold-link mag" href="https://github.com/ilkhanarda/Code-Enigma">GITHUB'DA İNCELE
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
+        </a>
+      </div>
+      <div class="spec">
+        <div class="spec-row" style="--i: 0;">
+          <div class="spec-label">ROL</div>
+          <div class="spec-val">Arayüz geliştirme — panel bileşenleri, akran karşılaştırma göstergeleri, filtre ve ayar kontrolleri</div>
+        </div>
+        <div class="spec-row" style="--i: 1;">
+          <div class="spec-label">YAPI</div>
+          <div class="spec-val">React 19 · Vite · Tailwind CSS 4 · GSAP</div>
+        </div>
+        <div class="spec-row" style="--i: 2;">
+          <div class="spec-label">MODÜLLER</div>
+          <div class="spec-val">Kişisel panel · Ölçme-değerlendirme testleri · Video dersler</div>
         </div>
       </div>
     </div>
@@ -349,6 +551,9 @@
     <div style="position: relative;">
       <div class="tag" style="letter-spacing: 0.16em;">BİR PROJEN Mİ VAR?</div>
       <a class="email sheen" href="mailto:rizgarozan7@gmail.com">rizgarozan7@gmail.com</a>
+      <div class="copy-row">
+        <button class="copy" type="button" data-mail="rizgarozan7@gmail.com">ADRESİ KOPYALA</button>
+      </div>
       <footer>
         <div>© 2026 RIZGAR OZAN — ANKARA</div>
         <a href="https://github.com/RizgarOzan">GITHUB / RIZGAROZAN</a>
@@ -361,7 +566,61 @@
 </main>
 
 <script>
-  document.documentElement.classList.add('js');
+(function () {
+  var root = document.documentElement;
+  root.classList.add('js');
+  var motion = matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  var fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (motion) root.classList.add('motion');
+  if (fine) root.classList.add('fine');
+
+  /* perde: aynı oturumda ikinci açılışta atlanır */
+  try {
+    if (sessionStorage.getItem('perde')) root.classList.add('seen');
+    else sessionStorage.setItem('perde', '1');
+  } catch (e) {}
+
+  function split(el, cls, wordsOnly) {
+    var i = 0, walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nodes = [], n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(function (t) {
+      var frag = document.createDocumentFragment();
+      var parts = wordsOnly ? t.nodeValue.split(/(\s+)/) : t.nodeValue.split('');
+      parts.forEach(function (p) {
+        if (!p) return;
+        if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); return; }
+        var s = document.createElement('span');
+        s.className = cls; s.textContent = p; s.style.setProperty('--i', i++);
+        frag.appendChild(s);
+      });
+      t.parentNode.replaceChild(frag, t);
+    });
+    return i;
+  }
+
+  /* isim harf harf, proje başlıkları kelime kelime */
+  if (motion) {
+    document.querySelectorAll('.name').forEach(function (el) { split(el, 'ch'); el.classList.add('split'); });
+    document.querySelectorAll('.proj-title').forEach(function (el) {
+      /* em içindeki kelimeler em'i korusun diye önce kelime kapsülü, sonra iç span */
+      var i = 0, walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nodes = [], n;
+      while ((n = walker.nextNode())) nodes.push(n);
+      nodes.forEach(function (t) {
+        var frag = document.createDocumentFragment();
+        t.nodeValue.split(/(\s+)/).forEach(function (p) {
+          if (!p) return;
+          if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); return; }
+          var w = document.createElement('span'); w.className = 'w';
+          var s = document.createElement('span'); s.textContent = p; s.style.setProperty('--i', i++);
+          w.appendChild(s); frag.appendChild(w);
+        });
+        t.parentNode.replaceChild(frag, t);
+      });
+    });
+    document.querySelectorAll('.email').forEach(function (el) { split(el, 'c'); });
+  }
+
+  /* görünür olunca aç */
   var els = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
@@ -373,6 +632,122 @@
   } else {
     els.forEach(function (el) { el.classList.add('in'); });
   }
+
+  /* adresi kopyala */
+  var copy = document.querySelector('.copy');
+  if (copy) copy.addEventListener('click', function () {
+    var done = function () { copy.textContent = 'KOPYALANDI'; copy.classList.add('done');
+      setTimeout(function () { copy.textContent = 'ADRESİ KOPYALA'; copy.classList.remove('done'); }, 2200); };
+    var fallback = function () {
+      var t = document.createElement('textarea'); t.value = copy.dataset.mail; t.setAttribute('readonly', '');
+      t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
+      try { if (document.execCommand('copy')) done(); } catch (e) {}
+      document.body.removeChild(t);
+    };
+    if (navigator.clipboard) navigator.clipboard.writeText(copy.dataset.mail).then(done, fallback);
+    else fallback();
+  });
+
+  /* sekme gizlenince başlık */
+  document.addEventListener('visibilitychange', function () {
+    document.title = document.hidden ? 'Buradayım — Rızgar Ozan' : 'Rızgar Ozan';
+  });
+
+  if (!motion) return;
+
+  /* ── kaydırma: ilerleme, şerit hızı, hakkımda kelimeleri ── */
+  var about = document.querySelector('.about-col'), words = [];
+  if (about) {
+    split(about, 'wd', true);
+    words = Array.prototype.slice.call(about.querySelectorAll('.wd'));
+  }
+  var lastY = scrollY, vel = 0, rate = 1, pos = 0;
+  var band = document.querySelector('.band'), track = document.querySelector('.band-track');
+  function onScroll() {
+    var y = scrollY, max = root.scrollHeight - innerHeight;
+    root.style.setProperty('--p', max > 0 ? (y / max).toFixed(4) : 0);
+    vel += Math.max(-90, Math.min(90, y - lastY)); lastY = y;
+    if (words.length) {
+      var r = about.getBoundingClientRect();
+      var t = (innerHeight * 0.8 - r.top) / (r.height + innerHeight * 0.25);
+      var lit = Math.round(Math.max(0, Math.min(1, t)) * words.length);
+      words.forEach(function (w, i) { w.classList.toggle('lit', i < lit); });
+    }
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ── imleç + manyetik butonlar ── */
+  var cur = document.querySelector('.cur'), mx = -100, my = -100, cx = -100, cy = -100;
+  if (fine) {
+    addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; cur.classList.add('live'); }, { passive: true });
+    document.addEventListener('mouseleave', function () { cur.classList.remove('live'); });
+    document.addEventListener('mouseover', function (e) {
+      cur.classList.toggle('on', !!e.target.closest('a, button'));
+    });
+    document.querySelectorAll('.mag').forEach(function (el) {
+      el.addEventListener('mousemove', function (e) {
+        var r = el.getBoundingClientRect();
+        el.style.transform = 'translate(' + ((e.clientX - r.left - r.width / 2) * 0.22).toFixed(1) + 'px,' + ((e.clientY - r.top - r.height / 2) * 0.3).toFixed(1) + 'px)';
+      });
+      el.addEventListener('mouseleave', function () { el.style.transform = ''; });
+    });
+    document.querySelectorAll('.proj').forEach(function (el) {
+      el.addEventListener('mousemove', function (e) {
+        var r = el.getBoundingClientRect();
+        el.style.setProperty('--px', ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+        el.style.setProperty('--py', ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+      });
+      el.addEventListener('mouseleave', function () { el.style.setProperty('--px', 0); el.style.setProperty('--py', 0); });
+    });
+  }
+
+  /* ── altın toz ── */
+  var c = document.querySelector('.dust'), ctx = c.getContext('2d'), ps = [], W = 0, H = 0, dustOn = true;
+  function mote(any) {
+    return { x: Math.random() * W, y: any ? Math.random() * H : H + 4, r: 0.5 + Math.random() * 1.3,
+      vx: (Math.random() - 0.5) * 0.12, vy: -(0.05 + Math.random() * 0.16), a: Math.random() * 6.283, s: 0.005 + Math.random() * 0.012 };
+  }
+  function size() {
+    var dpr = Math.min(devicePixelRatio || 1, 2), r = c.parentNode.getBoundingClientRect();
+    W = r.width; H = r.height; c.width = W * dpr; c.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ps = []; for (var i = Math.round(W * H / 14000); i > 0; i--) ps.push(mote(true));
+  }
+  size(); addEventListener('resize', size);
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { dustOn = en[0].isIntersecting; }).observe(c);
+
+  /* ── tek kare döngüsü ── */
+  var prev = performance.now();
+  function frame(now) {
+    var dt = Math.min(50, now - prev); prev = now;
+    /* şerit: kaydırma hızıyla hızlanır, geri kaydırınca tersine döner, yana yatar */
+    vel *= 0.9; rate += (1 + vel * 0.14 - rate) * 0.12;
+    if (track) {
+      var third = track.scrollWidth / 3;
+      pos = (pos + third / 28000 * dt * rate) % third; if (pos < 0) pos += third;
+      track.style.transform = 'translateX(' + (-pos).toFixed(2) + 'px)';
+      band.style.setProperty('--sk', (-vel * 0.09).toFixed(2) + 'deg');
+    }
+    /* imleç gecikmeli takip */
+    if (fine) { cx += (mx - cx) * 0.18; cy += (my - cy) * 0.18; cur.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px)'; }
+    /* toz */
+    if (dustOn && !document.hidden) {
+      var hr = c.getBoundingClientRect(), px = mx - hr.left, py = my - hr.top;
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < ps.length; i++) {
+        var p = ps[i]; p.a += p.s;
+        var dx = px - p.x, dy = py - p.y, d = dx * dx + dy * dy;
+        if (d < 40000 && d > 1) { var f = (1 - Math.sqrt(d) / 200) * 0.0006; p.vx -= dx * f; p.vy -= dy * f; }
+        p.x += p.vx; p.y += p.vy; p.vx *= 0.995; p.vy *= 0.995;
+        if (p.y < -4 || p.x < -4 || p.x > W + 4) ps[i] = p = mote(false);
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283);
+        ctx.fillStyle = 'rgba(214,194,154,' + (0.18 + 0.5 * (0.5 + 0.5 * Math.sin(p.a))).toFixed(3) + ')'; ctx.fill();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
 </script>
 </body>
 </html>
