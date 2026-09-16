@@ -75,7 +75,8 @@
     background: var(--champ); transform-origin: left; transform: scaleX(var(--p, 0));
     pointer-events: none; opacity: 0.9;
   }
-  .cur { display: none; }
+  .cur, .tail { display: none; }
+  .js.motion.fine .tail { display: block; position: fixed; inset: 0; z-index: 94; pointer-events: none; }
   .js.motion.fine .cur {
     display: block; position: fixed; top: 0; left: 0; z-index: 95; pointer-events: none;
     width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%;
@@ -119,6 +120,13 @@
   }
   .dust { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
   .js.motion .dust { display: block; }
+  /* toz avı skoru */
+  .hud {
+    position: absolute; top: 34px; right: 72px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em;
+    color: var(--champ); text-align: right; line-height: 1.9; opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+  }
+  .hud.live { opacity: 1; }
+  .hud span { color: var(--muted); }
   .crop { position: absolute; width: 26px; height: 26px; pointer-events: none; }
   .crop.tl { top: 30px; left: 32px; border-top: 1px solid var(--champ-dim); border-left: 1px solid var(--champ-dim); }
   .crop.tr { top: 30px; right: 32px; border-top: 1px solid var(--champ-dim); border-right: 1px solid var(--champ-dim); }
@@ -158,6 +166,8 @@
   .hero-sub { display: flex; justify-content: space-between; align-items: flex-end; gap: 64px; margin-top: 36px; }
   .lede { font-size: 20px; line-height: 1.6; max-width: 540px; }
   .meta { font-family: var(--mono); font-size: 12px; line-height: 2.1; color: var(--muted); text-align: right; white-space: nowrap; }
+  .clock { display: none; color: var(--champ-dim); }
+  .js .clock { display: block; }
   .cta-row { display: flex; gap: 18px; margin-top: 40px; align-items: center; flex-wrap: wrap; }
   .btn {
     display: inline-flex; align-items: center; gap: 12px;
@@ -207,7 +217,8 @@
 
   #projeler .grid-2 { margin-top: 58px; }
   #projeler .grid-2 + .grid-2 { margin-top: 104px; }
-  .proj { position: relative; }
+  .proj { position: relative; isolation: isolate; }
+  .pdust { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
   .numeral {
     font-family: var(--serif); font-style: italic; font-weight: 400;
     font-size: clamp(96px, 14vw, 196px); line-height: 0.82;
@@ -294,6 +305,9 @@
     margin-top: 68px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--muted);
   }
   footer a { color: var(--muted); }
+  .konami { display: none; font: inherit; letter-spacing: inherit; color: var(--muted); background: none; border: 0; padding: 0; cursor: pointer; transition: color 0.25s ease; }
+  .js.motion .konami { display: inline; }
+  .konami:hover { color: var(--champ); }
   footer a:hover { color: var(--champ); }
 
   /* ── motion ──────────────────────────── */
@@ -330,6 +344,7 @@
     .crop.bl, .crop.br { display: none; }
     .crop.tl { top: 16px; left: 14px; width: 20px; height: 20px; }
     .crop.tr { top: 16px; right: 14px; width: 20px; height: 20px; }
+    .hud { top: 18px; right: 24px; font-size: 11px; }
     .lede { font-size: 16px; }
     .cta-row { flex-direction: column; align-items: stretch; margin-top: 28px; }
     .btn, .ghost { justify-content: center; }
@@ -352,6 +367,7 @@
   <div class="curtain-seam"></div>
 </div>
 <div class="progress" aria-hidden="true"></div>
+<canvas class="tail" aria-hidden="true"></canvas>
 <div class="cur" aria-hidden="true"></div>
 
 <header>
@@ -368,6 +384,7 @@
   <div class="hero">
     <div class="hero-glow" aria-hidden="true"></div>
     <canvas class="dust" aria-hidden="true"></canvas>
+    <div class="hud" aria-hidden="true"></div>
     <div class="crop tl" aria-hidden="true"></div>
     <div class="crop tr" aria-hidden="true"></div>
     <div class="crop bl" aria-hidden="true"></div>
@@ -381,7 +398,7 @@
         </h1>
         <div class="hero-sub rise d3">
           <p class="lede" style="margin: 0;">Oyun ve yazılım geliştirici; Hacettepe Üniversitesi'nde öğrenciyim, Ankara'dayım. Unity ile oyun sistemleri, React ile web arayüzleri kuruyorum.</p>
-          <div class="meta">UNITY / C#<br>REACT / JAVASCRIPT</div>
+          <div class="meta">UNITY / C#<br>REACT / JAVASCRIPT<span class="clock" aria-live="off"></span></div>
         </div>
         <div class="cta-row rise d4">
           <a class="btn mag" href="#projeler">Projelere bak
@@ -558,6 +575,7 @@
         <div>© 2026 RIZGAR OZAN — ANKARA</div>
         <a href="https://github.com/RizgarOzan">GITHUB / RIZGAROZAN</a>
         <a href="https://www.linkedin.com/in/rizgarozan/">LINKEDIN / RIZGAROZAN</a>
+        <button class="konami" type="button" title="Toz avını başlat">TOZ AVI: ↑↑↓↓←→←→BA</button>
         <a href="#top">↑ BAŞA DÖN</a>
       </footer>
     </div>
@@ -653,6 +671,21 @@
     document.title = document.hidden ? 'Buradayım — Rızgar Ozan' : 'Rızgar Ozan';
   });
 
+  /* canlı Ankara saati + saate göre ne yapıyor olduğum */
+  var clock = document.querySelector('.clock');
+  function tick() {
+    var now = new Date(), tz = 'Europe/Istanbul';
+    var h = +new Intl.DateTimeFormat('en', { hour: 'numeric', hourCycle: 'h23', timeZone: tz }).format(now);
+    var wd = new Intl.DateTimeFormat('en', { weekday: 'short', timeZone: tz }).format(now);
+    var t = new Intl.DateTimeFormat('tr', { hour: '2-digit', minute: '2-digit', timeZone: tz }).format(now);
+    var s = h < 8 ? 'UYUYORUM' : (h < 17 && wd !== 'Sat' && wd !== 'Sun') ? 'DERSTEYİM' : 'KOD YAZIYORUM';
+    clock.innerHTML = 'ANKARA ' + t + '<br>MUHTEMELEN ' + s;
+  }
+  tick(); setInterval(tick, 30000);
+
+  console.log('%cRızgar Ozan%c\n\nBoşta 5 saniye bekle. Projelerde tozu izle. ↑↑↓↓←→←→BA.\nKaynak: github.com/RizgarOzan/RizgarOzan.github.io',
+    'font: italic 600 22px Georgia, serif; color: #D6C29A', 'color: #8E8B84');
+
   if (!motion) return;
 
   /* ── kaydırma: ilerleme, şerit hızı, hakkımda kelimeleri ── */
@@ -679,7 +712,10 @@
 
   /* ── imleç + manyetik butonlar ── */
   var cur = document.querySelector('.cur'), mx = -100, my = -100, cx = -100, cy = -100;
+  var tc = document.querySelector('.tail'), tctx = tc.getContext('2d'), tail = [], lmx = -100, lmy = -100;
   if (fine) {
+    var sizeTail = function () { tc.width = innerWidth; tc.height = innerHeight; };
+    sizeTail(); addEventListener('resize', sizeTail);
     addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; cur.classList.add('live'); }, { passive: true });
     document.addEventListener('mouseleave', function () { cur.classList.remove('live'); });
     document.addEventListener('mouseover', function (e) {
@@ -712,9 +748,144 @@
     var dpr = Math.min(devicePixelRatio || 1, 2), r = c.parentNode.getBoundingClientRect();
     W = r.width; H = r.height; c.width = W * dpr; c.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ps = []; for (var i = Math.round(W * H / 14000); i > 0; i--) ps.push(mote(true));
+    extra = []; gather = false; idleAt = performance.now(); /* toz yazı boyuta bağlı, yeniden kurulsun */
   }
   size(); addEventListener('resize', size);
   if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { dustOn = en[0].isIntersecting; }).observe(c);
+
+  /* ── toz yazıya toplanır: 5 sn dokunulmazsa, her 6 sn'de bir sonraki şekil, kıpırdayınca dağılır ── */
+  var GLYPHS = ['RO', '</>', '∞'], gi = 0, gather = false, extra = [], idleAt = performance.now(), glyphAt = 0;
+  /* gizli tuvale çiz, dolu pikselleri örnekle, karıştır, üst sınırla — hero yazısı ve proje amblemleri aynı yolu kullanır */
+  var serif = getComputedStyle(root).getPropertyValue('--serif');
+  function sample(w, h, draw, step, cap) {
+    var o = document.createElement('canvas'), oc = o.getContext('2d');
+    w = Math.ceil(w); h = Math.ceil(h); o.width = w; o.height = h;
+    oc.fillStyle = '#fff'; oc.strokeStyle = '#fff'; oc.textAlign = 'center'; oc.textBaseline = 'middle';
+    draw(oc);
+    var d = oc.getImageData(0, 0, w, h).data, pts = [];
+    for (var y = 0; y < h; y += step) for (var x = 0; x < w; x += step)
+      if (d[(y * w + x) * 4 + 3] > 128) pts.push([x + (Math.random() - 0.5) * step, y + (Math.random() - 0.5) * step]);
+    for (var i = pts.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = pts[i]; pts[i] = pts[j]; pts[j] = t; }
+    return pts.slice(0, cap);
+  }
+  function targets(text) {
+    var narrow = W < 720, fs = Math.min(H * 0.78, W * (narrow ? 0.5 : 0.3)), maxW = narrow ? W * 0.9 : W * 0.46;
+    return sample(W, H, function (oc) {
+      oc.font = 'italic 600 ' + fs + 'px ' + serif;
+      var tw = oc.measureText(text).width; if (tw > maxW) oc.font = 'italic 600 ' + (fs * maxW / tw) + 'px ' + serif;
+      oc.fillText(text, narrow ? W / 2 : W * 0.74, H / 2);
+    }, narrow ? 5 : 4, narrow ? 500 : 900);
+  }
+  function form(text) {
+    var pts = targets(text); if (!pts.length) return;
+    while (extra.length < pts.length) { var m = mote(true); m.o = 0; extra.push(m); }
+    for (var i = 0; i < extra.length; i++) { var p = pts[i % pts.length]; extra[i].tx = p[0]; extra[i].ty = p[1]; }
+    gather = true; glyphAt = performance.now();
+  }
+  function scatter() {
+    if (!gather) return; gather = false;
+    extra.forEach(function (p) { p.vx = (Math.random() - 0.5) * 1.8; p.vy = (Math.random() - 0.5) * 1.8; });
+  }
+  function wake() { idleAt = performance.now(); scatter(); }
+  ['mousemove', 'scroll', 'touchstart', 'keydown', 'wheel'].forEach(function (ev) { addEventListener(ev, wake, { passive: true }); });
+  addEventListener('touchmove', function (e) { mx = e.touches[0].clientX; my = e.touches[0].clientY; }, { passive: true });
+
+  /* ── proje amblemleri: her kart görünür olunca toz o projenin işaretine toplanır, imleçten kaçar ── */
+  var EMBLEMS = [
+    function (oc, x, y, s) { /* 01 match-3: 3×3 elmas */
+      for (var r = -1; r <= 1; r++) for (var q = -1; q <= 1; q++) {
+        oc.beginPath(); oc.moveTo(x + q * s * 0.36, y + r * s * 0.36 - s * 0.14); oc.lineTo(x + q * s * 0.36 + s * 0.14, y + r * s * 0.36);
+        oc.lineTo(x + q * s * 0.36, y + r * s * 0.36 + s * 0.14); oc.lineTo(x + q * s * 0.36 - s * 0.14, y + r * s * 0.36); oc.fill();
+      }
+    },
+    function (oc, x, y, s) { /* 02 glyph audit: Aa + tofu kutusu */
+      oc.font = '600 ' + s * 0.62 + 'px ' + serif; oc.fillText('Aa', x - s * 0.14, y);
+      oc.lineWidth = s * 0.05; oc.strokeRect(x + s * 0.3, y - s * 0.2, s * 0.32, s * 0.4);
+    },
+    function (oc, x, y, s) { /* 03 retrieval: büyüteç */
+      oc.lineWidth = s * 0.06; oc.beginPath(); oc.arc(x - s * 0.08, y - s * 0.08, s * 0.28, 0, 6.283); oc.stroke();
+      oc.lineWidth = s * 0.09; oc.beginPath(); oc.moveTo(x + s * 0.13, y + s * 0.13); oc.lineTo(x + s * 0.4, y + s * 0.4); oc.stroke();
+    },
+    function (oc, x, y, s) { /* 04 dedektif: soru işareti */
+      oc.font = 'italic 600 ' + s * 0.95 + 'px ' + serif; oc.fillText('?', x, y);
+    },
+    function (oc, x, y, s) { /* 05 matematik platformu: kalın çizgili toplam işareti (Σ) */
+      oc.lineWidth = s * 0.11; oc.lineJoin = 'miter'; oc.beginPath();
+      oc.moveTo(x + s * 0.3, y - s * 0.42); oc.lineTo(x - s * 0.3, y - s * 0.42); oc.lineTo(x + s * 0.02, y);
+      oc.lineTo(x - s * 0.3, y + s * 0.42); oc.lineTo(x + s * 0.3, y + s * 0.42); oc.stroke();
+    }
+  ];
+  var fields = [];
+  document.querySelectorAll('.proj').forEach(function (el, k) {
+    var cv = document.createElement('canvas'); cv.className = 'pdust'; cv.setAttribute('aria-hidden', 'true'); el.insertBefore(cv, el.firstChild);
+    var f = { el: el, c: cv, ctx: cv.getContext('2d'), ps: [], on: false, W: 0, H: 0, draw: EMBLEMS[k % EMBLEMS.length] };
+    fields.push(f);
+    new IntersectionObserver(function (en) { f.on = en[0].isIntersecting; }).observe(cv);
+  });
+  function sizeField(f) {
+    var dpr = Math.min(devicePixelRatio || 1, 2), r = f.el.getBoundingClientRect();
+    f.W = r.width; f.H = r.height; f.c.width = f.W * dpr; f.c.height = f.H * dpr; f.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    /* geniş: iki sütunlu düzende sol sütunun sağ boşluğu (açıklama 460px'te biter); dar: numaranın sağı */
+    var two = f.W > 960 - 144, narrow = f.W < 720, s = narrow ? Math.min(150, f.W * 0.4) : Math.min(two ? 190 : 230, f.H * 0.7);
+    var ex = narrow ? f.W * 0.74 : two ? (f.W - 80) / 2 - 70 : f.W * 0.72, ey = narrow ? 84 : f.H * 0.5;
+    var pts = sample(f.W, f.H, function (oc) { f.draw(oc, ex, ey, s); }, 4, narrow ? 220 : 380);
+    f.ps = pts.map(function (p) { var m = mote(true); m.o = 0; m.tx = p[0]; m.ty = p[1]; m.x = p[0] + (Math.random() - 0.5) * 240; m.y = p[1] + (Math.random() - 0.5) * 240; return m; });
+  }
+  fields.forEach(sizeField); addEventListener('resize', function () { fields.forEach(sizeField); });
+
+  /* ── toz avı: ↑↑↓↓←→←→BA (telefonda: üst köşedeki isme 5 kez dokun) — 20 saniyede kaç kıvılcım yakalarsın ── */
+  var KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'], ki = 0;
+  var hud = document.querySelector('.hud'), game = null, sparks = [], bits = [], taps = [];
+  addEventListener('keydown', function (e) {
+    ki = e.key.toLowerCase() === KONAMI[ki].toLowerCase() ? ki + 1 : (e.key.toLowerCase() === KONAMI[0].toLowerCase() ? 1 : 0);
+    if (ki === KONAMI.length) { ki = 0; startGame(); }
+  });
+  document.querySelector('.konami').addEventListener('click', startGame);
+  document.querySelector('.mark').addEventListener('click', function () {
+    var t = performance.now(); taps.push(t); taps = taps.filter(function (x) { return t - x < 2000; });
+    if (taps.length >= 5) { taps = []; startGame(); }
+  });
+  function spark() {
+    var gold = Math.random() < 0.15; /* nadir altın kıvılcım: 3 puan, daha hızlı kaçar */
+    return { x: 40 + Math.random() * (W - 80), y: 40 + Math.random() * (H - 80), vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+      r: gold ? 3.2 : 2.2 + Math.random() * 1.2, a: Math.random() * 6.283, s: 0.05, born: performance.now(), gold: gold };
+  }
+  function startGame() {
+    if (game) return;
+    var best = 0; try { best = +localStorage.getItem('tozavi') || 0; } catch (e) {}
+    game = { score: 0, best: best, end: performance.now() + 20000, over: 0 };
+    sparks = []; for (var i = 0; i < 7; i++) sparks.push(spark());
+    hud.classList.add('live'); c.scrollIntoView({ block: 'center' });
+  }
+  function endGame(now) {
+    game.over = now;
+    if (game.score > game.best) { game.best = game.score; try { localStorage.setItem('tozavi', game.score); } catch (e) {} }
+    hud.innerHTML = 'SKOR ' + game.score + ' &nbsp;·&nbsp; EN İYİ ' + game.best + '<br><span>TEKRAR: ↑↑↓↓←→←→BA</span>';
+    sparks = [];
+  }
+  function tickGame(now, px, py) {
+    if (game.over) { if (now - game.over > 6000) { hud.classList.remove('live'); game = null; } return; }
+    if (now >= game.end) return endGame(now);
+    idleAt = now; /* oyun sırasında toz yazı oluşmasın */
+    for (var i = sparks.length - 1; i >= 0; i--) {
+      var s = sparks[i], dx = px - s.x, dy = py - s.y, d = Math.sqrt(dx * dx + dy * dy);
+      s.a += s.s;
+      if (d < 140 && d > 1) { var fl = s.gold ? 0.08 : 0.05; s.vx -= dx / d * fl; s.vy -= dy / d * fl; } /* imleçten kaçar */
+      s.x += s.vx; s.y += s.vy; s.vx *= 0.97; s.vy *= 0.97;
+      if (s.x < 10 || s.x > W - 10) s.vx = -s.vx; if (s.y < 10 || s.y > H - 10) s.vy = -s.vy;
+      s.x = Math.max(10, Math.min(W - 10, s.x)); s.y = Math.max(10, Math.min(H - 10, s.y));
+      var caught = d < 26, stale = now - s.born > 5000;
+      if (caught || stale) {
+        if (caught) { game.score += s.gold ? 3 : 1; for (var k = 0; k < (s.gold ? 16 : 8); k++) bits.push({ x: s.x, y: s.y, vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3, o: 1, gold: s.gold }); }
+        sparks[i] = spark(); continue;
+      }
+      var g = 0.6 + 0.4 * Math.sin(s.a);
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r * 3, 0, 6.283); ctx.fillStyle = 'rgba(214,194,154,' + (0.08 * g).toFixed(3) + ')'; ctx.fill();
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.283); ctx.fillStyle = (s.gold ? 'rgba(214,194,154,' : 'rgba(242,239,233,') + (0.55 + 0.45 * g).toFixed(3) + ')'; ctx.fill();
+    }
+    hud.textContent = 'TOZ AVI  ' + Math.ceil((game.end - now) / 1000) + ' sn  ·  ' + game.score;
+  }
+
 
   /* ── tek kare döngüsü ── */
   var prev = performance.now();
@@ -728,8 +899,19 @@
       track.style.transform = 'translateX(' + (-pos).toFixed(2) + 'px)';
       band.style.setProperty('--sk', (-vel * 0.09).toFixed(2) + 'deg');
     }
-    /* imleç gecikmeli takip */
-    if (fine) { cx += (mx - cx) * 0.18; cy += (my - cy) * 0.18; cur.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px)'; }
+    /* imleç gecikmeli takip + arkasında toz kuyruğu */
+    if (fine) {
+      cx += (mx - cx) * 0.18; cy += (my - cy) * 0.18; cur.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px)';
+      var mv = Math.abs(mx - lmx) + Math.abs(my - lmy); lmx = mx; lmy = my;
+      if (mv > 2 && tail.length < 140) for (i = 0; i < Math.min(3, mv / 6); i++)
+        tail.push({ x: cx + (Math.random() - 0.5) * 6, y: cy + (Math.random() - 0.5) * 6, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 - 0.15, r: 0.6 + Math.random() * 0.9, o: 0.55 });
+      tctx.clearRect(0, 0, innerWidth, innerHeight);
+      for (i = tail.length - 1; i >= 0; i--) {
+        p = tail[i]; p.x += p.vx; p.y += p.vy; p.o -= 0.011;
+        if (p.o <= 0) { tail.splice(i, 1); continue; }
+        tctx.beginPath(); tctx.arc(p.x, p.y, p.r, 0, 6.283); tctx.fillStyle = 'rgba(214,194,154,' + p.o.toFixed(3) + ')'; tctx.fill();
+      }
+    }
     /* toz */
     if (dustOn && !document.hidden) {
       var hr = c.getBoundingClientRect(), px = mx - hr.left, py = my - hr.top;
@@ -742,6 +924,40 @@
         if (p.y < -4 || p.x < -4 || p.x > W + 4) ps[i] = p = mote(false);
         ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283);
         ctx.fillStyle = 'rgba(214,194,154,' + (0.18 + 0.5 * (0.5 + 0.5 * Math.sin(p.a))).toFixed(3) + ')'; ctx.fill();
+      }
+      /* toz yazı: boşta toplan, sırayla şekil değiştir, dağılınca sön */
+      if (!gather && now - idleAt > 5000) form(GLYPHS[gi++ % GLYPHS.length]);
+      else if (gather && now - glyphAt > 6000) form(GLYPHS[gi++ % GLYPHS.length]);
+      for (i = 0; i < extra.length; i++) {
+        p = extra[i]; p.a += p.s;
+        if (gather) { p.x += (p.tx - p.x) * 0.06; p.y += (p.ty - p.y) * 0.06; p.o = Math.min(1, p.o + 0.02); }
+        else { p.x += p.vx; p.y += p.vy; p.vx *= 0.98; p.vy *= 0.98; p.o -= 0.015; }
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283);
+        ctx.fillStyle = 'rgba(214,194,154,' + (p.o * (0.3 + 0.5 * (0.5 + 0.5 * Math.sin(p.a)))).toFixed(3) + ')'; ctx.fill();
+      }
+      if (!gather && extra.length) extra = extra.filter(function (p) { return p.o > 0; });
+      /* toz avı + yakalama kıvılcımları */
+      if (game) tickGame(now, px, py);
+      for (i = bits.length - 1; i >= 0; i--) {
+        p = bits[i]; p.x += p.vx; p.y += p.vy; p.vx *= 0.92; p.vy *= 0.92; p.o -= 0.03;
+        if (p.o <= 0) { bits.splice(i, 1); continue; }
+        ctx.beginPath(); ctx.arc(p.x, p.y, 1.2, 0, 6.283); ctx.fillStyle = (p.gold ? 'rgba(214,194,154,' : 'rgba(242,239,233,') + p.o.toFixed(3) + ')'; ctx.fill();
+      }
+    }
+    /* proje amblemleri: görünür kartlarda toz hedefine süzülür, hafifçe kıpırdar, imleçten kaçar */
+    for (var k = 0; k < fields.length; k++) {
+      var f = fields[k]; if (!f.on || document.hidden) continue;
+      var fr = f.c.getBoundingClientRect(), fx = mx - fr.left, fy = my - fr.top, inView = f.el.classList.contains('in');
+      f.ctx.clearRect(0, 0, f.W, f.H);
+      for (i = 0; i < f.ps.length; i++) {
+        p = f.ps[i]; p.a += p.s;
+        if (!inView) continue;
+        var ddx = fx - p.x, ddy = fy - p.y, dd = ddx * ddx + ddy * ddy;
+        if (fine && dd < 8100 && dd > 1) { var ff = (1 - Math.sqrt(dd) / 90) * 0.5; p.vx -= ddx / Math.sqrt(dd) * ff; p.vy -= ddy / Math.sqrt(dd) * ff; }
+        p.vx += (p.tx + Math.sin(p.a * 3) * 2 - p.x) * 0.01; p.vy += (p.ty + Math.cos(p.a * 2.3) * 2 - p.y) * 0.01;
+        p.x += p.vx; p.y += p.vy; p.vx *= 0.9; p.vy *= 0.9; p.o = Math.min(1, p.o + 0.012);
+        f.ctx.beginPath(); f.ctx.arc(p.x, p.y, p.r, 0, 6.283);
+        f.ctx.fillStyle = 'rgba(214,194,154,' + (p.o * (0.25 + 0.45 * (0.5 + 0.5 * Math.sin(p.a)))).toFixed(3) + ')'; f.ctx.fill();
       }
     }
     requestAnimationFrame(frame);
