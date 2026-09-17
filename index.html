@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rızgar Ozan</title>
-<meta name="description" content="Oyun ve yazılım geliştirici — Unity ile oyun sistemleri, React ile web arayüzleri. Ankara.">
+<meta name="description" content="Yapay zekâ sistemleri ve oyun araçları geliştiricisi — Türkçe retrieval değerlendirmeleri, Unity araçları. Ankara.">
 <meta property="og:title" content="Rızgar Ozan">
 <meta property="og:description" content="Oyun ve yazılım geliştirici — Unity ile oyun sistemleri, React ile web arayüzleri. Ankara.">
 <meta property="og:type" content="website">
@@ -397,8 +397,8 @@
           <span class="name ital sheen rise d2">Ozan</span>
         </h1>
         <div class="hero-sub rise d3">
-          <p class="lede" style="margin: 0;">Oyun ve yazılım geliştirici; Hacettepe Üniversitesi'nde öğrenciyim, Ankara'dayım. Unity ile oyun sistemleri, React ile web arayüzleri kuruyorum.</p>
-          <div class="meta">UNITY / C#<br>REACT / JAVASCRIPT<span class="clock" aria-live="off"></span></div>
+          <p class="lede" style="margin: 0;">Ölçüm sistemleri kuruyorum: bir RAG hattının hangi parçasının Türkçede maliyetini hak ettiğini ölçen retrieval değerlendirmeleri, ve bir seviyeyi ya da bozuk bir fontu kimse oynamadan yakalayan oyun araçları. Hacettepe Üniversitesi'nde öğrenciyim, Ankara'dayım.</p>
+          <div class="meta">PYTHON / RAG<br>UNITY / C#<span class="clock" aria-live="off"></span></div>
         </div>
         <div class="cta-row rise d4">
           <a class="btn mag" href="#projeler">Projelere bak
@@ -434,8 +434,32 @@
     <div class="grid-2 reveal proj">
       <div>
         <div class="numeral" aria-hidden="true">01</div>
+        <h3 class="proj-title">Turkish <em>RAG Eval</em></h3>
+        <p class="proj-desc" style="margin-bottom: 0;">Bir RAG hattının hangi parçası Türkçede maliyetini hak ediyor? 12 retrieval konfigürasyonunu, elle etiketlediğim 58 soruluk Türkçe altın set üzerinde ölçtüm; sonuçlar yeniden üretilebilir.</p>
+        <a class="gold-link mag" href="https://github.com/RizgarOzan/turkish-rag-eval">GITHUB'DA İNCELE
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
+        </a>
+      </div>
+      <div class="spec">
+        <div class="spec-row" style="--i: 0;">
+          <div class="spec-label">YAPI</div>
+          <div class="spec-val">Python · BM25 · dense embedding · hybrid RRF · 3 chunking stratejisi</div>
+        </div>
+        <div class="spec-row" style="--i: 1;">
+          <div class="spec-label">BULGU</div>
+          <div class="spec-val">5 karakterlik önek kökleme tek başına nDCG'yi %23–29 artırıyor; morfolojik analizör gerekmiyor</div>
+        </div>
+        <div class="spec-row" style="--i: 2;">
+          <div class="spec-label">METRİK</div>
+          <div class="spec-val">nDCG@10 · Recall@5 · MRR · P95 gecikme</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2 reveal proj">
+      <div>
+        <div class="numeral" aria-hidden="true">02</div>
         <h3 class="proj-title">Match3 <em>Lab</em></h3>
-        <p class="proj-desc" style="margin-bottom: 0;">Bir match-3 oyunu değil, match-3 tezgâhı: Unity'den bağımsız saf C# kural çekirdeği, elle yazılabilir seviye formatı ve seviye zorluğunu bot simülasyonuyla ölçen araç zinciri. Tarayıcıda oynanan WebGL demosu var.</p>
+        <p class="proj-desc" style="margin-bottom: 0;">Bir match-3 oyunu değil, match-3 tezgâhı: Unity'den bağımsız saf C# kural çekirdeği, elle yazılabilir seviye formatı ve seviye zorluğunu bot simülasyonuyla ölçen araç zinciri. <a class="gold-link mag" href="https://rizgarozan.github.io/match3-lab/" style="display:inline">Tarayıcıda oyna</a>.</p>
         <a class="gold-link mag" href="https://github.com/RizgarOzan/match3-lab">GITHUB'DA İNCELE
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
         </a>
@@ -457,7 +481,7 @@
     </div>
     <div class="grid-2 reveal proj">
       <div>
-        <div class="numeral" aria-hidden="true">02</div>
+        <div class="numeral" aria-hidden="true">03</div>
         <h3 class="proj-title">TMP Glyph <em>Audit</em></h3>
         <p class="proj-desc" style="margin-bottom: 0;">TextMeshPro fontlarının çizemediği her metni — sahnelerde, prefab'larda ve yalnız çalışma anında görünen metin dosyalarında — proje çapında bulan Unity paketi. TMP'nin gerçek fallback zincirini izler; editör penceresi ve CI çıkış kodları verir.</p>
         <a class="gold-link mag" href="https://github.com/RizgarOzan/tmp-glyph-audit">GITHUB'DA İNCELE
@@ -475,31 +499,7 @@
         </div>
         <div class="spec-row" style="--i: 2;">
           <div class="spec-label">TEST</div>
-          <div class="spec-val">18 xUnit + 4 EditMode testi; CI'da 0 / 1 / 2 çıkış kodu</div>
-        </div>
-      </div>
-    </div>
-    <div class="grid-2 reveal proj">
-      <div>
-        <div class="numeral" aria-hidden="true">03</div>
-        <h3 class="proj-title">Turkish <em>RAG Eval</em></h3>
-        <p class="proj-desc" style="margin-bottom: 0;">Bir RAG hattının hangi parçası Türkçede maliyetini hak ediyor? 12 retrieval konfigürasyonunu, elle etiketlediğim 58 soruluk Türkçe altın set üzerinde ölçtüm; sonuçlar yeniden üretilebilir.</p>
-        <a class="gold-link mag" href="https://github.com/RizgarOzan/turkish-rag-eval">GITHUB'DA İNCELE
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
-        </a>
-      </div>
-      <div class="spec">
-        <div class="spec-row" style="--i: 0;">
-          <div class="spec-label">YAPI</div>
-          <div class="spec-val">Python · BM25 · dense embedding · hybrid RRF · 3 chunking stratejisi</div>
-        </div>
-        <div class="spec-row" style="--i: 1;">
-          <div class="spec-label">BULGU</div>
-          <div class="spec-val">5 karakterlik önek kökleme tek başına nDCG'yi %23–29 artırıyor; morfolojik analizör gerekmiyor</div>
-        </div>
-        <div class="spec-row" style="--i: 2;">
-          <div class="spec-label">METRİK</div>
-          <div class="spec-val">nDCG@10 · Recall@5 · MRR · P95 gecikme</div>
+          <div class="spec-val">24 xUnit + 5 EditMode testi; CI'da 0 / 1 / 2 çıkış kodu</div>
         </div>
       </div>
     </div>
@@ -792,19 +792,19 @@
 
   /* ── proje amblemleri: her kart görünür olunca toz o projenin işaretine toplanır, imleçten kaçar ── */
   var EMBLEMS = [
-    function (oc, x, y, s) { /* 01 match-3: 3×3 elmas */
+    function (oc, x, y, s) { /* 01 retrieval eval: büyüteç */
+      oc.lineWidth = s * 0.06; oc.beginPath(); oc.arc(x - s * 0.08, y - s * 0.08, s * 0.28, 0, 6.283); oc.stroke();
+      oc.lineWidth = s * 0.09; oc.beginPath(); oc.moveTo(x + s * 0.13, y + s * 0.13); oc.lineTo(x + s * 0.4, y + s * 0.4); oc.stroke();
+    },
+    function (oc, x, y, s) { /* 02 match-3: 3×3 elmas */
       for (var r = -1; r <= 1; r++) for (var q = -1; q <= 1; q++) {
         oc.beginPath(); oc.moveTo(x + q * s * 0.36, y + r * s * 0.36 - s * 0.14); oc.lineTo(x + q * s * 0.36 + s * 0.14, y + r * s * 0.36);
         oc.lineTo(x + q * s * 0.36, y + r * s * 0.36 + s * 0.14); oc.lineTo(x + q * s * 0.36 - s * 0.14, y + r * s * 0.36); oc.fill();
       }
     },
-    function (oc, x, y, s) { /* 02 glyph audit: Aa + tofu kutusu */
+    function (oc, x, y, s) { /* 03 glyph audit: Aa + tofu kutusu */
       oc.font = '600 ' + s * 0.62 + 'px ' + serif; oc.fillText('Aa', x - s * 0.14, y);
       oc.lineWidth = s * 0.05; oc.strokeRect(x + s * 0.3, y - s * 0.2, s * 0.32, s * 0.4);
-    },
-    function (oc, x, y, s) { /* 03 retrieval: büyüteç */
-      oc.lineWidth = s * 0.06; oc.beginPath(); oc.arc(x - s * 0.08, y - s * 0.08, s * 0.28, 0, 6.283); oc.stroke();
-      oc.lineWidth = s * 0.09; oc.beginPath(); oc.moveTo(x + s * 0.13, y + s * 0.13); oc.lineTo(x + s * 0.4, y + s * 0.4); oc.stroke();
     },
     function (oc, x, y, s) { /* 04 dedektif: soru işareti */
       oc.font = 'italic 600 ' + s * 0.95 + 'px ' + serif; oc.fillText('?', x, y);
