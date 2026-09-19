@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Türkçe'de BM25'i yenen model: küçük multilingual değil, retrieval için eğitilmiş olan · Rızgar Ozan</title>
+<meta name="description" content="turkish-rag-eval: altı embedding modeli, 58 Türkçe soru; retrieval için eğitilmiş model köklemeli BM25'i geçiyor.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #0B0B0D; --panel: #121114; --ivory: #F2EFE9; --muted: #8E8B84; --soft: #B5B1A8;
+    --hair: #26262A; --champ: #D6C29A;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Instrument Sans', 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--soft); font: 17px/1.7 var(--sans); }
+  ::selection { background: var(--champ); color: var(--bg); }
+  a { color: var(--champ); text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--champ); outline-offset: 3px; }
+  main { max-width: 720px; margin: 0 auto; padding: 56px 16px 96px; }
+  .back { font: 500 12px/1 var(--mono); letter-spacing: 0.12em; text-decoration: none; }
+  h1 { font: 600 clamp(32px, 6vw, 48px)/1.1 var(--serif); color: var(--ivory); margin: 32px 0 12px; }
+  h2 { font: 600 28px/1.2 var(--serif); color: var(--ivory); margin: 48px 0 8px; }
+  strong { color: var(--ivory); }
+  em { color: var(--ivory); }
+  p > em:only-child { font: 13px/1.5 var(--mono); color: var(--muted); font-style: normal; }
+  code { font: 14px var(--mono); color: var(--ivory); background: var(--panel); padding: 1px 5px; }
+  .table { overflow-x: auto; margin: 20px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { border-bottom: 1px solid var(--hair); padding: 8px 10px; text-align: left; }
+  th { font: 500 12px var(--mono); letter-spacing: 0.06em; color: var(--muted); }
+  td { font-variant-numeric: tabular-nums; }
+  li { margin: 6px 0; }
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="../">← RIZGAR OZAN</a>
+<article>
+<h1>Türkçe'de BM25'i yenen model: küçük multilingual değil, retrieval için eğitilmiş olan</h1>
+<p><em>Rızgar Ozan · 2026-09-19 · <a href="https://github.com/RizgarOzan/turkish-rag-eval/blob/main/docs/blog/2026-09-19-bm25-turkish-en.md">English version</a></em></p>
+<p><a href="https://github.com/RizgarOzan/turkish-rag-eval">turkish-rag-eval</a>'i tek bir soru için
+kurdum: bir RAG hattının hangi parçası Türkçede maliyetini hak ediyor? İlk ölçümden sonra
+README'ye şunu yazdım: çok dilli embedding modeli, köklemeli BM25'i geçemedi. Cümle doğruydu
+ama yanlış şeyi anlatıyordu. Beş model daha ölçünce kaybedenin yoğun (dense) arama değil,
+seçtiğim model olduğu ortaya çıktı. Bu yazı o iki ölçümün hikâyesi.</p>
+<h2>Düzenek</h2>
+<p>Altın set 58 Türkçe sağlık sorusu. Soruları 54 Türkçe Vikipedi makalesinden (toplam 1,09
+milyon karakter) kendim yazdım ve etiketledim. Her soru makaledeki cümlenin kopyası değil,
+başka kelimelerle sorulmuş hâli: metin "diyabet teşhisi konulduğunda" diyorsa soru "şeker
+hastalığı teşhisi konan kişiler" diye soruyor. Sorular metinden kopyalansaydı BM25 hak
+etmediği bir avantaj kazanırdı.</p>
+<p>Bir parça (chunk), doğru makaleden geliyorsa <em>ve</em> cevap cümlesini içeriyorsa ilgili sayılıyor.
+Bu tanım parçalama yönteminden bağımsız. Böylece üç parçalama yöntemini (sabit boyut,
+cümle, başlık yolunu ekleyen hiyerarşik) dört arayıcıyla (köklemesiz BM25, 5 harflik önek
+köklemeli BM25, dense, ikisini RRF ile birleştiren hibrit) aynı etiketlerle
+karşılaştırabiliyorum. 12 konfigürasyon, hepsi CPU'da; projede GPU yok.</p>
+<h2>İlk ölçüm: "embedding BM25'i yenemedi"</h2>
+<p>Varsayılan model <code>paraphrase-multilingual-MiniLM-L12-v2</code> idi: 118 M parametre, küçük ve hızlı,
+çok dilli arama örneklerinin çoğunda ilk karşılaşılan model. nDCG@10 sonuçları:</p>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Parçalama</th>
+<th>BM25 + kökleme</th>
+<th>Dense (MiniLM)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sabit</td>
+<td>0,476</td>
+<td>0,446</td>
+</tr>
+<tr>
+<td>cümle</td>
+<td>0,510</td>
+<td>0,461</td>
+</tr>
+<tr>
+<td>hiyerarşik</td>
+<td>0,494</td>
+<td>0,501</td>
+</tr>
+</tbody>
+</table></div>
+<p>Köklemeli BM25 üç yöntemin ikisinde dense aramayı geçti, üstelik yaklaşık 5 kat daha hızlıydı.
+Dense ancak hiyerarşik parçalamada, başlık yolu bağlamı geri verince, kıl payı öne geçti.
+Kökleme de tek başına en ucuz kazançtı: her kelimeyi ilk 5 harfine kırpmak nDCG@10'u her
+parçalamada %23–29 artırdı. Türkçe eklemeli bir dil; <em>diyabet</em>, <em>diyabetin</em>, <em>diyabete</em>,
+<em>diyabetli</em> aynı kavramın dört yüzeyi. Köklemesiz bir indeks sorudaki biçimi nadiren buluyor,
+bunun için morfolojik analizöre de gerek yok.</p>
+<p>En iyi sonuç hibritteydi: hiyerarşik parçalama + RRF 0,607. README'nin ilk hâlinin özeti
+buydu: kökle, hibrit kullan, embedding'e tek başına güvenme.</p>
+<h2>İkinci ölçüm: model değişince</h2>
+<p>Harness'e baştan <code>--model</code> seçeneği koymuştum, ama ilk sonucu genelleştirmeden önce onu
+kullanmadım. 18 Eylül'de beş model daha ölçtüm. Hepsi aynı 58 soru, aynı korpus, aynı
+16 iş parçacıklı CPU:</p>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Parametre</th>
+<th>Dense hiyerarşik</th>
+<th>Hibrit hiyerarşik</th>
+<th>Sorgu P95</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MiniLM (varsayılan)</td>
+<td>118 M</td>
+<td>0,501</td>
+<td>0,607</td>
+<td>23 ms</td>
+</tr>
+<tr>
+<td>emrecan (yalnız Türkçe)</td>
+<td>111 M</td>
+<td>0,497</td>
+<td>0,654</td>
+<td>43 ms</td>
+</tr>
+<tr>
+<td>multilingual-e5-small</td>
+<td>118 M</td>
+<td>0,642</td>
+<td>0,639</td>
+<td>22 ms</td>
+</tr>
+<tr>
+<td>multilingual-e5-base</td>
+<td>278 M</td>
+<td>0,668</td>
+<td>0,648</td>
+<td>49 ms</td>
+</tr>
+<tr>
+<td>Mursit-Large-TR-Retrieval (yalnız Türkçe)</td>
+<td>404 M</td>
+<td><strong>0,781</strong></td>
+<td>0,673</td>
+<td>214 ms</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>bge-m3</code>'ü 45 dakikada durdurdum. Hiyerarşik parçalara gelemedi ama sabit ve cümle
+parçalamada 0,766 ve 0,767 aldı. Köklemeli BM25 aynı parçalamalarda 0,476 ve 0,510'da kalıyor.</p>
+<h2>Tablodan çıkan üç şey</h2>
+<p><strong>1. Sorun dense arama değil, modeldi.</strong> Retrieval için eğitilmiş her model (E5, bge-m3,
+Mursit) her parçalamada köklemeli BM25'i tek başına geçiyor. En çarpıcı satır e5-small:
+varsayılanla aynı boyutta, sorgu başına aynı hızda (22 ms), korpusu 3 dakikada gömüyor ve
+başka hiçbir şey değişmeden 0,501'den 0,642'ye çıkıyor. CPU'da çalışan bir sistemde
+varsayılanın yerine konacak ilk model bu.</p>
+<p><strong>2. Hibrit yalnız zayıf bir modele yarıyor.</strong> RRF, BM25'in sıralamasına dense sıralamayla
+aynı ağırlığı veriyor. MiniLM'i 0,106 yukarı çekiyor. Güçlü bir modelde ise iyi sıralamayı
+daha kötü bir sıralamayla karıştırmış oluyor: Mursit 0,781'den 0,673'e, e5-base 0,668'den
+0,648'e düşüyor. İlk ölçümdeki "hibrit her yerde kazanıyor" sonucu modelin zayıflığından
+geliyormuş. Birleştirip birleştirmemeye karar vermek için önce ölçmek gerekiyor.</p>
+<p><strong>3. "Türkçe'ye özel" olmak yetmiyor.</strong> Hugging Face'in <code>sentence-similarity</code> kategorisinde en
+çok indirilen iki Türkçe modeli seçtim. Biri (emrecan) cümle benzerliği için eğitilmiş
+(NLI + STS-b) ve girdiyi 75 token'da kesiyor. Tokenizer'la saydım: parçaların %83–99'u
+kırpılıyor. Dense arayıcı olarak varsayılandan farkı yok (0,497'ye 0,501). Diğeri (Mursit)
+doğrudan retrieval için eğitilmiş ve buradaki en iyi model. Aradaki fark dilde değil,
+modelin ne için eğitildiğinde.</p>
+<h2>Maliyet</h2>
+<p>Kalitenin bir bedeli var ve CPU'da bunu hissediyorsunuz. Mursit sorgu başına 214 ms
+harcıyor, e5-small'ın yaklaşık 10 katı, üç parçalamanın hepsini gömmesi de 35 dakika sürüyor.
+Benim seçimim şöyle olurdu:</p>
+<ul>
+<li><strong>Gecikme önemliyse:</strong> multilingual-e5-small. 0,642, 22 ms, hibrite gerek yok (0,639 ile
+  dense'ten farkı gürültü düzeyinde).</li>
+<li><strong>Kalite önemliyse ve sorgu başına 214 ms kabul edilebiliyorsa:</strong> Mursit, hibritsiz, 0,781.</li>
+<li><strong>Embedding hiç kullanılamıyorsa:</strong> köklemeli BM25. Morfolojik analizör yok, 4–6 ms.</li>
+</ul>
+<p>E5 modelleri her girdinin başında <code>query:</code> / <code>passage:</code> öneki bekliyor. Önek olmadan
+alınan E5 sonucu adil bir sonuç değil; harness bunları <code>src/models.py</code>'de ekliyor.</p>
+<h2>Sınırlar</h2>
+<p>58 soru küçük bir set. Yaklaşık 0,05'ten küçük nDCG farklarını sıralama olarak değil, gürültü
+olarak okuyun. Soruları tek kişi etiketledi. Hepsi tek alandan, Vikipedi'nin sağlık
+makalelerinden geliyor ve klinik metne olduğu gibi aktarılmaz. <code>bge-m3</code> yarım bir koşu,
+<code>google/embeddinggemma-300m</code> lisans onayı istediği için ölçülmedi. Sayıların hepsi
+README'de ve <code>python src/run_eval.py --model &lt;ad&gt;</code> ile yeniden üretilebiliyor.</p>
+<p>Set büyüyor: hedef beş alanda 300 soru. İlk 30 yeni soruyu bir dil modeli taslak olarak
+yazdı, ikinci bağımsız bir geçiş onu görmeden yeniden etiketledi; 30'un 30'u uyuştu. İnsan
+tarafından doğrulanmış taslak oranı henüz %0 ve README bunu açıkça yazıyor. Türkçe bir
+Vikipedi makalesinden 5–10 soru yazıp tek bir JSON dosyasıyla PR açmak için ML bilmek
+gerekmiyor; <a href="https://github.com/RizgarOzan/turkish-rag-eval/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> nasıl yapılacağını anlatıyor.</p>
+<h2>Sonuç</h2>
+<p>İlk ölçümüm yanlış değildi, ama ondan çıkardığım genelleme yanlıştı. "Türkçede embedding
+BM25'i yenemiyor" diye yazmadan önce yapmam gereken tek şey modeli değiştirmekti ve harness
+buna zaten hazırdı. Artık README iki sonucu da taşıyor: eski tablo silinmedi, yanına
+yenisi ve bu yazı eklendi.</p>
+</article>
+</main>
+</body>
+</html>
