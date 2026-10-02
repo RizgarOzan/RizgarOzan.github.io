@@ -833,7 +833,8 @@
   var serif = getComputedStyle(root).getPropertyValue('--serif');
   function sample(w, h, draw, step, cap) {
     var o = document.createElement('canvas'), oc = o.getContext('2d');
-    w = Math.ceil(w); h = Math.ceil(h); o.width = w; o.height = h;
+    w = Math.ceil(w); h = Math.ceil(h); if (w < 1 || h < 1) return []; /* gizli sekme / henüz yerleşmemiş kutu: getImageData 0 genişlikte fırlatır */
+    o.width = w; o.height = h;
     oc.fillStyle = '#fff'; oc.strokeStyle = '#fff'; oc.textAlign = 'center'; oc.textBaseline = 'middle';
     draw(oc);
     var d = oc.getImageData(0, 0, w, h).data, pts = [];
