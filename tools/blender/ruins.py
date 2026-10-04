@@ -835,13 +835,15 @@ def colossal_head(loc, S=3.4):
         jaw = sstep(0.1, -0.9, w)
         fr = sstep(-0.05, -0.55, yy)
         au = abs(u)
-        d = (0.06 + 0.26 * sstep(0.3, -0.22, w)) * sstep(-0.4, -0.25, w) * sstep(0.36, 0.28, w) * _g(u, 0.07 + 0.07 * sstep(0.1, -0.3, w))
-        d += 0.1 * _g(w - 0.3, 0.07) * sstep(0.62, 0.42, au)                  # brow
-        d -= 0.16 * math.exp(-((au - 0.3) / 0.12) ** 2 - ((w - 0.14) / 0.09) ** 2)   # sockets
+        # features a notch stronger than life, so they still read from across the valley
+        d = (0.06 + 0.32 * sstep(0.3, -0.22, w)) * sstep(-0.4, -0.25, w) * sstep(0.36, 0.28, w) * _g(u, 0.08 + 0.07 * sstep(0.1, -0.3, w))
+        d += 0.14 * _g(w - 0.3, 0.08) * sstep(0.66, 0.42, au)                  # brow
+        d -= 0.22 * math.exp(-((au - 0.3) / 0.13) ** 2 - ((w - 0.14) / 0.1) ** 2)    # sockets
         d += 0.045 * math.exp(-((au - 0.43) / 0.15) ** 2 - ((w + 0.05) / 0.15) ** 2)  # cheekbones
         d += 0.06 * _g(u, 0.22) * _g(w + 0.5, 0.06)                              # lips
         d -= 0.04 * _g(u, 0.2) * _g(w + 0.53, 0.016)                             # lip line
         d += 0.08 * _g(u, 0.2) * _g(w + 0.75, 0.09)                              # chin
+        d += 0.09 * _g(u, 0.3) * sstep(-0.56, -0.7, w) * sstep(-1.0, -0.85, w)   # beard, lips to under the chin
         x = u * 0.78 * (1 - 0.22 * jaw)
         y = yy * 0.92 * (1 - 0.08 * jaw) * (1.05 if yy > 0 else 1.0) - d * fr
         z = w * 1.12
@@ -863,7 +865,7 @@ def colossal_head(loc, S=3.4):
         a = 2 * math.pi * i / 10 + 0.15
         if i in (1, 2):         # on the sheared side
             continue
-        hgt = (0.42 if i % 2 else 0.3) * (0.5 if i == 7 else 1.0)
+        hgt = (0.56 if i % 2 else 0.4) * (0.5 if i == 7 else 1.0)  # tall points: the crown is what says "king"
         def P(da, rr, zz):
             return (rr * math.cos(a + da), rr * math.sin(a + da), zz)
         c = [P(-0.13, 1.0, 0.76), P(0.13, 1.0, 0.76), P(0.13, 1.07, 0.76), P(-0.13, 1.07, 0.76),
@@ -874,12 +876,13 @@ def colossal_head(loc, S=3.4):
     for f in crown.bm.faces:
         f.smooth = f in set(crown.smooth_faces)
 
-    # pose: face three-quarters to the camera, rolled onto the left cheek,
-    # tipped back a little; sunk to the lips
+    # pose: face nearly to the camera (a quarter turn off, so the nose still
+    # casts a profile), only a little rolled and tipped back, sunk to the chin:
+    # upright enough that it reads as a face from the field
     to_cam = CAM_POS - Vector(loc)
-    yaw = math.atan2(to_cam.y, to_cam.x) + math.pi / 2 - math.radians(28)
-    R = Matrix.Rotation(yaw, 4, 'Z') @ Matrix.Rotation(math.radians(-17), 4, 'Y') @ Matrix.Rotation(math.radians(-9), 4, 'X')
-    M = Matrix.Translation(Vector(loc) + Vector((0, 0, 0.68 * S))) @ R @ Matrix.Diagonal((S, S, S, 1.0))
+    yaw = math.atan2(to_cam.y, to_cam.x) + math.pi / 2 - math.radians(14)
+    R = Matrix.Rotation(yaw, 4, 'Z') @ Matrix.Rotation(math.radians(-7), 4, 'Y') @ Matrix.Rotation(math.radians(-5), 4, 'X')
+    M = Matrix.Translation(Vector(loc) + Vector((0, 0, 0.8 * S))) @ R @ Matrix.Diagonal((S, S, S, 1.0))
     B = Masonry('colossus', PALE, bevel=0.0, inset=0.0, noise_amp=0.0, moss=1.3, tint=(0.85, 0.95))
     B.add_bmesh(bm, M, tint=0.92)
     B.add_bmesh(crown.bm, M, tint=0.8)

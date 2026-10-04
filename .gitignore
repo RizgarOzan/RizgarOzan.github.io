@@ -2,3 +2,6 @@
 __pycache__/
 # dev-only tools (model viewer, procedural stand-ins): kept out of the published site
 dev/
+
+# Blender export of the ruins (tools/blender/ruins.py); the site loads ruins-near/-far.glb made from it by tools/ruins-lod.mjs
+assets/env/ruins.glb
