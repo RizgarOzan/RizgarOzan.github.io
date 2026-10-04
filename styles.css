@@ -1,3 +1,9 @@
+/* Own copies of the fonts, subset to Latin + Turkish (tools/fonts.sh): about 90 KB for all four. */
+@font-face { font-family: 'Cormorant Garamond'; font-weight: 500; font-style: normal; font-display: swap; src: url(assets/fonts/cormorant-500.woff2) format('woff2'); }
+@font-face { font-family: 'EB Garamond'; font-weight: 400; font-style: normal; font-display: swap; src: url(assets/fonts/ebgaramond-400.woff2) format('woff2'); }
+@font-face { font-family: 'EB Garamond'; font-weight: 400; font-style: italic; font-display: swap; src: url(assets/fonts/ebgaramond-400i.woff2) format('woff2'); }
+@font-face { font-family: 'EB Garamond'; font-weight: 500; font-style: normal; font-display: swap; src: url(assets/fonts/ebgaramond-500.woff2) format('woff2'); }
+
 :root {
   --bg: #070a17;
   --bone: #e6dcc3;

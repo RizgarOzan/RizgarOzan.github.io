@@ -26,24 +26,16 @@
   "sameAs": ["https://github.com/RizgarOzan", "https://www.linkedin.com/in/rizgarozan/"] }
 </script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070a17'/%3E%3Cpath d='M32 6 L36 44 L32 58 L28 44 Z' fill='%23cfd8e6'/%3E%3Crect x='20' y='42' width='24' height='4' fill='%23cfd8e6'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+<link rel="preload" href="assets/fonts/cormorant-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/ebgaramond-400.woff2" as="font" type="font/woff2" crossorigin>
 <script>
-// VERSION: bump it when publishing; the stylesheet and every module of ours load with ?v=VERSION.
-// three.js and GSAP are served from vendor/ (minified builds, no CDN). A slow line only makes the
-// loader wait longer (with a way out to the list); the page turns into the plain list on its own
-// only when a script fails to load or WebGL is missing.
+// VERSION: bump it when publishing; the stylesheet and the bundle load with ?v=VERSION.
+// The scene's code (ours, three.js and GSAP) is one bundle in dist/ (tools/build.mjs), fetched
+// in three parts: the main file, a shared chunk, and the smithy when it is first needed.
+// A slow line only makes the loader wait longer (with a way out to the list); the page turns
+// into the plain list on its own only when a script fails to load or WebGL is missing.
 (function () {
-  var VERSION = '2026-10-05b';
-  var lib = function (p) { return new URL('vendor/' + p, location.href).href; };
-  var imports = {
-    three: lib('three/build/three.module.min.js'),
-    'three/addons/': lib('three/examples/jsm/'),
-    gsap: lib('gsap/index.js')
-  };
-  var mods = ['main', 'ui', 'i18n', 'data', 'palette', 'audio', 'clock', 'scene/world', 'scene/field', 'scene/forge', 'scene/warm', 'scene/loader', 'scene/sway'];
-  mods.forEach(function (m) { var u = new URL('src/' + m + '.js', location.href).href; imports[u] = u + '?v=' + VERSION; });
+  var VERSION = '2026-10-05c';
   window.__rzFallback = function () {
     if (window.__rzStarted || !document.body) return;
     document.body.classList.remove('is-loading', 'pre-intro', 'pre-ui');
@@ -51,9 +43,9 @@
     var p = document.querySelector('.panel');
     if (p) p.removeAttribute('aria-hidden');
   };
-  // A library or one of our modules that throws while loading would leave the loader up forever.
+  // A script that throws while loading would leave the loader up forever.
   window.addEventListener('error', function (e) {
-    if (!window.__rzStarted && /\/(vendor|src)\//.test(e.filename || '')) window.__rzFallback();
+    if (!window.__rzStarted && /\/dist\//.test(e.filename || '')) window.__rzFallback();
   });
   // "Open the list": before the scripts are in, just the class; after, the real toggle.
   window.__rzList = function () {
@@ -62,26 +54,22 @@
     b.classList.add('is-list');
     b.classList.remove('pre-intro', 'pre-ui');
   };
-  // The scripts' share of the loader bar (up to 25 %), until main.js reports on its own.
-  var expect = mods.length + 14;
+  // The scripts' share of the loader bar (up to 25 %), by bytes of the bundle in, until main.js reports on its own.
   var poll = setInterval(function () {
     var bar = document.querySelector('.loader-bar');
     if (window.__rzStarted || !bar) { if (window.__rzStarted) clearInterval(poll); return; }
-    var n = performance.getEntriesByType('resource').filter(function (r) { return /\/(vendor|src)\//.test(r.name); }).length;
-    bar.style.width = Math.min(25, 2 + 23 * n / expect) + '%';
+    var got = 0;
+    performance.getEntriesByType('resource').forEach(function (r) { if (/\/dist\//.test(r.name)) got += r.encodedBodySize || 0; });
+    bar.style.width = Math.min(25, 2 + 23 * got / 240000) + '%';
   }, 300);
-  document.write('<script type="importmap">' + JSON.stringify({ imports: imports }) + '<\/script>' +
+  document.write('<script type="importmap">' + JSON.stringify({ imports: { 'meshopt-decoder': './vendor/three/examples/jsm/libs/meshopt_decoder.module.js' } }) + '<\/script>' +
     '<link rel="stylesheet" href="styles.css?v=' + VERSION + '">' +
-    // the language switch on its own, so it works even when the scene's libraries never arrive
-    '<script type="module" src="src/i18n.js?v=' + VERSION + '"><\/script>' +
-    '<script defer src="vendor/gsap/gsap.min.js" onerror="__rzFallback()"><\/script>' +
-    '<script type="module" src="src/main.js?v=' + VERSION + '" onerror="__rzFallback()"><\/script>');
+    // the language switch on its own, so it works even when the scene's code never arrives
+    '<script type="module" src="dist/i18n.js?v=' + VERSION + '"><\/script>' +
+    '<script type="module" src="dist/main.js?v=' + VERSION + '" onerror="__rzFallback()"><\/script>');
 })();
 </script>
 <noscript><link rel="stylesheet" href="styles.css"><style>body { overflow: auto; }</style></noscript>
-<!-- fetched alongside main.js instead of after it: the libraries the first frame needs -->
-<link rel="modulepreload" href="vendor/three/build/three.module.min.js">
-<link rel="modulepreload" href="vendor/three/examples/jsm/loaders/GLTFLoader.js">
 <link rel="modulepreload" href="vendor/three/examples/jsm/libs/meshopt_decoder.module.js">
 </head>
 <body class="is-loading pre-intro pre-ui">

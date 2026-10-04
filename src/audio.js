@@ -38,8 +38,15 @@ export function createAudio() {
     return true;
   }
 
+  // The recordings (about 300 KB) are only fetched once main.js says the field is in
+  // (preload): on a slow line they must not share the line with the swords.
+  let wanted = false, fetched = false;
+  function preload() { wanted = true; load(); }
+
   // Opus in Ogg where the browser takes it, MP3 otherwise (older Safari).
   function load() {
+    if (fetched || !wanted || !ctx) return;
+    fetched = true;
     const ogg = new Audio().canPlayType('audio/ogg; codecs="opus"') !== '';
     const decode = (buf) => new Promise((ok, fail) => {
       const p = ctx.decodeAudioData(buf, ok, fail); // callback form for old Safari
@@ -164,7 +171,7 @@ export function createAudio() {
     if (document.hidden) ctx.suspend(); else if (enabled) ctx.resume();
   });
 
-  return { hover, pull, plant, toggle, place, descend, hammer, get enabled() { return enabled; }, get wind() { return wind; },
+  return { hover, pull, plant, toggle, place, descend, hammer, preload, get enabled() { return enabled; }, get wind() { return wind; },
     // turns of the wind swell so far (it starts at phase 0), or null before the sound starts
     get windPhase() { return wind ? (ctx.currentTime - windStart) * WIND_LFO : null; } };
 }
