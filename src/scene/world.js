@@ -262,7 +262,7 @@ function patchGround(material, uniforms, impact) {
       .replace('#include <common>', `#include <common>
         uniform sampler2D uGDiff, uGNor, uGArm;
         uniform vec3 uGShadeA, uGShadeB;
-        uniform float uGNs, uEarthL;
+        uniform float uGNs, uEarthL, uGMapIn;
         varying vec3 vGW;
         ${NOISE_GLSL}
         ${GROUND_SHADE_GLSL}
@@ -278,8 +278,9 @@ function patchGround(material, uniforms, impact) {
         vec2 gA = gw * 0.385;
         vec2 gB = gR * gw * 0.233 + vec2(0.37, 0.71);
         float gBl = smoothstep(0.32, 0.68, fbm(gw * 0.085 + 5.0));
-        vec3 gAlb = mix(texture2D(uGDiff, gA).rgb, texture2D(uGDiff, gB).rgb, gBl);
-        vec3 gArm = mix(texture2D(uGArm, gA).rgb, texture2D(uGArm, gB).rgb, gBl);
+        // before the maps are in: plain mid-grey earth and even roughness (uGMapIn 0)
+        vec3 gAlb = mix(vec3(0.5), mix(texture2D(uGDiff, gA).rgb, texture2D(uGDiff, gB).rgb, gBl), uGMapIn);
+        vec3 gArm = mix(vec3(1.0), mix(texture2D(uGArm, gA).rgb, texture2D(uGArm, gB).rgb, gBl), uGMapIn);
         float gL = dot(gAlb, vec3(0.2126, 0.7152, 0.0722));
         gAlb = mix(vec3(gL), gAlb, 0.8);
         gAlb *= 0.5 + 0.9 * smoothstep(0.25, 0.75, fbm(gw * 0.03 + 3.0));
@@ -298,7 +299,7 @@ function patchGround(material, uniforms, impact) {
           vec3 nA = texture2D(uGNor, gA).xyz * 2.0 - 1.0;
           vec3 nB = texture2D(uGNor, gB).xyz * 2.0 - 1.0;
           nB.xy = nB.xy * gR;
-          vec3 gn = mix(nA, nB, gBl);
+          vec3 gn = mix(vec3(0.0, 0.0, 1.0), mix(nA, nB, gBl), uGMapIn);
           gn.xy *= uGNs;
           gn = normalize(gn);
           vec3 gT = mat3(viewMatrix) * vec3(1.0, 0.0, 0.0);
@@ -311,17 +312,29 @@ function patchGround(material, uniforms, impact) {
   material.customProgramCacheKey = () => (impact ? 'ground-impact' : 'ground');
 }
 
-// The first view gets tiny 256 px copies (90 KB for all three, so a slow line still
-// draws the field soon); the 1k set replaces them once the swords are in, and the 2k
-// set after that on a fast line (upgradeGround).
+// The first frame draws the ground with no maps at all (1x1 neutral textures, uGMapIn 0: the
+// large-scale shade and noise are still there), so it never waits for a download. The tiny
+// 256 px set (90 KB for all three) fades in when it lands (groundIn); sharper sets replace
+// it later, by the line's speed (upgradeGround: 512 webp, 1k and 2k jpg).
 const GROUND_DIR = 'assets/textures/brown_mud_rocks_01/';
 const GROUND_MAPS = { uGDiff: ['diff', true], uGNor: ['nor_gl', false], uGArm: ['arm', false] };
-function makeGroundUniforms(aniso) {
-  const t = (k) => tex(`${GROUND_DIR}${GROUND_MAPS[k][0]}_256.webp`, GROUND_MAPS[k][1], aniso);
+const GROUND_EXT = { 256: 'webp', 512: 'webp', '1k': 'jpg', '2k': 'jpg' };
+function groundSet(res, aniso) {
+  return Object.fromEntries(Object.entries(GROUND_MAPS).map(([k, [name, srgb]]) => [k, tex(`${GROUND_DIR}${name}_${res}.${GROUND_EXT[res]}`, srgb, aniso)]));
+}
+function makeGroundUniforms() {
+  const flat = (r, g, b, srgb) => {
+    const t = new THREE.DataTexture(new Uint8Array([r, g, b, 255]), 1, 1);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+    t.needsUpdate = true;
+    return t;
+  };
   return {
-    uGDiff: { value: t('uGDiff') },
-    uGNor: { value: t('uGNor') },
-    uGArm: { value: t('uGArm') },
+    uGDiff: { value: flat(128, 128, 128, true) },
+    uGNor: { value: flat(128, 128, 255, false) },
+    uGArm: { value: flat(255, 255, 0, false) },
+    uGMapIn: { value: 0 },
     uGShadeA: { value: C.ground }, uGShadeB: { value: C.groundLight },
     uGNs: { value: 1.15 },
     // mean brightness of the crater's plain-earth vertex colour (#3b3429, linear)
@@ -351,7 +364,8 @@ function makeTerrain(groundUniforms) {
   }
   geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
   geo.computeVertexNormals();
-  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0 });
+  // both sides: on the way down to the smithy the camera passes through it
+  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0, side: THREE.DoubleSide });
   patchGround(mat, groundUniforms, false);
   const mesh = new THREE.Mesh(geo, mat);
   mesh.receiveShadow = true;
@@ -446,18 +460,28 @@ function patchRuin(material, far = false) {
 const ruinIn = { value: 1 };
 
 const RUIN_STONE = new Set(['stone', 'stone_dark', 'stone_moss', 'stone_pale']);
-function loadRuins(world, parent, aniso, arrived) {
+// Two files (tools/ruins-lod.mjs): the ring around the field first, the far kingdom after it.
+// "<name>_flat" materials are flat-shaded pieces that travel without normals.
+function loadRuins(world, parent, aniso, arrived, farArrived) {
   const patched = new Set();
   const centre = new THREE.Vector3();
-  let map, nor, arm;
-  // after the swords: on a slow line they make the page, the ruins rise out of the fog later
-  return loadGLB('assets/env/ruins.glb', 5).then(async (gltf) => {
-    // 512 px, asked for only now so they never share the line with the first view:
-    // the ruins stand 12 m and more away, in haze
+  // 512 px, asked for with the first file so they never share the line with the swords:
+  // the ruins stand 12 m and more away, in haze
+  let maps = null;
+  const stoneMaps = () => {
+    if (maps) return maps;
     const dir = 'assets/textures/rock_surface/';
-    map = tex(dir + 'diff_512.webp', true, aniso);
-    nor = tex(dir + 'nor_gl_512.webp', false, aniso);
-    arm = tex(dir + 'arm_512.webp', false, aniso);
+    maps = [tex(dir + 'diff_512.webp', true, aniso), tex(dir + 'nor_gl_512.webp', false, aniso), tex(dir + 'arm_512.webp', false, aniso)];
+    return maps;
+  };
+  // after the swords: on a slow line they make the page, the ruins rise out of the fog later
+  const near = loadGLB('assets/env/ruins-near.glb', 5).then((gltf) => place(gltf, true)).catch((err) => { arrived(); console.error('ruins failed to load', err); });
+  // the far kingdom only once the ring is in (one big download at a time on a slow line)
+  const far = near.then(() => loadGLB('assets/env/ruins-far.glb', 6)).then((gltf) => place(gltf, false)).catch((err) => { farArrived(); console.error('far ruins failed to load', err); });
+  return Promise.all([near, far]).then(([r]) => r);
+
+  async function place(gltf, first) {
+    const [map, nor, arm] = stoneMaps();
     const r = gltf.scene;
     // Smaller and farther than built: the blocks read as real masonry and the
     // kingdom sits across the valley instead of walling the field in.
@@ -476,17 +500,20 @@ function loadRuins(world, parent, aniso, arrived) {
       o.castShadow = centre.length() < 26 && bs.radius * o.matrixWorld.getMaxScaleOnAxis() < 8;
       const m = o.material;
       // The two lit windows should be a faint far-off ember, not a white slab.
-      if (m.name === 'cold_glow') { m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.12); return; }
+      const flat = m.name.endsWith('_flat');
+      const base = flat ? m.name.slice(0, -5) : m.name;
+      if (base === 'cold_glow') { m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.12); return; }
       if (patched.has(m)) return;
       patched.add(m);
-      if (RUIN_STONE.has(m.name)) {
+      if (flat) m.flatShading = true;
+      if (RUIN_STONE.has(base)) {
         // the texture averages ~0.12 linear: lift the base colour so the
         // stone keeps the brightness it had untextured
         m.color.multiplyScalar(5.5);
         Object.assign(m, { map, normalMap: nor, roughnessMap: arm, aoMap: arm, aoMapIntensity: 0.8, roughness: 1 });
         m.normalScale.set(1.3, 1.3);
       }
-      patchRuin(m, m.name === 'stone_far');
+      patchRuin(m, base === 'stone_far');
       m.needsUpdate = true;
     });
     await Promise.all([map, nor, arm].map((t) => t.userData.loaded));
@@ -494,12 +521,13 @@ function loadRuins(world, parent, aniso, arrived) {
       shadows: ['depth'], depthPass: world.depthPass,
       stage: () => { r.visible = false; r.userData.landing = true; parent.add(r); },
     });
-    arrived();
+    (first ? arrived : farArrived)(); // main.js lands the batch with the next settle
     await warmed;
     r.visible = true;
     r.userData.landing = false;
+    if (!first && world.shown) ruinIn.value = 0; // the far kingdom rises out of the fog too
     return r;
-  }).catch((err) => { arrived(); console.error('ruins failed to load', err); });
+  }
 }
 
 // Where the ground mist parts around a sword: (x, z, radius, -), set by field.js.
@@ -873,7 +901,8 @@ export function createWorld(canvas) {
   const skyGroup = new THREE.Group();
   skyGroup.add(sky, stars);
   const aniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-  const groundUniforms = makeGroundUniforms(aniso);
+  const groundUniforms = makeGroundUniforms();
+  let groundRes = 0; // the set in use: 0 (none yet), 256, 512, '1k', '2k'
   // everything that belongs to the night outside, hidden as one in the smithy,
   // and the smithy below, shown only down there. Each holds its own lights: a
   // shader is built for the lights in view, so keeping the two sets apart keeps
@@ -976,6 +1005,7 @@ export function createWorld(canvas) {
     mistLow.material.uniforms.uTime.value = t;
     mistHigh.material.uniforms.uTime.value = t;
     if (ruinIn.value < 1) ruinIn.value = Math.min(1, ruinIn.value + dt / 3.5); // risen out of the fog, eased (shader)
+    if (groundRes && groundUniforms.uGMapIn.value < 1) groundUniforms.uGMapIn.value = Math.min(1, groundUniforms.uGMapIn.value + dt / 1.2); // the ground's maps fade in
     motes.material.uniforms.uTime.value = t;
     final.uniforms.uTime.value = t;
   }
@@ -1116,23 +1146,38 @@ export function createWorld(canvas) {
     // the extra pass's settings: the earth passing on the way down, the pull's flare
     post: fxPass.uniforms,
     groundImpact: (m) => groundImpact(m, groundUniforms),
-    // The first view's ground maps, each settling when it is in (the frame waits for them).
-    groundLoads: Object.keys(GROUND_MAPS).map((k) => groundUniforms[k].value.userData.loaded),
+    // The moon's shadow map at full (2048) or half detail (main.js adapt: cheaper before resolution goes).
+    setShadowDetail(full) {
+      const n = full ? 2048 : 1024;
+      if (moon.shadow.mapSize.x === n) return;
+      moon.shadow.mapSize.set(n, n);
+      moon.shadow.map?.dispose();
+      moon.shadow.map = null;
+      api.shadowHold = 0;
+    },
+    // Fetch a set of ground maps and swap them in, uploaded a few per frame first; the first
+    // set (256) fades in over the plain earth. Sets only go up, and one at a time.
+    async upgradeGround(res) {
+      const order = [0, 256, 512, '1k', '2k'];
+      if (order.indexOf(res) <= order.indexOf(groundRes) || api.groundBusy) return;
+      api.groundBusy = true;
+      try {
+        const next = groundSet(res, aniso);
+        await Promise.all(Object.values(next).map((t) => t.userData.loaded));
+        if (Object.values(next).some((t) => !t.image)) return;
+        await uploadTextures(api, Object.values(next));
+        for (const [k, t] of Object.entries(next)) { const old = groundUniforms[k].value; groundUniforms[k].value = t; old.dispose(); }
+        groundRes = res;
+      } finally { api.groundBusy = false; }
+    },
     // Set once the first frame is up: from then on the ruins rise out of the fog when they come.
     shown: false,
     ruins: null,
-    // Swap the ground maps for a sharper set ('1k' or '2k'), uploaded a few per frame first.
-    async upgradeGround(res) {
-      const next = Object.fromEntries(Object.entries(GROUND_MAPS).map(([k, [name, srgb]]) => [k, tex(`${GROUND_DIR}${name}_${res}.jpg`, srgb, aniso)]));
-      await Promise.all(Object.values(next).map((t) => t.userData.loaded));
-      if (Object.values(next).some((t) => !t.image)) return;
-      await uploadTextures(api, Object.values(next));
-      for (const [k, t] of Object.entries(next)) { const old = groundUniforms[k].value; groundUniforms[k].value = t; old.dispose(); }
-    },
   };
-  // ruinsArrived: in and compiling; ruins: in the scene
-  let arrived;
+  // ruinsArrived / farArrived: the ring / the far kingdom in and compiling; ruins: both in the scene
+  let arrived, farArrived;
   api.ruinsArrived = new Promise((r) => { arrived = r; });
-  api.ruins = loadRuins(api, outdoor, aniso, arrived).then((r) => { if (r && api.shown) ruinIn.value = 0; return r; });
+  api.farArrived = new Promise((r) => { farArrived = r; });
+  api.ruins = loadRuins(api, outdoor, aniso, arrived, farArrived).then((r) => { if (r && api.shown) ruinIn.value = 0; return r; });
   return api;
 }

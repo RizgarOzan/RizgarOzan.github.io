@@ -64,8 +64,9 @@ function poseOf(entry) {
   return new THREE.Euler(deg(p.pitch || 0), deg(p.yaw || 0), deg(-(p.lean || 0)));
 }
 
-// The broken earth where the blade went in: three Blender variants
-// (tools/blender/impact.py), shared across slots and tinted to the night ground.
+// The broken earth where the blade went in: one Blender model (tools/blender/impact.py; it has
+// three variants, one is enough on a slow line), shared across slots, each turned and stretched
+// its own way, and tinted to the night ground.
 const impactCache = new Map();
 const impactTint = new THREE.Color(1, 1, 1); // world.js re-materials the craters with the ground texture
 function loadImpact(variant, world, priority) {
@@ -85,10 +86,11 @@ function loadImpact(variant, world, priority) {
 }
 // This slot's crater, placed (not yet in the scene), or null.
 async function crater(world, index) {
-  const src = await loadImpact('abc'[index % 3], world, index);
+  const src = await loadImpact('a', world, index);
   if (!src) return null;
   const m = src.clone();
   m.rotation.y = seeded(index * 4.1) * Math.PI * 2;
+  m.scale.set(0.9 + 0.22 * seeded(index * 7.3), 1, 0.9 + 0.22 * seeded(index * 2.9 + 1));
   m.position.y = -0.012;
   return m;
 }
@@ -457,22 +459,36 @@ export function createField(world, { onOpened, onClosing, reducedMotion, audio }
     });
   });
 
-  // Sharp copies: the field stands on light copies (512 px textures). A sword's full set,
-  // assets/weapons/<id>-hd.glb (same meshes, same material names), is fetched when it is
-  // opened or, on a fast line, hovered; its maps are uploaded first, then swapped into the
-  // slot's materials in one go (same maps, so no shader changes).
+  // Sharp copies: the field stands on light copies (512 px textures, simplified meshes). A
+  // sword's full set, assets/weapons/<id>-hd.glb (same node and material names), is fetched
+  // when it is opened or, on a fast line, hovered; its maps are uploaded first, then maps and
+  // geometries are swapped into the standing sword in one go. The materials, the sway nodes,
+  // the hit box and the fade list stay what they are, so nothing else needs to know.
   const MAPS = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap'];
   const sharp = {};
   function sharpen(i, priority = 20) {
     const s = slots[i];
     if (!s || sharp[i]) return sharp[i];
     sharp[i] = Promise.all([loadGLB(`assets/weapons/${s.entry.weapon}-hd.glb`, priority), s.ready]).then(async ([gltf]) => {
-      const byName = new Map();
-      gltf.scene.traverse((o) => { if (o.material) [].concat(o.material).forEach((m) => byName.set(m.name, m)); });
-      const pairs = [];
-      s.root.traverse((o) => { if (o.material) [].concat(o.material).forEach((m) => { if (byName.has(m.name)) pairs.push([m, byName.get(m.name)]); }); });
+      const byName = new Map(), hdMesh = new Map();
+      gltf.scene.traverse((o) => {
+        if (o.isMesh) hdMesh.set(o.name, o);
+        if (o.material) [].concat(o.material).forEach((m) => byName.set(m.name, m));
+      });
+      const pairs = [], geos = [];
+      s.weapons[0].obj.traverse((o) => {
+        if (o.material) [].concat(o.material).forEach((m) => { if (byName.has(m.name)) pairs.push([m, byName.get(m.name)]); });
+        const hd = hdMesh.get(o.name);
+        if (!o.isMesh || !hd) return;
+        // the same attributes, or the material would need another program (a pipeline slip: keep the light mesh)
+        // (three draws only the first vertex colour: an extra color_1 in one file changes nothing)
+        const used = (g) => Object.keys(g.attributes).filter((k) => !/^color_\d+$/.test(k)).sort().join();
+        const same = used(o.geometry) === used(hd.geometry);
+        if (same) geos.push([o, hd.geometry]); else console.warn(`sharp copy of "${s.entry.weapon}": ${o.name} has other attributes, kept light`);
+      });
       await uploadTextures(world, pairs.flatMap(([, h]) => MAPS.map((k) => h[k]).filter(Boolean)));
       for (const [m, h] of pairs) for (const k of MAPS) if (m[k] && h[k]) m[k] = h[k];
+      for (const [o, g] of geos) o.geometry = g; // the light geometry stays with the cached model (mods), not disposed
     }).catch((err) => console.error(`sharp copy of "${s.entry.weapon}" failed`, err));
     return sharp[i];
   }
@@ -599,7 +615,9 @@ export function createField(world, { onOpened, onClosing, reducedMotion, audio }
     audio?.descend?.(toBelow);
     const dur = reducedMotion ? 0.4 : 2.2;
     depthFx.v = 0;
-    strataDir = fxOn() ? (toBelow ? 1 : -1) : 0;
+    // the earth passing is a 2 s full-screen pass: drawn whatever the quality (it is what hides the
+    // single-sided ground from below); only reduced motion keeps the plain veil
+    strataDir = reducedMotion ? 0 : (toBelow ? 1 : -1);
     let flipped = false;
     const tl = gsap.timeline();
     tl.to(depthFx, {

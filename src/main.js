@@ -120,15 +120,14 @@ async function start() {
   window.addEventListener('hashchange', () => { if (ui.wantsForge()) loadForge(); });
   if (ui.wantsForge()) loadForge();
 
-  // Honest progress: the ground's maps, then the shaders (built off the main thread).
-  let got = 0;
-  const step = () => ui.progress(0.25 + 0.45 * (++got / world.groundLoads.length));
-  ui.progress(0.25);
-  await Promise.all(world.groundLoads.map((p) => p.then(step)));
+  // The first frame does not wait for the ground's maps: it draws plain earth, and the 256 px
+  // set fades in when it lands. Progress: the shaders (built off the main thread).
+  ui.progress(0.3);
+  world.upgradeGround(256);
   const first = Promise.all([
     warm(world, world.scene, { shadows: ['depth'], must: true }),
     warmPasses(world, { skip: [world.depthPass] }),
-  ]);
+  ]).then(() => ui.progress(0.7));
   // Whatever of the field is already in makes the first frame. The rest lands
   // in batches (warm.js: each landing costs one short pause), while the
   // opening shot holds still: the camera only starts its move once the swords
@@ -153,6 +152,8 @@ async function start() {
   setTimeout(() => body.classList.remove('pre-ui'), 7000); // never left hidden if the intro is held up
   // Once the field and its ruins are all in: the sharp ground maps, then the smithy.
   const settled = Promise.all([field.planted, world.ruins]);
+  // the recordings only once the swords are in: on a slow line the field comes first
+  field.planted.then(() => audio.preload());
   // the depth-of-field pass is first needed when a sword opens: it lands with the next batch
   warm(world, world.scene, { depthPass: world.depthPass });
   Promise.race([arrived, sleep(2500)])
@@ -170,17 +171,24 @@ async function start() {
         await settle(world);
       }
     })
+    // the far kingdom comes after the ring, one download at a time: land it when it is in
+    .then(() => world.farArrived)
+    .then(() => settle(world))
     .then(() => settled)
     .then(() => new Promise((r) => idle(r, { timeout: 1500 })))
-    // Sharper ground (1.4 MB) once the field is in. On a fast line (over 1 MB/s) the rest
-    // follows: the 2k ground (not on phones or Save-Data), every sword's sharp copy, and the
-    // smithy ahead of time. On a slow line those wait until they are asked for: a sword's
-    // sharp copy when it is opened, the smithy when the visitor heads down.
-    .then(() => world.upgradeGround('1k'))
+    // Sharper ground (512, 0.4 MB) once the field is in. What follows depends on the line:
+    // under 300 KB/s nothing more on its own (a sword's sharp copy when it is opened, the smithy
+    // when the visitor heads down); up to 1 MB/s the 1k ground and the smithy ahead of time;
+    // faster still the 2k ground (not on phones or Save-Data) and every sword's sharp copy.
+    .then(() => world.upgradeGround(512))
     .then(async () => {
-      if (linkSpeed() < 1e6) return;
-      if (!lite) await world.upgradeGround('2k');
-      await field.sharpenAll();
+      const speed = linkSpeed();
+      if (speed < 3e5) return;
+      await world.upgradeGround('1k');
+      if (speed >= 1e6) {
+        if (!lite) await world.upgradeGround('2k');
+        await field.sharpenAll();
+      }
       setTimeout(() => idle(loadForge, { timeout: 2000 }), 1000);
     })
     .catch((err) => console.error('startup', err));
@@ -192,34 +200,53 @@ async function start() {
   let clock = gsap.ticker.time;
   let wasBelow = false;
 
-  // Adaptive quality: watch the frame time and trade resolution for smoothness.
+  // Adaptive quality: watch the frame time and trade effects, then resolution, for smoothness.
   // Shadows refresh every other frame; nothing that casts them moves fast.
   const renderer = world.renderer;
-  world.quality = { dof: true, fx: true };
+  world.quality = { dof: true, fx: true, shadow: true };
   world.windPhase = () => audio.windPhase;
   renderer.shadowMap.autoUpdate = false;
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
   const maxPR = Math.min(window.devicePixelRatio, 1.75);
-  let pr = maxPR, frames = 0, spent = 0, settleUntil = performance.now() + 4000;
+  // a phone keeps its resolution (a soft picture on a sharp screen reads as broken); a desktop may go lower
+  const minPR = coarse ? Math.min(maxPR, 1.25) : 0.75;
+  let pr = maxPR, frames = 0, spent = 0, avgMs = 0, settleUntil = performance.now() + 4000;
   function adapt(ms) {
     if (performance.now() < settleUntil) return;
     spent += ms; frames++;
     if (frames < 60) return;
-    const avg = spent / frames;
+    const avg = avgMs = spent / frames;
     frames = 0; spent = 0;
-    // First give up the light shafts and wind, then depth of field, then
-    // resolution; win them back in reverse.
+    // First give up the light shafts and wind, then depth of field, then the moon's
+    // shadow detail, then resolution; win them back in reverse.
     const q = world.quality;
-    if (avg > 24 && q.fx) { q.fx = false; settleUntil = performance.now() + 1500; return; }
-    if (avg > 24 && q.dof) { q.dof = false; settleUntil = performance.now() + 1500; return; }
-    if (avg < 13 && pr === maxPR && !q.dof) { q.dof = true; settleUntil = performance.now() + 1500; return; }
-    if (avg < 13 && pr === maxPR && !q.fx) { q.fx = true; settleUntil = performance.now() + 1500; return; }
-    const next = avg > 24 ? Math.max(0.75, pr - 0.25) : avg < 13 ? Math.min(maxPR, pr + 0.25) : pr;
+    const hold = () => { settleUntil = performance.now() + 1500; };
+    if (avg > 24 && q.fx) { q.fx = false; hold(); return; }
+    if (avg > 24 && q.dof) { q.dof = false; hold(); return; }
+    if (avg > 24 && q.shadow) { q.shadow = false; world.setShadowDetail(false); hold(); return; }
+    if (avg < 13 && pr === maxPR && !q.shadow) { q.shadow = true; world.setShadowDetail(true); hold(); return; }
+    if (avg < 13 && pr === maxPR && !q.dof) { q.dof = true; hold(); return; }
+    if (avg < 13 && pr === maxPR && !q.fx) { q.fx = true; hold(); return; }
+    const next = avg > 24 ? Math.max(minPR, pr - 0.25) : avg < 13 ? Math.min(maxPR, pr + 0.25) : pr;
     if (next === pr) return;
     pr = next;
     renderer.setPixelRatio(pr);
     world.composer.setPixelRatio?.(pr);
     world.resize();
-    settleUntil = performance.now() + 1500;
+    hold();
+  }
+  // ?diag: a small readout of the quality in force (for a screenshot from a phone)
+  let diag = null;
+  if (new URLSearchParams(location.search).has('diag')) {
+    diag = document.createElement('pre');
+    diag.style.cssText = 'position:fixed;left:8px;top:64px;z-index:99;margin:0;font:11px/1.4 monospace;color:#fff;background:rgba(0,0,0,.6);padding:4px 6px;pointer-events:none';
+    document.body.appendChild(diag);
+    setInterval(() => {
+      const q = world.quality;
+      diag.textContent = `pr ${pr.toFixed(2)} (dpr ${window.devicePixelRatio}) ${renderer.domElement.width}x${renderer.domElement.height}
+fx ${q.fx} dof ${q.dof} shadow ${q.shadow}
+frame ${avgMs.toFixed(1)} ms  line ${(linkSpeed() / 1024).toFixed(0)} KB/s`;
+    }, 500);
   }
   let tick = 0;
   // If the GPU drops the context (driver reset, too many tabs) the page falls back
