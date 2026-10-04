@@ -28,18 +28,18 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070a17'/%3E%3Cpath d='M32 6 L36 44 L32 58 L28 44 Z' fill='%23cfd8e6'/%3E%3Crect x='20' y='42' width='24' height='4' fill='%23cfd8e6'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
 <script>
 // VERSION: bump it when publishing; the stylesheet and every module of ours load with ?v=VERSION.
-// Watchdog: if the scripts never start (the CDN is down or blocked), the page turns into the plain list.
+// three.js and GSAP are served from vendor/ (no CDN). If a module fails to load, or nothing has
+// started after 30 s, the page turns into the plain list instead of a blank loader.
 (function () {
-  var VERSION = '2026-10-04d';
-  var CDN = 'https://cdn.jsdelivr.net/npm/';
+  var VERSION = '2026-10-04e';
+  var lib = function (p) { return new URL('vendor/' + p, location.href).href; };
   var imports = {
-    three: CDN + 'three@0.170.0/build/three.module.js',
-    'three/addons/': CDN + 'three@0.170.0/examples/jsm/',
-    gsap: CDN + 'gsap@3.12.5/index.js'
+    three: lib('three/build/three.module.js'),
+    'three/addons/': lib('three/examples/jsm/'),
+    gsap: lib('gsap/index.js')
   };
   ['main', 'ui', 'i18n', 'data', 'palette', 'audio', 'clock', 'scene/world', 'scene/field', 'scene/forge', 'scene/warm', 'scene/loader', 'scene/sway']
     .forEach(function (m) { var u = new URL('src/' + m + '.js', location.href).href; imports[u] = u + '?v=' + VERSION; });
@@ -50,7 +50,7 @@
     var p = document.querySelector('.panel');
     if (p) p.removeAttribute('aria-hidden');
   };
-  setTimeout(window.__rzFallback, 6000);
+  setTimeout(window.__rzFallback, 30000);
   document.write('<script type="importmap">' + JSON.stringify({ imports: imports }) + '<\/script>' +
     '<link rel="stylesheet" href="styles.css?v=' + VERSION + '">' +
     // the language switch on its own, so it works even when the scene's libraries never arrive
@@ -60,11 +60,11 @@
 </script>
 <noscript><link rel="stylesheet" href="styles.css"><style>body { overflow: auto; }</style></noscript>
 <!-- fetched alongside main.js instead of after it: the libraries, the 3D loader and the first view's ground -->
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" crossorigin>
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js" crossorigin>
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/meshopt_decoder.module.js" crossorigin>
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/UnrealBloomPass.js" crossorigin>
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/gsap@3.12.5/gsap-core.js" crossorigin>
+<link rel="modulepreload" href="vendor/three/build/three.module.js">
+<link rel="modulepreload" href="vendor/three/examples/jsm/loaders/GLTFLoader.js">
+<link rel="modulepreload" href="vendor/three/examples/jsm/libs/meshopt_decoder.module.js">
+<link rel="modulepreload" href="vendor/three/examples/jsm/postprocessing/UnrealBloomPass.js">
+<link rel="modulepreload" href="vendor/gsap/gsap-core.js">
 <link rel="preload" href="assets/textures/brown_mud_rocks_01/diff_1k.jpg" as="fetch" crossorigin>
 <link rel="preload" href="assets/textures/brown_mud_rocks_01/nor_gl_1k.jpg" as="fetch" crossorigin>
 <link rel="preload" href="assets/textures/brown_mud_rocks_01/arm_1k.jpg" as="fetch" crossorigin>
