@@ -1,1 +1,4 @@
 .claude/
+__pycache__/
+# dev-only tools (model viewer, procedural stand-ins): kept out of the published site
+dev/

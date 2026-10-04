@@ -1,1213 +1,277 @@
 <!doctype html>
-<html lang="tr" id="top">
+<html lang="tr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rızgar Ozan</title>
-<meta name="description" content="Yapay zekâ sistemleri ve oyun araçları geliştiricisi — Türkçe retrieval değerlendirmeleri, Unity araçları. Ankara.">
+<meta name="description" content="Rızgar Ozan oyunlar, Unity araçları ve Türkçe yapay zekâ arama sistemleri geliştiriyor. Ankara.">
+<link rel="canonical" href="https://rizgarozan.github.io/">
+<link rel="alternate" hreflang="tr" href="https://rizgarozan.github.io/">
+<link rel="alternate" hreflang="en" href="https://rizgarozan.github.io/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://rizgarozan.github.io/">
 <meta property="og:title" content="Rızgar Ozan">
-<meta property="og:description" content="Oyun ve yazılım geliştirici — Unity ile oyun sistemleri, React ile web arayüzleri. Ankara.">
+<meta property="og:description" content="Ölçüm sistemleri kuruyorum: Türkçe retrieval değerlendirmeleri ve oyun araçları. Ankara.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230B0B0D'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-size='40' fill='%23D6C29A'%3ER%3C/text%3E%3C/svg%3E">
+<meta property="og:url" content="https://rizgarozan.github.io/">
+<meta property="og:image" content="https://rizgarozan.github.io/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ay ışığında toprağa saplanmış kılıçlar ve arkada yıkık bir krallık">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#070a17">
+<script type="application/ld+json">
+{ "@context": "https://schema.org", "@type": "Person", "name": "Rızgar Ozan", "url": "https://rizgarozan.github.io/",
+  "sameAs": ["https://github.com/RizgarOzan", "https://www.linkedin.com/in/rizgarozan/"] }
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070a17'/%3E%3Cpath d='M32 6 L36 44 L32 58 L28 44 Z' fill='%23cfd8e6'/%3E%3Crect x='20' y='42' width='24' height='4' fill='%23cfd8e6'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<style>
-  :root {
-    --bg: #0B0B0D;
-    --panel: #121114;
-    --ivory: #F2EFE9;
-    --muted: #8E8B84;
-    --soft: #B5B1A8;
-    --hair: #26262A;
-    --champ: #D6C29A;
-    --champ-dim: rgba(214, 194, 154, 0.4);
-    --serif: 'Cormorant Garamond', Georgia, serif;
-    --sans: 'Instrument Sans', 'Segoe UI', sans-serif;
-    --mono: 'IBM Plex Mono', Consolas, monospace;
-    --t0: 1.15s; /* perde açıldıktan sonra hero'nun başlama anı */
-    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    background-color: var(--bg);
-    color: var(--ivory);
-    font-family: var(--sans);
-    overflow-x: hidden;
-    background-image: url('data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22160%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22/%3E%3C/filter%3E%3Crect width=%22160%22 height=%22160%22 filter=%22url(%23n)%22 opacity=%220.045%22/%3E%3C/svg%3E');
-  }
-  ::selection { background: var(--champ); color: var(--bg); }
-  a { color: inherit; text-decoration: none; transition: color 0.25s ease; }
-  a:hover { color: var(--champ); }
-  :focus-visible { outline: 2px solid var(--champ); outline-offset: 3px; }
-
-  .wrap { max-width: 1440px; margin: 0 auto; }
-
-  /* ── perde (açılış) ──────────────────── */
-  .curtain { display: none; }
-  .js.motion .curtain {
-    display: block; position: fixed; inset: 0; z-index: 100; pointer-events: none;
-    animation: curtain-off 0s linear calc(var(--t0) + 0.9s) forwards;
-  }
-  .curtain-top, .curtain-bot {
-    position: absolute; left: 0; right: 0; height: 50%; background: var(--bg);
-    animation: 0.95s var(--ease) calc(var(--t0) - 0.25s) forwards;
-  }
-  .curtain-top { top: 0; height: calc(50% + 1px); animation-name: curtain-up; }
-  .curtain-bot { bottom: 0; animation-name: curtain-down; }
-  .curtain-seam {
-    position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--champ);
-    transform: scaleX(0); animation: seam 0.7s var(--ease) 0.15s forwards;
-    box-shadow: 0 0 18px rgba(214, 194, 154, 0.6);
-  }
-  @keyframes seam { to { transform: scaleX(1); } }
-  @keyframes curtain-up { to { transform: translateY(-101%); } }
-  @keyframes curtain-down { to { transform: translateY(101%); } }
-  @keyframes curtain-off { to { visibility: hidden; } }
-  .js.motion.seen { --t0: 0.05s; }
-  .js.motion.seen .curtain { display: none; }
-
-  /* ── ilerleme çizgisi + imleç ────────── */
-  .progress {
-    position: fixed; top: 0; left: 0; height: 1px; width: 100%; z-index: 90;
-    background: var(--champ); transform-origin: left; transform: scaleX(var(--p, 0));
-    pointer-events: none; opacity: 0.9;
-  }
-  .cur, .tail { display: none; }
-  .js.motion.fine .tail { display: block; position: fixed; inset: 0; z-index: 94; pointer-events: none; }
-  .js.motion.fine .cur {
-    display: block; position: fixed; top: 0; left: 0; z-index: 95; pointer-events: none;
-    width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%;
-    border: 1px solid var(--champ);
-    transition: width 0.3s var(--ease), height 0.3s var(--ease), margin 0.3s var(--ease), background-color 0.3s ease, opacity 0.3s ease;
-    opacity: 0;
-  }
-  .js.motion.fine .cur.live { opacity: 1; }
-  .js.motion.fine .cur.on {
-    width: 56px; height: 56px; margin: -28px 0 0 -28px;
-    background-color: rgba(214, 194, 154, 0.12);
-  }
-  .js.motion.fine .cur::after {
-    content: ""; position: absolute; left: 50%; top: 50%; width: 3px; height: 3px;
-    margin: -1.5px 0 0 -1.5px; border-radius: 50%; background: var(--champ);
-  }
-  .js.motion.fine body, .js.motion.fine a, .js.motion.fine button { cursor: none; }
-
-  /* ── nav ─────────────────────────────── */
-  header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 26px 56px; border-bottom: 1px solid var(--hair);
-  }
-  .mark { font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: 0.1em; }
-  nav { display: flex; gap: 40px; font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; }
-  nav a { position: relative; padding-bottom: 3px; }
-  nav a::after {
-    content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 100%;
-    background: var(--champ); transform: scaleX(0); transform-origin: right;
-    transition: transform 0.35s var(--ease);
-  }
-  nav a:hover::after { transform: scaleX(1); transform-origin: left; }
-
-  /* ── hero ────────────────────────────── */
-  .hero { position: relative; }
-  .hero-glow {
-    position: absolute; inset: 0; pointer-events: none;
-    background:
-      radial-gradient(ellipse 860px 460px at 24% 8%, rgba(214, 194, 154, 0.09), transparent 62%),
-      radial-gradient(ellipse 700px 400px at 88% 80%, rgba(143, 163, 184, 0.05), transparent 60%);
-  }
-  .dust { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
-  .js.motion .dust { display: block; }
-  /* toz avı skoru */
-  .hud {
-    position: absolute; top: 34px; right: 72px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em;
-    color: var(--champ); text-align: right; line-height: 1.9; opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
-  }
-  .hud.live { opacity: 1; }
-  .hud span { color: var(--muted); }
-  .crop { position: absolute; width: 26px; height: 26px; pointer-events: none; }
-  .crop.tl { top: 30px; left: 32px; border-top: 1px solid var(--champ-dim); border-left: 1px solid var(--champ-dim); }
-  .crop.tr { top: 30px; right: 32px; border-top: 1px solid var(--champ-dim); border-right: 1px solid var(--champ-dim); }
-  .crop.bl { bottom: 30px; left: 32px; border-bottom: 1px solid var(--champ-dim); border-left: 1px solid var(--champ-dim); }
-  .crop.br { bottom: 30px; right: 32px; border-bottom: 1px solid var(--champ-dim); border-right: 1px solid var(--champ-dim); }
-  .hero-inner { position: relative; display: flex; gap: 40px; padding: 78px 72px 64px 72px; }
-  .rail {
-    writing-mode: vertical-rl; transform: rotate(180deg);
-    font-family: var(--mono); font-size: 11px; letter-spacing: 0.3em; color: var(--muted);
-    padding-bottom: 4px; flex-shrink: 0;
-  }
-  .hero-main { flex: 1; min-width: 0; }
-  .name { font-family: var(--serif); font-weight: 500; font-size: clamp(64px, 12.8vw, 184px); line-height: 0.92; letter-spacing: -0.01em; }
-  .name.ital { font-weight: 600; font-style: italic; line-height: 0.98; display: inline-block; padding-right: 0.14em; }
-  .sheen {
-    background: linear-gradient(110deg, #F2EFE9 0%, #D6C29A 28%, #9E8E6C 48%, #F2EFE9 68%, #D6C29A 100%);
-    background-size: 240% 100%;
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    animation: sheen 8s ease-in-out infinite;
-  }
-  @keyframes sheen { 0% { background-position: 0% 0; } 50% { background-position: 100% 0; } 100% { background-position: 0% 0; } }
-  /* harf harf yükselme (JS harfleri böler) */
-  .name .ch { display: inline-block; }
-  .js.motion .name.split { overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
-  .js.motion .name.split .ch {
-    transform: translateY(112%) rotate(4deg); transform-origin: left bottom;
-    animation: ch-up 1s var(--ease) calc(var(--t0) + var(--i) * 0.045s) forwards;
-  }
-  @keyframes ch-up { to { transform: none; } }
-  /* parıltı harflere iner: her harf kendi dalgasını biraz gecikmeli sürer */
-  .js.motion .name.sheen.split { background: none; animation: none; }
-  .js.motion .name.sheen.split .ch {
-    background: linear-gradient(110deg, #F2EFE9 0%, #D6C29A 28%, #9E8E6C 48%, #F2EFE9 68%, #D6C29A 100%);
-    background-size: 240% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
-    animation: ch-up 1s var(--ease) calc(var(--t0) + var(--i) * 0.045s) forwards, sheen 8s ease-in-out calc(var(--i) * -0.5s) infinite;
-  }
-  .hero-sub { display: flex; justify-content: space-between; align-items: flex-end; gap: 64px; margin-top: 36px; }
-  .lede { font-size: 20px; line-height: 1.6; max-width: 540px; }
-  .meta { font-family: var(--mono); font-size: 12px; line-height: 2.1; color: var(--muted); text-align: right; white-space: nowrap; }
-  .clock { display: none; color: var(--champ-dim); }
-  .js .clock { display: block; }
-  .cta-row { display: flex; gap: 18px; margin-top: 40px; align-items: center; flex-wrap: wrap; }
-  .btn {
-    display: inline-flex; align-items: center; gap: 12px;
-    background: var(--champ); color: var(--bg);
-    font-weight: 600; font-size: 15px; letter-spacing: 0.02em; padding: 16px 30px;
-    transition: box-shadow 0.3s ease, transform 0.4s var(--ease);
-  }
-  .btn:hover { color: var(--bg); box-shadow: 0 0 34px rgba(214, 194, 154, 0.35); }
-  .btn svg { transition: transform 0.3s ease; }
-  .btn:hover svg { transform: translateY(3px); }
-  .ghost {
-    display: inline-flex; align-items: center; gap: 10px;
-    font-weight: 500; font-size: 15px; padding: 15px 28px;
-    border: 1px solid rgba(242, 239, 233, 0.5);
-    transition: border-color 0.3s ease, color 0.25s ease, transform 0.4s var(--ease);
-  }
-  .ghost:hover { border-color: var(--champ); }
-  .ghost svg { transition: transform 0.3s ease; }
-  .ghost:hover svg { transform: translate(3px, -3px); }
-  .ghost:hover svg path { stroke: var(--champ); }
-  .mag { will-change: transform; }
-
-  /* ── diagonal band ───────────────────── */
-  .band-wrap { position: relative; height: 124px; }
-  .band {
-    position: absolute; left: -3%; right: -3%; top: 32px;
-    transform: rotate(-2deg) skewX(var(--sk, 0deg));
-    background: var(--panel);
-    border-top: 1px solid rgba(214, 194, 154, 0.35);
-    border-bottom: 1px solid rgba(214, 194, 154, 0.35);
-    overflow: hidden; padding: 14px 0;
-  }
-  .band-track { display: flex; width: max-content; animation: mq 28s linear infinite; }
-  .js.motion .band-track { animation: none; }
-  .band-track > span { white-space: nowrap; padding-right: 64px; font-family: var(--mono); font-size: 13px; letter-spacing: 0.22em; color: var(--champ); }
-  @keyframes mq { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
-
-  /* ── sections ────────────────────────── */
-  section { padding: 92px 72px; }
-  .sec-head {
-    display: flex; justify-content: space-between; align-items: baseline;
-    border-bottom: 1px solid var(--hair); padding-bottom: 26px;
-  }
-  h1, h2 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: clamp(34px, 4vw, 52px); }
-  .tag { font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; color: var(--muted); }
-  .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 80px; }
-
-  #projeler .grid-2 { margin-top: 58px; }
-  #projeler .grid-2 + .grid-2 { margin-top: 104px; }
-  .proj { position: relative; isolation: isolate; }
-  .pdust { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
-  .numeral {
-    font-family: var(--serif); font-style: italic; font-weight: 400;
-    font-size: clamp(96px, 14vw, 196px); line-height: 0.82;
-    color: transparent; -webkit-text-stroke: 1.5px var(--champ-dim);
-    display: inline-block;
-    background: linear-gradient(to top, rgba(214, 194, 154, 0.22) 50%, transparent 50%);
-    background-size: 100% 200%; background-position: 0 0;
-    -webkit-background-clip: text; background-clip: text;
-    transition: background-position 1.6s var(--ease) 0.2s, transform 0.5s var(--ease);
-    transform: translate(calc(var(--px, 0) * -14px), calc(var(--py, 0) * -10px));
-  }
-  .in .numeral { background-position: 0 100%; }
-  .proj-title { font-family: var(--serif); font-weight: 600; font-size: clamp(36px, 4.4vw, 62px); line-height: 1.05; margin-top: -0.68em; position: relative; }
-  .proj-title em { color: var(--champ); }
-  .proj-title .w { display: inline-block; overflow: hidden; padding: 0.06em 0.06em 0.18em 0.02em; margin: -0.06em -0.06em -0.18em -0.02em; vertical-align: top; }
-  .proj-title .w > span { display: inline-block; }
-  .js.motion .proj-title .w > span { transform: translateY(110%); transition: transform 0.9s var(--ease); transition-delay: calc(var(--i) * 0.08s); }
-  .js.motion .in .proj-title .w > span { transform: none; }
-  .proj-desc { font-size: 17px; line-height: 1.65; color: var(--soft); max-width: 460px; margin-top: 20px; }
-  .gold-link {
-    display: inline-flex; align-items: center; gap: 10px;
-    font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; color: var(--champ);
-    margin-top: 28px; padding-bottom: 5px; position: relative;
-    transition: transform 0.4s var(--ease);
-  }
-  .gold-link::after {
-    content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 100%;
-    background: rgba(214, 194, 154, 0.5); transform-origin: left;
-    transition: transform 0.35s ease;
-  }
-  .gold-link:hover::after { transform: scaleX(0.4); }
-  .gold-link svg { transition: transform 0.3s ease; }
-  .gold-link:hover svg { transform: translate(3px, -3px); }
-  .spec { display: flex; flex-direction: column; justify-content: center; }
-  .spec-row { display: flex; gap: 26px; border-top: 1px solid var(--hair); padding: 22px 0; position: relative; }
-  .spec-row:last-child { border-bottom: 1px solid var(--hair); }
-  .js.motion .spec-row { border-color: transparent; }
-  .js.motion .spec-row::before, .js.motion .spec-row:last-child::after {
-    content: ""; position: absolute; left: 0; right: 0; height: 1px; background: var(--hair);
-    transform: scaleX(0); transform-origin: left; transition: transform 1s var(--ease);
-    transition-delay: calc(var(--i) * 0.12s);
-  }
-  .js.motion .spec-row::before { top: -1px; }
-  .js.motion .spec-row:last-child::after { bottom: -1px; transition-delay: calc(var(--i) * 0.12s + 0.12s); }
-  .js.motion .in .spec-row::before, .js.motion .in .spec-row:last-child::after { transform: scaleX(1); }
-  .spec-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; color: var(--muted); width: 104px; flex-shrink: 0; padding-top: 3px; }
-  .spec-val { font-size: 16px; line-height: 1.6; }
-
-  #hakkimda { border-top: 1px solid var(--hair); }
-  .about-col { display: flex; flex-direction: column; gap: 20px; }
-  .about-col p { margin: 0; font-size: 19px; line-height: 1.7; }
-  .about-col p + p { color: var(--muted); }
-  .about-col em { font-family: var(--serif); font-size: 1.1em; color: var(--champ); }
-  /* kaydırdıkça kelime kelime aydınlanma (JS kelimeleri böler) */
-  .js.motion .about-col .wd { color: var(--ivory); opacity: 0.16; transition: opacity 0.45s ease; }
-  .js.motion .about-col p + p .wd { color: var(--soft); }
-  .js.motion .about-col .wd.lit { opacity: 1; }
-  .js.motion .about-col .wd.lit em { color: var(--champ); }
-
-  #iletisim { border-top: 1px solid var(--hair); padding-bottom: 42px; position: relative; }
-  .contact-glow {
-    position: absolute; inset: 0; pointer-events: none;
-    background: radial-gradient(ellipse 700px 320px at 70% 40%, rgba(214, 194, 154, 0.07), transparent 62%);
-  }
-  .email {
-    display: inline-block; font-family: var(--serif); font-weight: 600; font-style: italic;
-    font-size: clamp(26px, 6vw, 88px); margin-top: 14px; padding-right: 0.2em;
-    overflow-wrap: anywhere;
-  }
-  .email .c { display: inline-block; }
-  .js.motion .email:hover .c { animation: wave 0.7s var(--ease) calc(var(--i) * 28ms); }
-  @keyframes wave { 30% { transform: translateY(-0.14em); } 60% { transform: translateY(0.05em); } 100% { transform: none; } }
-  .copy-row { display: flex; align-items: center; gap: 18px; margin-top: 18px; flex-wrap: wrap; }
-  .copy {
-    display: none; font: 500 12px/1 var(--mono); letter-spacing: 0.16em; color: var(--muted);
-    background: none; border: 1px solid var(--hair); padding: 12px 18px; cursor: pointer;
-    transition: color 0.25s ease, border-color 0.25s ease;
-  }
-  .js .copy { display: inline-block; }
-  .copy:hover { color: var(--champ); border-color: var(--champ-dim); }
-  .copy.done { color: var(--champ); border-color: var(--champ); }
-  footer {
-    display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
-    margin-top: 68px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; color: var(--muted);
-  }
-  footer a { color: var(--muted); }
-  .konami { display: none; font: inherit; letter-spacing: inherit; color: var(--muted); background: none; border: 0; padding: 0; cursor: pointer; transition: color 0.25s ease; }
-  .js.motion .konami { display: inline; }
-  .konami:hover { color: var(--champ); }
-  footer a:hover { color: var(--champ); }
-  /* kapanış: dev isim, kaydırdıkça yükselir */
-  .giant {
-    font-family: var(--serif); font-weight: 500; font-size: min(15.5vw, 218px); line-height: 0.8;
-    white-space: nowrap; text-align: center; margin-top: 56px; padding-bottom: 0.12em;
-    color: transparent; -webkit-text-stroke: 1px var(--champ-dim);
-  }
-  .giant em { font-weight: 600; -webkit-text-stroke-color: var(--champ); }
-
-  /* ── yumuşak kaydırma (Lenis) ────────── */
-  html.lenis, html.lenis body { height: auto; }
-  .lenis.lenis-smooth { scroll-behavior: auto !important; }
-
-  /* ── yatay projeler (JS geniş ekranda .hz ekler) ── */
-  .gl, .hz-count { display: none; }
-  .hz #projeler { padding: 0; height: 100vh; overflow: hidden; position: relative; }
-  .hz #projeler .sec-head { position: absolute; top: 44px; left: 72px; right: 72px; z-index: 2; }
-  .hz .hz-count { display: inline; margin-left: 28px; color: var(--champ); }
-  .hz .gl { display: block; position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
-  .hz .hz-track { display: flex; height: 100%; width: max-content; position: relative; z-index: 1; will-change: transform; }
-  .hz #projeler .grid-2, .hz #projeler .grid-2 + .grid-2 { margin: 0; flex: 0 0 var(--pw, 100vw); width: var(--pw, 100vw); height: 100%; padding: 168px 72px 60px; }
-  .hz .proj .spec { justify-content: flex-end; }
-  .hz .pdust { display: none; }
-  .hz.nogl .pdust { display: block; }
-
-  /* ── motion ──────────────────────────── */
-  @media (prefers-reduced-motion: no-preference) {
-    .js .rise { opacity: 0; transform: translateY(16px); animation: rise 0.8s var(--ease) forwards; }
-    .js .d1 { animation-delay: calc(var(--t0) + 0.05s); } .js .d2 { animation-delay: calc(var(--t0) + 0.18s); }
-    .js .d3 { animation-delay: calc(var(--t0) + 0.5s); } .js .d4 { animation-delay: calc(var(--t0) + 0.64s); }
-    .js .name.rise { opacity: 1; transform: none; animation: none; }
-    @keyframes rise { to { opacity: 1; transform: none; } }
-    .hero-glow, .contact-glow { animation: glow 9s ease-in-out infinite alternate; }
-    @keyframes glow { from { opacity: 0.5; } to { opacity: 1; } }
-    .js .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s var(--ease); }
-    .js .reveal.in { opacity: 1; transform: none; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    .sheen, .band-track { animation: none; }
-  }
-
-  /* ── responsive ──────────────────────── */
-  @media (max-width: 960px) {
-    .grid-2 { grid-template-columns: 1fr; gap: 40px; }
-    .hero-sub { flex-direction: column; align-items: flex-start; gap: 24px; }
-    .meta { text-align: left; }
-    section { padding: 64px 32px; }
-    .hero-inner { padding: 56px 32px 48px 32px; }
-    header { padding: 20px 32px; }
-  }
-  @media (max-width: 720px) {
-    header { padding: 18px 24px; }
-    nav { gap: 22px; font-size: 11px; }
-    .hero-inner { flex-direction: column; gap: 22px; padding: 46px 24px 44px 24px; }
-    .rail { writing-mode: horizontal-tb; transform: none; font-size: 10px; letter-spacing: 0.26em; }
-    .crop.bl, .crop.br { display: none; }
-    .crop.tl { top: 16px; left: 14px; width: 20px; height: 20px; }
-    .crop.tr { top: 16px; right: 14px; width: 20px; height: 20px; }
-    .hud { top: 18px; right: 24px; font-size: 11px; }
-    .lede { font-size: 16px; }
-    .cta-row { flex-direction: column; align-items: stretch; margin-top: 28px; }
-    .btn, .ghost { justify-content: center; }
-    .band-wrap { height: auto; }
-    .band { position: static; transform: skewX(var(--sk, 0deg)); left: 0; right: 0; padding: 10px 0; }
-    section { padding: 52px 24px; }
-    #projeler .grid-2 + .grid-2 { margin-top: 72px; }
-    .proj-desc { font-size: 15px; }
-    .spec-label { width: 68px; }
-    .spec-val { font-size: 14px; }
-    footer { margin-top: 40px; }
-  }
-</style>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+<script>
+// VERSION: bump it when publishing; the stylesheet and every module of ours load with ?v=VERSION.
+// Watchdog: if the scripts never start (the CDN is down or blocked), the page turns into the plain list.
+(function () {
+  var VERSION = '2026-10-04d';
+  var CDN = 'https://cdn.jsdelivr.net/npm/';
+  var imports = {
+    three: CDN + 'three@0.170.0/build/three.module.js',
+    'three/addons/': CDN + 'three@0.170.0/examples/jsm/',
+    gsap: CDN + 'gsap@3.12.5/index.js'
+  };
+  ['main', 'ui', 'i18n', 'data', 'palette', 'audio', 'clock', 'scene/world', 'scene/field', 'scene/forge', 'scene/warm', 'scene/loader', 'scene/sway']
+    .forEach(function (m) { var u = new URL('src/' + m + '.js', location.href).href; imports[u] = u + '?v=' + VERSION; });
+  window.__rzFallback = function () {
+    if (window.__rzStarted || !document.body) return;
+    document.body.classList.remove('is-loading', 'pre-intro', 'pre-ui');
+    document.body.classList.add('no-webgl');
+    var p = document.querySelector('.panel');
+    if (p) p.removeAttribute('aria-hidden');
+  };
+  setTimeout(window.__rzFallback, 6000);
+  document.write('<script type="importmap">' + JSON.stringify({ imports: imports }) + '<\/script>' +
+    '<link rel="stylesheet" href="styles.css?v=' + VERSION + '">' +
+    // the language switch on its own, so it works even when the scene's libraries never arrive
+    '<script type="module" src="src/i18n.js?v=' + VERSION + '"><\/script>' +
+    '<script type="module" src="src/main.js?v=' + VERSION + '" onerror="__rzFallback()"><\/script>');
+})();
+</script>
+<noscript><link rel="stylesheet" href="styles.css"><style>body { overflow: auto; }</style></noscript>
+<!-- fetched alongside main.js instead of after it: the libraries, the 3D loader and the first view's ground -->
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/meshopt_decoder.module.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/postprocessing/UnrealBloomPass.js" crossorigin>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/gsap@3.12.5/gsap-core.js" crossorigin>
+<link rel="preload" href="assets/textures/brown_mud_rocks_01/diff_1k.jpg" as="fetch" crossorigin>
+<link rel="preload" href="assets/textures/brown_mud_rocks_01/nor_gl_1k.jpg" as="fetch" crossorigin>
+<link rel="preload" href="assets/textures/brown_mud_rocks_01/arm_1k.jpg" as="fetch" crossorigin>
+<link rel="preload" href="assets/weapons/buster.glb" as="fetch" crossorigin>
 </head>
-<body>
+<body class="is-loading pre-intro pre-ui">
+<canvas id="scene" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
 
-<div class="curtain" aria-hidden="true">
-  <div class="curtain-top"></div>
-  <div class="curtain-bot"></div>
-  <div class="curtain-seam"></div>
-</div>
-<div class="progress" aria-hidden="true"></div>
-<canvas class="tail" aria-hidden="true"></canvas>
-<div class="cur" aria-hidden="true"></div>
-
-<header>
-  <div class="mark">RIZGAR OZAN</div>
-  <nav aria-label="Sayfa içi gezinme">
-    <a href="#projeler">PROJELER</a>
-    <a href="#hakkimda">HAKKIMDA</a>
-    <a href="#iletisim">İLETİŞİM</a>
+<header class="top">
+  <a class="brand" href="#" data-home>
+    <h1 class="brand-name">Rızgar Ozan</h1>
+    <span class="brand-line" data-i18n="brand">Oyunlar, araçlar ve yapay zekâ sistemleri geliştiriyorum.</span>
+  </a>
+  <nav class="top-nav" aria-label="Site">
+    <a class="link" href="#/demirhane" data-i18n="nav.forge">Demirhane</a>
+    <a class="link" href="#/hakkimda" data-about data-i18n="nav.about">Hakkımda</a>
+    <button type="button" class="link" data-mode-toggle aria-pressed="false">Liste</button>
+    <button type="button" class="link" data-sound-toggle aria-pressed="true">Ses açık</button>
+    <button type="button" class="link search" data-palette aria-haspopup="dialog" aria-keyshortcuts="Control+K /"><span data-i18n="nav.search">Ara</span> <kbd>Ctrl K</kbd></button>
+    <button type="button" class="link lang" data-lang-toggle><span data-l="tr">TR</span><span class="lang-sep">/</span><span data-l="en">EN</span></button>
   </nav>
 </header>
 
-<main class="wrap">
+<div class="tag" aria-hidden="true"><span class="tag-num"></span><span class="tag-title"></span></div>
 
-  <div class="hero">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <canvas class="dust" aria-hidden="true"></canvas>
-    <div class="hud" aria-hidden="true"></div>
-    <div class="crop tl" aria-hidden="true"></div>
-    <div class="crop tr" aria-hidden="true"></div>
-    <div class="crop bl" aria-hidden="true"></div>
-    <div class="crop br" aria-hidden="true"></div>
-    <div class="hero-inner">
-      <div class="rail" aria-hidden="true">ANKARA, TR — HACETTEPE ÜNİVERSİTESİ — 2026</div>
-      <div class="hero-main">
-        <h1 style="font-size: inherit; font-weight: inherit;">
-          <span class="name rise d1" style="display: block;">Rızgar</span>
-          <span class="name ital sheen rise d2">Ozan</span>
-        </h1>
-        <div class="hero-sub rise d3">
-          <p class="lede" style="margin: 0;">Ölçüm sistemleri kuruyorum: bir RAG hattının hangi parçasının Türkçede maliyetini hak ettiğini ölçen retrieval değerlendirmeleri, ve bir seviyeyi ya da bozuk bir fontu kimse oynamadan yakalayan oyun araçları. Hacettepe Üniversitesi'nde öğrenciyim, Ankara'dayım.</p>
-          <div class="meta">PYTHON / RAG<br>UNITY / C#<span class="clock" aria-live="off"></span></div>
-        </div>
-        <div class="cta-row rise d4">
-          <a class="btn mag" href="#projeler">Projelere bak
-            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#0B0B0D" stroke-width="1.7" aria-hidden="true"><path d="M8 2v11M3.5 8.5 8 13l4.5-4.5"></path></svg>
-          </a>
-          <a class="ghost mag" href="https://github.com/RizgarOzan">GitHub
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#F2EFE9" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
-          </a>
-          <a class="ghost mag" href="https://www.linkedin.com/in/rizgarozan/">LinkedIn
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#F2EFE9" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
-          </a>
-        </div>
-      </div>
-    </div>
+<nav class="index" aria-label="Bölümler" data-i18n-attr="aria-label:a.sections">
+  <ol></ol>
+</nav>
+<a class="up" href="#" data-home data-i18n="up">↑ Tarla</a>
+
+<aside class="panel" aria-hidden="true">
+  <button type="button" class="panel-close" aria-label="Kapat" data-back data-i18n-attr="aria-label:a.close">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 5 L19 19 M19 5 L5 19" stroke="currentColor" stroke-width="1.6"/></svg>
+  </button>
+  <div class="panel-body">
+
+    <article class="entry" id="turkish-rag-eval">
+      <img class="thumb" src="assets/thumbs/buster.webp" alt="" width="83" height="600" loading="lazy" decoding="async">
+      <p class="kicker" data-i18n="rag.kicker"><span>01</span> Yapay zekâ</p>
+      <h2 lang="en">Turkish RAG Eval</h2>
+      <p class="lead" data-i18n="rag.lead">Türkçe sorularda bir arama sisteminin hangi parçasının gerçekten işe yaradığını ölçtüğüm deney.</p>
+      <p class="actions" data-i18n="rag.actions">
+        <a class="btn primary" href="https://github.com/RizgarOzan/turkish-rag-eval">Kodu <span lang="en">GitHub</span>’da gör</a>
+        <a class="btn" href="yazilar/turkce-bm25.html">Yazıyı oku</a>
+        <a class="btn" href="https://huggingface.co/datasets/RizgarOzan/turkish-rag-eval">Veri seti</a>
+      </p>
+      <p data-i18n="rag.p1">RAG, bir dil modelinin cevap vermeden önce belgelerden ilgili parçaları bulup okuması demek. 12 farklı arama kurgusunu, elle etiketlediğim 58 soruluk Türkçe bir test setinde karşılaştırdım. Bütün sonuçlar tek komutla yeniden üretilebiliyor.</p>
+      <dl class="facts" data-i18n="rag.facts">
+        <div><dt>Öne çıkan sonuç</dt><dd>Kelimelerin ilk 5 harfini kök gibi kullanmak, arama başarısını (nDCG) tek başına %23–29 artırıyor. Ağır bir biçimbilim aracına gerek kalmıyor.</dd></div>
+        <div><dt>Denediklerim</dt><dd>Anahtar kelimeyle arama (BM25), anlamla arama (dense embedding), ikisinin birleşimi (hybrid RRF) ve 3 farklı metin bölme yöntemi</dd></div>
+        <div><dt>Ölçtüklerim</dt><dd>nDCG@10 · Recall@5 · MRR · P95 gecikme · Python</dd></div>
+      </dl>
+    </article>
+
+    <article class="entry" id="match3-lab">
+      <img class="thumb" src="assets/thumbs/rebellion.webp" alt="" width="99" height="600" loading="lazy" decoding="async">
+      <p class="kicker" data-i18n="m3.kicker"><span>02</span> Oyun aracı</p>
+      <h2 lang="en">Match3 Lab</h2>
+      <p class="lead" data-i18n="m3.lead">Match-3 oyunlarında seviye tasarlamayı ve zorluğunu ölçmeyi kolaylaştıran bir araç takımı.</p>
+      <p class="actions" data-i18n="m3.actions">
+        <a class="btn primary" href="https://rizgarozan.github.io/match3-lab/">Tarayıcıda oyna</a>
+        <a class="btn" href="https://github.com/RizgarOzan/match3-lab">Kodu <span lang="en">GitHub</span>’da gör</a>
+      </p>
+      <p data-i18n="m3.p1">Oyunun kurallarını Unity’den bağımsız, saf C# ile yazdım; aynı kurallar oyunda da testlerde de botlarda da çalışıyor. Seviyeler elle yazılabilen sade bir biçimde duruyor. Botlar her seviyeyi binlerce kez oynayıp zorluğu sayıya döküyor.</p>
+      <dl class="facts" data-i18n="m3.facts">
+        <div><dt>Ölçüm</dt><dd>6 seviye, her biri 1000 bot oyunuyla. Açgözlü ve rastgele botun kazanma oranları zorluk eğrisini çiziyor.</dd></div>
+        <div><dt>Araçlar</dt><dd>Komut satırı (validate · sim · curve · tune) · Unity seviye editörü · simülatör penceresi</dd></div>
+        <div><dt>Kullandıklarım</dt><dd>C# / .NET · Unity 6 · xUnit · WebGL</dd></div>
+      </dl>
+    </article>
+
+    <article class="entry" id="tmp-glyph-audit">
+      <img class="thumb" src="assets/thumbs/revolver.webp" alt="" width="93" height="600" loading="lazy" decoding="async">
+      <p class="kicker" data-i18n="tmp.kicker"><span>03</span> <span lang="en">Unity</span> aracı</p>
+      <h2 lang="en">TMP Glyph Audit</h2>
+      <p class="lead" data-i18n="tmp.lead">Oyundaki yazılarda fontta karşılığı olmayan harfleri, oyun çıkmadan bulan Unity paketi.</p>
+      <p class="actions" data-i18n="tmp.actions">
+        <a class="btn primary" href="https://github.com/RizgarOzan/tmp-glyph-audit">Kodu <span lang="en">GitHub</span>’da gör</a>
+      </p>
+      <p data-i18n="tmp.p1">Unity’de yazılar TextMeshPro ile çizilir; fontta olmayan bir harf (ğ ya da ş gibi) oyunda kutucuk olarak görünür. Paket bütün sahneleri, prefab’ları ve oyun sırasında yüklenen metin dosyalarını tarıyor, fontların yedek zincirini de hesaba katıp eksik harfleri raporluyor.</p>
+      <dl class="facts" data-i18n="tmp.facts">
+        <div><dt>Kullanımı</dt><dd>Editördeki bir pencereden ya da otomatik derlemede (CI) komutla. Sonucu 0, 1 ya da 2 çıkış koduyla bildiriyor.</dd></div>
+        <div><dt>Test</dt><dd>24 xUnit ve 5 EditMode testi</dd></div>
+        <div><dt>Kullandıklarım</dt><dd>C# · TextMeshPro · Unity 2023.2+ · açık kaynak, git adresiyle kurulur (UPM)</dd></div>
+      </dl>
+    </article>
+
+    <article class="entry" id="bilim-dedektifi">
+      <img class="thumb" src="assets/thumbs/master.webp" alt="" width="119" height="600" loading="lazy" decoding="async">
+      <p class="kicker" data-i18n="bd.kicker"><span>04</span> Oyun</p>
+      <h2 lang="tr">Bilim Dedektifi</h2>
+      <p class="lead" data-i18n="bd.lead">Gizemli bir ölümü araştıran bir dedektifin gözünden ilerleyen, eğitsel kısa bir macera oyunu.</p>
+      <p class="actions" data-i18n="bd.actions">
+        <a class="btn primary" href="https://rizgarozan.itch.io/bilim-dedektifi"><span lang="en">itch.io</span>’da indir</a>
+      </p>
+      <p data-i18n="bd.p1">Hacettepe’de ders projesi olarak ekipçe geliştirdik. Oyun itch.io’da ücretsiz yayında.</p>
+      <dl class="facts" data-i18n="bd.facts">
+        <div><dt>Durum</dt><dd>Yayında · ücretsiz · Windows için indirilebilir</dd></div>
+        <div><dt>Tür</dt><dd>Eğitsel dedektif ve gizem oyunu</dd></div>
+        <div><dt>Ekip</dt><dd>Hacettepe ders projesi, ekip çalışması</dd></div>
+      </dl>
+    </article>
+
+    <article class="entry" id="code-enigma">
+      <img class="thumb" src="assets/thumbs/zangetsu.webp" alt="" width="97" height="600" loading="lazy" decoding="async">
+      <p class="kicker" data-i18n="ce.kicker"><span>05</span> Web</p>
+      <h2 lang="en">Code-Enigma</h2>
+      <p class="lead" data-i18n="ce.lead">Matematik odaklı, öğrenciye göre şekillenen bir çalışma platformu.</p>
+      <p class="actions" data-i18n="ce.actions">
+        <a class="btn primary" href="https://github.com/ilkhanarda/Code-Enigma">Kodu <span lang="en">GitHub</span>’da gör</a>
+      </p>
+      <p data-i18n="ce.p1">İlkhan Arda Akmaca ile birlikte geliştiriyoruz. Ben arayüz tarafındayım: kişisel paneli, öğrencinin kendini akranlarıyla karşılaştırdığı göstergeleri, filtreleri ve ayar ekranlarını yapıyorum.</p>
+      <dl class="facts" data-i18n="ce.facts">
+        <div><dt>Bölümler</dt><dd>Kişisel panel · Ölçme ve değerlendirme testleri · Video dersler</dd></div>
+        <div><dt>Kullandıklarım</dt><dd>React 19 · Vite · Tailwind CSS 4 · GSAP</dd></div>
+      </dl>
+    </article>
+
+    <article class="entry" id="gizli">
+      <img class="thumb thumb-wide" src="assets/thumbs/forge.webp" alt="" width="600" height="396" loading="lazy" decoding="async">
+      <p class="kicker" data-i18n="anvil.kicker">Demirhane · Örste</p>
+      <h2 data-i18n="anvil.h2">Örsteki iş</h2>
+      <p class="lead" data-i18n="anvil.lead">Şu an üzerinde çalıştığım, henüz duyurmadığım bir oyun.</p>
+      <p data-i18n="anvil.p1">Örsteki kızgın bıçak o oyun. Çekiç benim saatime göre çalışıyor: başındaysam iniyor, derste ya da uykudaysam örsün üstünde bekliyor.</p>
+      <p data-i18n="anvil.p2">Oyunu duyurduğumda adını ve ne olduğunu burada anlatacağım.</p>
+    </article>
+
+    <article class="entry" id="acik-kaynak">
+      <p class="kicker" data-i18n="oss.kicker">Demirhane · Açık kaynak</p>
+      <h2 data-i18n="oss.h2">Açık kaynak katkıları</h2>
+      <p class="lead" data-i18n="oss.lead">Kullandığım açık kaynak projelerde bulduğum hataları düzeltip sahiplerine gönderdiğim katkılar.</p>
+      <p class="actions" data-i18n="oss.actions">
+        <a class="btn primary" href="https://github.com/RizgarOzan"><span lang="en">GitHub</span> profilinde gör</a>
+      </p>
+      <p data-i18n="oss.p1">Çoğu, yapay zekâ arama sistemlerini değerlendiren kütüphanelerde ve Unity araçlarında. Aşağıdaki sayılar, proje sahiplerinin kabul edip birleştirdiği değişiklikler (PR).</p>
+      <!-- measured with gh on 2026-10-04 10:24 (Istanbul): PRs by RizgarOzan in repos he does not own; merged 71, distinct repos 22, open 32.
+           Same numbers in src/i18n.js (oss.stats) and both CVs (tools/cv). -->
+      <p class="stats" data-i18n="oss.stats"><span><b>71</b> birleşen PR</span><span><b>22</b> proje</span><span><b>32</b> incelemede bekliyor</span></p>
+      <ul class="repos" lang="en" data-i18n="oss.repos">
+        <li><b>MTEB</b><span>15 PR</span><em lang="tr">RAG işimin dayandığı retrieval değerlendirme kütüphanesi</em></li>
+        <li><b>kornia</b><span>13 PR</span><em lang="tr">Bilgisayarlı görü kütüphanesi; sayısal hesaplardaki uç durum hataları</em></li>
+        <li><b>LightRAG</b><span>4 PR</span><em lang="tr">RAG çatısı; metin ayrıştırma ve Markdown düzeltmeleri</em></li>
+        <li><b>unity-mcp</b><span>5 PR</span><em lang="tr">Unity editörünü yapay zekâya bağlayan köprü</em></li>
+        <li><b>docling</b><span>4 PR</span><em lang="tr">Belge okuma aracı; OCR modeli indirme ve eski dosya biçimi (AFP, EBCDIC) düzeltmeleri</em></li>
+      </ul>
+    </article>
+
+    <article class="entry" id="hakkimda">
+      <p class="kicker" data-i18n="about.kicker">Hakkımda</p>
+      <h2>Rızgar Ozan</h2>
+      <p class="lead" data-i18n="about.lead">Oyun mekaniği, veri modeli ya da arayüz: parçaların birbirine nasıl bağlandığıyla uğraşmayı seven bir geliştiriciyim.</p>
+      <p class="actions"><a class="btn primary" href="assets/cv/Rizgar_Ozan_CV_TR.pdf" download data-cv data-i18n="cv" data-i18n-attr="href:cv.href">CV indir <small>PDF</small></a></p>
+      <p data-i18n="about.p1">Ankara’da yaşıyorum, Hacettepe Üniversitesi’nde okuyorum ve bir yandan oyun geliştiriyorum. Bir şeyin çalıştığını söylemeden önce ölçmeyi alışkanlık edindim.</p>
+      <dl class="facts" data-i18n="about.facts">
+        <div><dt>Deneyim</dt><dd>Barko Elektronik’te yazılım mühendisliği stajı, Temmuz–Ağustos 2026. İki kişilik ekipte şirketin kendi donanımında çalışan bir LLM altyapısı kurduk, FastAPI ve Docker ile veri servisleri yazdık. Kurumsal portalı Active Directory’ye ben bağladım.</dd></div>
+        <div><dt>Eğitim</dt><dd>Hacettepe Üniversitesi, Bilgisayar ve Öğretim Teknolojileri Eğitimi. Haziran 2027’de mezun oluyorum.</dd></div>
+        <div><dt>Odak</dt><dd>Türkçe arama ve RAG (Python) · Oyun geliştirme (Unity, C#)</dd></div>
+        <div><dt>Araçlar</dt><dd>Unity · C# · Python · React · JavaScript · Tailwind CSS · Git</dd></div>
+        <div><dt>İlgi alanları</dt><dd>Oyun tasarımı · Arayüz</dd></div>
+        <div><dt>Yazılar</dt><dd><a href="#/yazilar">Türkçe’de BM25’i yenen model</a></dd></div>
+        <div><dt>İletişim</dt><dd><a href="mailto:rizgarozan7@gmail.com">rizgarozan7@gmail.com</a> · <a href="https://github.com/RizgarOzan">GitHub</a> · <a href="https://www.linkedin.com/in/rizgarozan/">LinkedIn</a></dd></div>
+      </dl>
+    </article>
+
+    <article class="entry" id="yazilar">
+      <p class="kicker" data-i18n="writing.kicker">Yazılar</p>
+      <h2 data-i18n="writing.h2">Ölçüp yazdıklarım</h2>
+      <p class="lead" data-i18n="writing.lead">Bir projede ölçtüğüm şeyi uzun uzun anlatmak istediğimde buraya yazıyorum.</p>
+      <ul class="writings" data-i18n="writing.writings">
+        <li><a href="yazilar/turkce-bm25.html"><time datetime="2026-09-19">19 Eylül 2026</time><b>Türkçe’de BM25’i yenen model</b><span>Türkçe aramada klasik kelime eşleştirmeyi (BM25) bir yapay zekâ modelinin geçip geçemediğine 58 soruluk test setimle baktım. Küçük çok dilli model geçemedi, arama için eğitilmiş model geçti.</span></a></li>
+      </ul>
+    </article>
+
+    <article class="entry" id="referanslar">
+      <h2 class="small" data-i18n="credits.h2">Kaynaklar</h2>
+      <ul class="credits" data-credits></ul>
+      <p class="fine" data-i18n="credits.fine">Modeller, hayranların Sketchfab’de paylaştığı çalışmalar; yazarlarının Creative Commons lisanslarıyla kullanıyorum. Silah tasarımları ve isimleri ilgili oyunlara ve yayıncılarına ait, site ticari değil. Dokular Poly Haven’dan (CC0). Ses kaynakları <a href="assets/audio/CREDITS.txt">ayrıca listelendi</a>. Yazı tipleri Cormorant Garamond ve EB Garamond (OFL), sahne three.js ve GSAP ile çalışıyor.</p>
+    </article>
+
   </div>
-
-  <div class="band-wrap" aria-hidden="true">
-    <div class="band">
-      <div class="band-track">
-        <span>UNITY&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;C#&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;REACT&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;JAVASCRIPT&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;TAILWIND CSS&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;GIT&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;OYUN TASARIMI&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;UI&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;</span>
-        <span>UNITY&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;C#&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;REACT&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;JAVASCRIPT&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;TAILWIND CSS&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;GIT&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;OYUN TASARIMI&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;UI&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;</span>
-        <span>UNITY&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;C#&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;REACT&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;JAVASCRIPT&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;TAILWIND CSS&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;GIT&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;OYUN TASARIMI&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;UI&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;</span>
-      </div>
-    </div>
+  <div class="panel-foot">
+    <button type="button" class="step" data-step="-1" aria-label="Önceki" data-i18n-attr="aria-label:a.prev">←</button>
+    <span class="step-count"></span>
+    <span class="keys-hint" aria-hidden="true" data-i18n="keys">Ok tuşlarıyla da geçebilirsin</span>
+    <button type="button" class="step" data-step="1" aria-label="Sonraki" data-i18n-attr="aria-label:a.next">→</button>
   </div>
+</aside>
+<p class="sr-only" aria-live="polite" data-announce></p>
 
-  <section id="projeler">
-    <div class="sec-head reveal">
-      <h2>Projeler</h2>
-      <div class="tag">SEÇİLİ İŞ<span class="hz-count" aria-hidden="true">01 / 05</span></div>
-    </div>
-    <canvas class="gl" aria-hidden="true"></canvas>
-    <div class="hz-track">
+<aside class="contact" aria-label="İletişim" data-i18n-attr="aria-label:a.contact">
+  <span class="icons">
+    <a href="mailto:rizgarozan7@gmail.com" aria-label="E-posta: rizgarozan7@gmail.com" data-i18n-attr="aria-label:a.email" title="rizgarozan7@gmail.com"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z M3 6l9 7 9-7" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></a>
+    <a href="https://github.com/RizgarOzan" aria-label="GitHub" title="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg></a>
+    <a href="https://www.linkedin.com/in/rizgarozan/" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.1c0-1.22-.02-2.78-1.7-2.78-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg></a>
+  </span>
+</aside>
+<a href="#/referanslar" class="sources" data-i18n="sources">kaynaklar</a>
+<div class="cue" aria-hidden="true"><span class="cue-m" data-i18n="cue.m">Aşağıda: Demirhane</span><span class="cue-d" data-i18n="cue.d">Kaydırarak in</span> <span class="cue-a">↓</span></div>
 
-    <div class="grid-2 reveal proj">
-      <div>
-        <div class="numeral" aria-hidden="true">01</div>
-        <h3 class="proj-title">Turkish <em>RAG Eval</em></h3>
-        <p class="proj-desc" style="margin-bottom: 0;">Bir RAG hattının hangi parçası Türkçede maliyetini hak ediyor? 12 retrieval konfigürasyonunu, elle etiketlediğim 58 soruluk Türkçe altın set üzerinde ölçtüm; sonuçlar yeniden üretilebilir.</p>
-        <a class="gold-link mag" href="https://github.com/RizgarOzan/turkish-rag-eval">GITHUB'DA İNCELE
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
-        </a>
-        <a class="gold-link mag" href="yazilar/turkce-bm25.html">YAZIYI OKU
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
-        </a>
-        <a class="gold-link mag" href="https://huggingface.co/datasets/RizgarOzan/turkish-rag-eval">VERİ SETİ HUGGING FACE'TE
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
-        </a>
-      </div>
-      <div class="spec">
-        <div class="spec-row" style="--i: 0;">
-          <div class="spec-label">YAPI</div>
-          <div class="spec-val">Python · BM25 · dense embedding · hybrid RRF · 3 chunking stratejisi</div>
-        </div>
-        <div class="spec-row" style="--i: 1;">
-          <div class="spec-label">BULGU</div>
-          <div class="spec-val">5 karakterlik önek kökleme tek başına nDCG'yi %23–29 artırıyor; morfolojik analizör gerekmiyor</div>
-        </div>
-        <div class="spec-row" style="--i: 2;">
-          <div class="spec-label">METRİK</div>
-          <div class="spec-val">nDCG@10 · Recall@5 · MRR · P95 gecikme</div>
-        </div>
-      </div>
-    </div>
-    <div class="grid-2 reveal proj">
-      <div>
-        <div class="numeral" aria-hidden="true">02</div>
-        <h3 class="proj-title">Match3 <em>Lab</em></h3>
-        <p class="proj-desc" style="margin-bottom: 0;">Bir match-3 oyunu değil, match-3 tezgâhı: Unity'den bağımsız saf C# kural çekirdeği, elle yazılabilir seviye formatı ve seviye zorluğunu bot simülasyonuyla ölçen araç zinciri. <a class="gold-link mag" href="https://rizgarozan.github.io/match3-lab/" style="display:inline">Tarayıcıda oyna</a>.</p>
-        <a class="gold-link mag" href="https://github.com/RizgarOzan/match3-lab">GITHUB'DA İNCELE
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
-        </a>
-      </div>
-      <div class="spec">
-        <div class="spec-row" style="--i: 0;">
-          <div class="spec-label">YAPI</div>
-          <div class="spec-val">C# / .NET · Unity 6 · xUnit · WebGL</div>
-        </div>
-        <div class="spec-row" style="--i: 1;">
-          <div class="spec-label">ÖLÇÜM</div>
-          <div class="spec-val">6 seviye, her biri 1000 bot oyunuyla; açgözlü ve rastgele botun kazanma oranı zorluk eğrisini çiziyor</div>
-        </div>
-        <div class="spec-row" style="--i: 2;">
-          <div class="spec-label">ARAÇLAR</div>
-          <div class="spec-val">Komut satırı (validate · sim · curve · tune) · Unity seviye editörü · simülatör penceresi</div>
-        </div>
-      </div>
-    </div>
-    <div class="grid-2 reveal proj">
-      <div>
-        <div class="numeral" aria-hidden="true">03</div>
-        <h3 class="proj-title">TMP Glyph <em>Audit</em></h3>
-        <p class="proj-desc" style="margin-bottom: 0;">TextMeshPro fontlarının çizemediği her metni — sahnelerde, prefab'larda ve yalnız çalışma anında görünen metin dosyalarında — proje çapında bulan Unity paketi. TMP'nin gerçek fallback zincirini izler; editör penceresi ve CI çıkış kodları verir.</p>
-        <a class="gold-link mag" href="https://github.com/RizgarOzan/tmp-glyph-audit">GITHUB'DA İNCELE
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
-        </a>
-      </div>
-      <div class="spec">
-        <div class="spec-row" style="--i: 0;">
-          <div class="spec-label">TÜR</div>
-          <div class="spec-val">Açık kaynak Unity paketi (UPM, git URL ile kurulur)</div>
-        </div>
-        <div class="spec-row" style="--i: 1;">
-          <div class="spec-label">YAPI</div>
-          <div class="spec-val">C# · TextMeshPro · Unity 2023.2+ · saf C# çekirdek + editör katmanı</div>
-        </div>
-        <div class="spec-row" style="--i: 2;">
-          <div class="spec-label">TEST</div>
-          <div class="spec-val">24 xUnit + 5 EditMode testi; CI'da 0 / 1 / 2 çıkış kodu</div>
-        </div>
-      </div>
-    </div>
-    <div class="grid-2 reveal proj">
-      <div>
-        <div class="numeral" aria-hidden="true">04</div>
-        <h3 class="proj-title">Bilim <em>Dedektifi</em></h3>
-        <p class="proj-desc" style="margin-bottom: 0;">Gizemli bir ölümü araştıran bir dedektifin gözünden ilerleyen eğitsel kısa macera. Hacettepe'de ders projesi olarak ekipçe geliştirdik; itch.io'da ücretsiz yayında.</p>
-        <a class="gold-link mag" href="https://rizgarozan.itch.io/bilim-dedektifi">ITCH.IO'DA İNCELE
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
-        </a>
-      </div>
-      <div class="spec">
-        <div class="spec-row" style="--i: 0;">
-          <div class="spec-label">DURUM</div>
-          <div class="spec-val">Yayında — ücretsiz, Windows (indirilebilir)</div>
-        </div>
-        <div class="spec-row" style="--i: 1;">
-          <div class="spec-label">TÜR</div>
-          <div class="spec-val">Eğitsel dedektif/gizem demosu</div>
-        </div>
-        <div class="spec-row" style="--i: 2;">
-          <div class="spec-label">EKİP</div>
-          <div class="spec-val">Hacettepe ders projesi — ekip çalışması</div>
-        </div>
-      </div>
-    </div>
-    <div class="grid-2 reveal proj">
-      <div>
-        <div class="numeral" aria-hidden="true">05</div>
-        <h3 class="proj-title">Code-<em>Enigma</em></h3>
-        <p class="proj-desc" style="margin-bottom: 0;">Matematik odaklı, kişiselleştirilmiş akademik gelişim platformu. İlkhan Arda Akmaca ile birlikte geliştiriyoruz; arayüz dili Türkçe.</p>
-        <a class="gold-link mag" href="https://github.com/ilkhanarda/Code-Enigma">GITHUB'DA İNCELE
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
-        </a>
-      </div>
-      <div class="spec">
-        <div class="spec-row" style="--i: 0;">
-          <div class="spec-label">ROL</div>
-          <div class="spec-val">Arayüz geliştirme — panel bileşenleri, akran karşılaştırma göstergeleri, filtre ve ayar kontrolleri</div>
-        </div>
-        <div class="spec-row" style="--i: 1;">
-          <div class="spec-label">YAPI</div>
-          <div class="spec-val">React 19 · Vite · Tailwind CSS 4 · GSAP</div>
-        </div>
-        <div class="spec-row" style="--i: 2;">
-          <div class="spec-label">MODÜLLER</div>
-          <div class="spec-val">Kişisel panel · Ölçme-değerlendirme testleri · Video dersler</div>
-        </div>
-      </div>
-    </div>
-    </div>
-  </section>
+<div class="palette" hidden role="dialog" aria-modal="true" aria-label="Hızlı menü" data-i18n-attr="aria-label:a.palette">
+  <div class="pal-box">
+    <input type="text" placeholder="Ne arıyorsun?" aria-label="Ara" data-i18n-attr="placeholder:a.query,aria-label:a.search" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list" autocomplete="off" spellcheck="false">
+    <ul id="pal-list" role="listbox" aria-label="Sonuçlar" data-i18n-attr="aria-label:a.results"></ul>
+    <p class="pal-foot" aria-hidden="true" data-i18n="pal.foot"><span><kbd>↑</kbd><kbd>↓</kbd> seç</span><span><kbd>Enter</kbd> aç</span><span><kbd>Esc</kbd> kapat</span></p>
+  </div>
+</div>
 
-  <!-- Sayılar elle güncellenir (haftalık profil rutini):
-       gh api graphql "author:RizgarOzan type:pr -user:RizgarOzan is:merged|is:open"
-       2026-09-28: 54 birleşti / 14 proje / 20 açık -->
-  <section id="acik-kaynak" class="reveal" style="border-top: 1px solid var(--hair);">
-    <div class="sec-head">
-      <h2>Açık Kaynak</h2>
-      <div class="tag">KATKILAR</div>
-    </div>
-    <div class="grid-2" style="margin-top: 58px;">
-      <div>
-        <p class="proj-desc" style="margin-top: 0; max-width: 480px;">Sahibi olmadığım projelere gönderdiğim düzeltmeler — çoğu retrieval değerlendirme kütüphaneleri ve Unity araçları. Kullanırken denk geldiğim hataları, deposuna geri gönderip birleştirdiğim yerler.</p>
-        <p class="proj-desc" style="max-width: 480px;"><span style="font-family: var(--serif); font-style: italic; font-size: 1.9em; color: var(--champ); vertical-align: -0.04em;">61</span> birleştirilen PR · 17 proje · 28'i hâlâ incelemede. GitHub profilimdeki liste her hafta kendini yeniliyor.</p>
-        <a class="gold-link mag" href="https://github.com/RizgarOzan">GITHUB PROFİLİNDE GÖR
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#D6C29A" stroke-width="1.7" aria-hidden="true"><path d="M3 13 13 3M6 3h7v7"></path></svg>
-        </a>
-      </div>
-      <div class="spec">
-        <div class="spec-row" style="--i: 0;">
-          <div class="spec-label">MTEB</div>
-          <div class="spec-val">embeddings-benchmark · 15 PR birleşti · ★ 3.4k — RAG işimin dayandığı retrieval değerlendirme kütüphanesi</div>
-        </div>
-        <div class="spec-row" style="--i: 1;">
-          <div class="spec-label">KORNIA</div>
-          <div class="spec-val">kornia · 12 PR birleşti · ★ 11.4k — türevlenebilir bilgisayarlı görü; sayısal çözücü kenar durumları</div>
-        </div>
-        <div class="spec-row" style="--i: 2;">
-          <div class="spec-label">LIGHTRAG</div>
-          <div class="spec-val">HKUDS · 4 PR birleşti · ★ 39.9k — RAG çatısı; ayrıştırıcı ve markdown düzeltmeleri</div>
-        </div>
-        <div class="spec-row" style="--i: 3;">
-          <div class="spec-label">UNITY-MCP</div>
-          <div class="spec-val">CoplayDev · 3 PR birleşti · ★ 14.6k — Unity editörünü yapay zekâya bağlayan köprü</div>
-        </div>
-        <div class="spec-row" style="--i: 4;">
-          <div class="spec-label">DOCLING</div>
-          <div class="spec-val">docling-project · 3 PR birleşti · ★ 68.3k — belge ayrıştırma; OCR model indirme, AFP ve EBCDIC ayrıştırıcı düzeltmeleri</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="hakkimda" class="reveal">
-    <div class="grid-2">
-      <h2>Hakkımda</h2>
-      <div class="about-col">
-        <p>Sistem kurmayı seven bir geliştiriciyim: oyun mekaniği, veri modeli ya da arayüz — parçaların birbirine nasıl <em>bağlandığı</em> ilgimi çeker.</p>
-        <p>Ankara'da yaşıyorum; Hacettepe Üniversitesi'nde öğrenimime devam ediyor, bir yandan da oyun geliştiriyorum. Bir şeyin çalıştığını söylemeden önce ölçmeyi ilke edindim.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="iletisim" class="reveal">
-    <div class="contact-glow" aria-hidden="true"></div>
-    <div style="position: relative;">
-      <div class="tag" style="letter-spacing: 0.16em;">BİR PROJEN Mİ VAR?</div>
-      <a class="email sheen" href="mailto:rizgarozan7@gmail.com">rizgarozan7@gmail.com</a>
-      <div class="copy-row">
-        <button class="copy" type="button" data-mail="rizgarozan7@gmail.com">ADRESİ KOPYALA</button>
-      </div>
-      <footer>
-        <div>© 2026 RIZGAR OZAN — ANKARA</div>
-        <a href="https://github.com/RizgarOzan">GITHUB / RIZGAROZAN</a>
-        <a href="https://www.linkedin.com/in/rizgarozan/">LINKEDIN / RIZGAROZAN</a>
-        <button class="konami" type="button" title="Toz avını başlat">TOZ AVI: ↑↑↓↓←→←→BA</button>
-        <a href="#top">↑ BAŞA DÖN</a>
-      </footer>
-      <div class="giant" aria-hidden="true">Rızgar <em>Ozan</em></div>
-    </div>
-  </section>
-
-</main>
-
-<script>
-(function () {
-  var root = document.documentElement;
-  root.classList.add('js');
-  var motion = matchMedia('(prefers-reduced-motion: no-preference)').matches;
-  var fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  if (motion) root.classList.add('motion');
-  if (fine) root.classList.add('fine');
-
-  /* perde: aynı oturumda ikinci açılışta atlanır */
-  try {
-    if (sessionStorage.getItem('perde')) root.classList.add('seen');
-    else sessionStorage.setItem('perde', '1');
-  } catch (e) {}
-
-  function split(el, cls, wordsOnly) {
-    var i = 0, walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nodes = [], n;
-    while ((n = walker.nextNode())) nodes.push(n);
-    nodes.forEach(function (t) {
-      var frag = document.createDocumentFragment();
-      var parts = wordsOnly ? t.nodeValue.split(/(\s+)/) : t.nodeValue.split('');
-      parts.forEach(function (p) {
-        if (!p) return;
-        if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); return; }
-        var s = document.createElement('span');
-        s.className = cls; s.textContent = p; s.style.setProperty('--i', i++);
-        frag.appendChild(s);
-      });
-      t.parentNode.replaceChild(frag, t);
-    });
-    return i;
-  }
-
-  /* isim harf harf, proje başlıkları kelime kelime */
-  if (motion) {
-    document.querySelectorAll('.name').forEach(function (el) { split(el, 'ch'); el.classList.add('split'); });
-    document.querySelectorAll('.proj-title').forEach(function (el) {
-      /* em içindeki kelimeler em'i korusun diye önce kelime kapsülü, sonra iç span */
-      var i = 0, walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nodes = [], n;
-      while ((n = walker.nextNode())) nodes.push(n);
-      nodes.forEach(function (t) {
-        var frag = document.createDocumentFragment();
-        t.nodeValue.split(/(\s+)/).forEach(function (p) {
-          if (!p) return;
-          if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); return; }
-          var w = document.createElement('span'); w.className = 'w';
-          var s = document.createElement('span'); s.textContent = p; s.style.setProperty('--i', i++);
-          w.appendChild(s); frag.appendChild(w);
-        });
-        t.parentNode.replaceChild(frag, t);
-      });
-    });
-    document.querySelectorAll('.email').forEach(function (el) { split(el, 'c'); });
-  }
-
-  /* görünür olunca aç */
-  var els = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-      });
-    }, { threshold: 0.15 });
-    els.forEach(function (el) { io.observe(el); });
-  } else {
-    els.forEach(function (el) { el.classList.add('in'); });
-  }
-
-  /* adresi kopyala */
-  var copy = document.querySelector('.copy');
-  if (copy) copy.addEventListener('click', function () {
-    var done = function () { copy.textContent = 'KOPYALANDI'; copy.classList.add('done');
-      setTimeout(function () { copy.textContent = 'ADRESİ KOPYALA'; copy.classList.remove('done'); }, 2200); };
-    var fallback = function () {
-      var t = document.createElement('textarea'); t.value = copy.dataset.mail; t.setAttribute('readonly', '');
-      t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
-      try { if (document.execCommand('copy')) done(); } catch (e) {}
-      document.body.removeChild(t);
-    };
-    if (navigator.clipboard) navigator.clipboard.writeText(copy.dataset.mail).then(done, fallback);
-    else fallback();
-  });
-
-  /* sekme gizlenince başlık */
-  document.addEventListener('visibilitychange', function () {
-    document.title = document.hidden ? 'Buradayım — Rızgar Ozan' : 'Rızgar Ozan';
-  });
-
-  /* canlı Ankara saati + saate göre ne yapıyor olduğum */
-  var clock = document.querySelector('.clock');
-  function tick() {
-    var now = new Date(), tz = 'Europe/Istanbul';
-    var h = +new Intl.DateTimeFormat('en', { hour: 'numeric', hourCycle: 'h23', timeZone: tz }).format(now);
-    var wd = new Intl.DateTimeFormat('en', { weekday: 'short', timeZone: tz }).format(now);
-    var t = new Intl.DateTimeFormat('tr', { hour: '2-digit', minute: '2-digit', timeZone: tz }).format(now);
-    var s = h < 8 ? 'UYUYORUM' : (h < 17 && wd !== 'Sat' && wd !== 'Sun') ? 'DERSTEYİM' : 'KOD YAZIYORUM';
-    clock.innerHTML = 'ANKARA ' + t + '<br>MUHTEMELEN ' + s;
-  }
-  tick(); setInterval(tick, 30000);
-
-  console.log('%cRızgar Ozan%c\n\nBoşta 5 saniye bekle. Projelerde tozu izle. ↑↑↓↓←→←→BA.\nKaynak: github.com/RizgarOzan/RizgarOzan.github.io',
-    'font: italic 600 22px Georgia, serif; color: #D6C29A', 'color: #8E8B84');
-
-  if (!motion) return;
-
-  /* ── kaydırma: ilerleme, şerit hızı, hakkımda kelimeleri ── */
-  var about = document.querySelector('.about-col'), words = [];
-  if (about) {
-    split(about, 'wd', true);
-    words = Array.prototype.slice.call(about.querySelectorAll('.wd'));
-  }
-  var lastY = scrollY, vel = 0, rate = 1, pos = 0;
-  var band = document.querySelector('.band'), track = document.querySelector('.band-track');
-  function onScroll() {
-    var y = scrollY, max = root.scrollHeight - innerHeight;
-    root.style.setProperty('--p', max > 0 ? (y / max).toFixed(4) : 0);
-    vel += Math.max(-90, Math.min(90, y - lastY)); lastY = y;
-    if (words.length) {
-      var r = about.getBoundingClientRect();
-      var t = (innerHeight * 0.8 - r.top) / (r.height + innerHeight * 0.25);
-      var lit = Math.round(Math.max(0, Math.min(1, t)) * words.length);
-      words.forEach(function (w, i) { w.classList.toggle('lit', i < lit); });
-    }
-  }
-  addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  /* ── imleç + manyetik butonlar ── */
-  var cur = document.querySelector('.cur'), mx = -100, my = -100, cx = -100, cy = -100;
-  var tc = document.querySelector('.tail'), tctx = tc.getContext('2d'), tail = [], lmx = -100, lmy = -100;
-  if (fine) {
-    var sizeTail = function () { tc.width = innerWidth; tc.height = innerHeight; };
-    sizeTail(); addEventListener('resize', sizeTail);
-    addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; cur.classList.add('live'); }, { passive: true });
-    document.addEventListener('mouseleave', function () { cur.classList.remove('live'); });
-    document.addEventListener('mouseover', function (e) {
-      cur.classList.toggle('on', !!e.target.closest('a, button'));
-    });
-    document.querySelectorAll('.mag').forEach(function (el) {
-      el.addEventListener('mousemove', function (e) {
-        var r = el.getBoundingClientRect();
-        el.style.transform = 'translate(' + ((e.clientX - r.left - r.width / 2) * 0.22).toFixed(1) + 'px,' + ((e.clientY - r.top - r.height / 2) * 0.3).toFixed(1) + 'px)';
-      });
-      el.addEventListener('mouseleave', function () { el.style.transform = ''; });
-    });
-    document.querySelectorAll('.proj').forEach(function (el) {
-      el.addEventListener('mousemove', function (e) {
-        var r = el.getBoundingClientRect();
-        el.style.setProperty('--px', ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
-        el.style.setProperty('--py', ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
-      });
-      el.addEventListener('mouseleave', function () { el.style.setProperty('--px', 0); el.style.setProperty('--py', 0); });
-    });
-  }
-
-  /* ── altın toz ── */
-  var c = document.querySelector('.dust'), ctx = c.getContext('2d'), ps = [], W = 0, H = 0, dustOn = true;
-  function mote(any) {
-    return { x: Math.random() * W, y: any ? Math.random() * H : H + 4, r: 0.5 + Math.random() * 1.3,
-      vx: (Math.random() - 0.5) * 0.12, vy: -(0.05 + Math.random() * 0.16), a: Math.random() * 6.283, s: 0.005 + Math.random() * 0.012 };
-  }
-  function size() {
-    var dpr = Math.min(devicePixelRatio || 1, 2), r = c.parentNode.getBoundingClientRect();
-    W = r.width; H = r.height; c.width = W * dpr; c.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ps = []; for (var i = Math.round(W * H / 14000); i > 0; i--) ps.push(mote(true));
-    extra = []; gather = false; idleAt = performance.now(); /* toz yazı boyuta bağlı, yeniden kurulsun */
-  }
-  size(); addEventListener('resize', size);
-  if ('IntersectionObserver' in window) new IntersectionObserver(function (en) { dustOn = en[0].isIntersecting; }).observe(c);
-
-  /* ── toz yazıya toplanır: 5 sn dokunulmazsa, her 6 sn'de bir sonraki şekil, kıpırdayınca dağılır ── */
-  var GLYPHS = ['RO', '</>', '∞'], gi = 0, gather = false, extra = [], idleAt = performance.now(), glyphAt = 0;
-  /* gizli tuvale çiz, dolu pikselleri örnekle, karıştır, üst sınırla — hero yazısı ve proje amblemleri aynı yolu kullanır */
-  var serif = getComputedStyle(root).getPropertyValue('--serif');
-  function sample(w, h, draw, step, cap) {
-    var o = document.createElement('canvas'), oc = o.getContext('2d');
-    w = Math.ceil(w); h = Math.ceil(h); if (w < 1 || h < 1) return []; /* gizli sekme / henüz yerleşmemiş kutu: getImageData 0 genişlikte fırlatır */
-    o.width = w; o.height = h;
-    oc.fillStyle = '#fff'; oc.strokeStyle = '#fff'; oc.textAlign = 'center'; oc.textBaseline = 'middle';
-    draw(oc);
-    var d = oc.getImageData(0, 0, w, h).data, pts = [];
-    for (var y = 0; y < h; y += step) for (var x = 0; x < w; x += step)
-      if (d[(y * w + x) * 4 + 3] > 128) pts.push([x + (Math.random() - 0.5) * step, y + (Math.random() - 0.5) * step]);
-    for (var i = pts.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = pts[i]; pts[i] = pts[j]; pts[j] = t; }
-    return pts.slice(0, cap);
-  }
-  function targets(text) {
-    var narrow = W < 720, fs = Math.min(H * 0.78, W * (narrow ? 0.5 : 0.3)), maxW = narrow ? W * 0.9 : W * 0.46;
-    return sample(W, H, function (oc) {
-      oc.font = 'italic 600 ' + fs + 'px ' + serif;
-      var tw = oc.measureText(text).width; if (tw > maxW) oc.font = 'italic 600 ' + (fs * maxW / tw) + 'px ' + serif;
-      oc.fillText(text, narrow ? W / 2 : W * 0.74, H / 2);
-    }, narrow ? 5 : 4, narrow ? 500 : 900);
-  }
-  function form(text) {
-    var pts = targets(text); if (!pts.length) return;
-    while (extra.length < pts.length) { var m = mote(true); m.o = 0; extra.push(m); }
-    for (var i = 0; i < extra.length; i++) { var p = pts[i % pts.length]; extra[i].tx = p[0]; extra[i].ty = p[1]; }
-    gather = true; glyphAt = performance.now();
-  }
-  function scatter() {
-    if (!gather) return; gather = false;
-    extra.forEach(function (p) { p.vx = (Math.random() - 0.5) * 1.8; p.vy = (Math.random() - 0.5) * 1.8; });
-  }
-  function wake() { idleAt = performance.now(); scatter(); }
-  ['mousemove', 'scroll', 'touchstart', 'keydown', 'wheel'].forEach(function (ev) { addEventListener(ev, wake, { passive: true }); });
-  addEventListener('touchmove', function (e) { mx = e.touches[0].clientX; my = e.touches[0].clientY; }, { passive: true });
-
-  /* ── proje amblemleri: her kart görünür olunca toz o projenin işaretine toplanır, imleçten kaçar ── */
-  var EMBLEMS = [
-    function (oc, x, y, s) { /* 01 retrieval eval: büyüteç */
-      oc.lineWidth = s * 0.06; oc.beginPath(); oc.arc(x - s * 0.08, y - s * 0.08, s * 0.28, 0, 6.283); oc.stroke();
-      oc.lineWidth = s * 0.09; oc.beginPath(); oc.moveTo(x + s * 0.13, y + s * 0.13); oc.lineTo(x + s * 0.4, y + s * 0.4); oc.stroke();
-    },
-    function (oc, x, y, s) { /* 02 match-3: 3×3 elmas */
-      for (var r = -1; r <= 1; r++) for (var q = -1; q <= 1; q++) {
-        oc.beginPath(); oc.moveTo(x + q * s * 0.36, y + r * s * 0.36 - s * 0.14); oc.lineTo(x + q * s * 0.36 + s * 0.14, y + r * s * 0.36);
-        oc.lineTo(x + q * s * 0.36, y + r * s * 0.36 + s * 0.14); oc.lineTo(x + q * s * 0.36 - s * 0.14, y + r * s * 0.36); oc.fill();
-      }
-    },
-    function (oc, x, y, s) { /* 03 glyph audit: Aa + tofu kutusu */
-      oc.font = '600 ' + s * 0.62 + 'px ' + serif; oc.fillText('Aa', x - s * 0.14, y);
-      oc.lineWidth = s * 0.05; oc.strokeRect(x + s * 0.3, y - s * 0.2, s * 0.32, s * 0.4);
-    },
-    function (oc, x, y, s) { /* 04 dedektif: soru işareti */
-      oc.font = 'italic 600 ' + s * 0.95 + 'px ' + serif; oc.fillText('?', x, y);
-    },
-    function (oc, x, y, s) { /* 05 matematik platformu: kalın çizgili toplam işareti (Σ) */
-      oc.lineWidth = s * 0.11; oc.lineJoin = 'miter'; oc.beginPath();
-      oc.moveTo(x + s * 0.3, y - s * 0.42); oc.lineTo(x - s * 0.3, y - s * 0.42); oc.lineTo(x + s * 0.02, y);
-      oc.lineTo(x - s * 0.3, y + s * 0.42); oc.lineTo(x + s * 0.3, y + s * 0.42); oc.stroke();
-    }
-  ];
-  var fields = [];
-  document.querySelectorAll('.proj').forEach(function (el, k) {
-    var cv = document.createElement('canvas'); cv.className = 'pdust'; cv.setAttribute('aria-hidden', 'true'); el.insertBefore(cv, el.firstChild);
-    var f = { el: el, c: cv, ctx: cv.getContext('2d'), ps: [], on: false, W: 0, H: 0, draw: EMBLEMS[k % EMBLEMS.length] };
-    fields.push(f);
-    new IntersectionObserver(function (en) { f.on = en[0].isIntersecting; }).observe(cv);
-  });
-  function sizeField(f) {
-    var dpr = Math.min(devicePixelRatio || 1, 2), r = f.el.getBoundingClientRect();
-    f.W = r.width; f.H = r.height; f.c.width = f.W * dpr; f.c.height = f.H * dpr; f.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    /* geniş: iki sütunlu düzende sol sütunun sağ boşluğu (açıklama 460px'te biter); dar: numaranın sağı */
-    var two = f.W > 960 - 144, narrow = f.W < 720, s = narrow ? Math.min(150, f.W * 0.4) : Math.min(two ? 190 : 230, f.H * 0.7);
-    var ex = narrow ? f.W * 0.74 : two ? (f.W - 80) / 2 - 70 : f.W * 0.72, ey = narrow ? 84 : f.H * 0.5;
-    var pts = sample(f.W, f.H, function (oc) { f.draw(oc, ex, ey, s); }, 4, narrow ? 220 : 380);
-    f.ps = pts.map(function (p) { var m = mote(true); m.o = 0; m.tx = p[0]; m.ty = p[1]; m.x = p[0] + (Math.random() - 0.5) * 240; m.y = p[1] + (Math.random() - 0.5) * 240; return m; });
-  }
-  fields.forEach(sizeField); addEventListener('resize', function () { fields.forEach(sizeField); });
-
-  /* ── toz avı: ↑↑↓↓←→←→BA (telefonda: üst köşedeki isme 5 kez dokun) — 20 saniyede kaç kıvılcım yakalarsın ── */
-  var KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'], ki = 0;
-  var hud = document.querySelector('.hud'), game = null, sparks = [], bits = [], taps = [];
-  addEventListener('keydown', function (e) {
-    ki = e.key.toLowerCase() === KONAMI[ki].toLowerCase() ? ki + 1 : (e.key.toLowerCase() === KONAMI[0].toLowerCase() ? 1 : 0);
-    if (ki === KONAMI.length) { ki = 0; startGame(); }
-  });
-  document.querySelector('.konami').addEventListener('click', startGame);
-  document.querySelector('.mark').addEventListener('click', function () {
-    var t = performance.now(); taps.push(t); taps = taps.filter(function (x) { return t - x < 2000; });
-    if (taps.length >= 5) { taps = []; startGame(); }
-  });
-  function spark() {
-    var gold = Math.random() < 0.15; /* nadir altın kıvılcım: 3 puan, daha hızlı kaçar */
-    return { x: 40 + Math.random() * (W - 80), y: 40 + Math.random() * (H - 80), vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
-      r: gold ? 3.2 : 2.2 + Math.random() * 1.2, a: Math.random() * 6.283, s: 0.05, born: performance.now(), gold: gold };
-  }
-  function startGame() {
-    if (game) return;
-    var best = 0; try { best = +localStorage.getItem('tozavi') || 0; } catch (e) {}
-    game = { score: 0, best: best, end: performance.now() + 20000, over: 0 };
-    sparks = []; for (var i = 0; i < 7; i++) sparks.push(spark());
-    hud.classList.add('live'); c.scrollIntoView({ block: 'center' });
-  }
-  function endGame(now) {
-    game.over = now;
-    if (game.score > game.best) { game.best = game.score; try { localStorage.setItem('tozavi', game.score); } catch (e) {} }
-    hud.innerHTML = 'SKOR ' + game.score + ' &nbsp;·&nbsp; EN İYİ ' + game.best + '<br><span>TEKRAR: ↑↑↓↓←→←→BA</span>';
-    sparks = [];
-  }
-  function tickGame(now, px, py) {
-    if (game.over) { if (now - game.over > 6000) { hud.classList.remove('live'); game = null; } return; }
-    if (now >= game.end) return endGame(now);
-    idleAt = now; /* oyun sırasında toz yazı oluşmasın */
-    for (var i = sparks.length - 1; i >= 0; i--) {
-      var s = sparks[i], dx = px - s.x, dy = py - s.y, d = Math.sqrt(dx * dx + dy * dy);
-      s.a += s.s;
-      if (d < 140 && d > 1) { var fl = s.gold ? 0.08 : 0.05; s.vx -= dx / d * fl; s.vy -= dy / d * fl; } /* imleçten kaçar */
-      s.x += s.vx; s.y += s.vy; s.vx *= 0.97; s.vy *= 0.97;
-      if (s.x < 10 || s.x > W - 10) s.vx = -s.vx; if (s.y < 10 || s.y > H - 10) s.vy = -s.vy;
-      s.x = Math.max(10, Math.min(W - 10, s.x)); s.y = Math.max(10, Math.min(H - 10, s.y));
-      var caught = d < 26, stale = now - s.born > 5000;
-      if (caught || stale) {
-        if (caught) { game.score += s.gold ? 3 : 1; for (var k = 0; k < (s.gold ? 16 : 8); k++) bits.push({ x: s.x, y: s.y, vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3, o: 1, gold: s.gold }); }
-        sparks[i] = spark(); continue;
-      }
-      var g = 0.6 + 0.4 * Math.sin(s.a);
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.r * 3, 0, 6.283); ctx.fillStyle = 'rgba(214,194,154,' + (0.08 * g).toFixed(3) + ')'; ctx.fill();
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.283); ctx.fillStyle = (s.gold ? 'rgba(214,194,154,' : 'rgba(242,239,233,') + (0.55 + 0.45 * g).toFixed(3) + ')'; ctx.fill();
-    }
-    hud.textContent = 'TOZ AVI  ' + Math.ceil((game.end - now) / 1000) + ' sn  ·  ' + game.score;
-  }
-
-
-  /* ── tek kare döngüsü ── */
-  var prev = performance.now();
-  function frame(now) {
-    var dt = Math.min(50, now - prev); prev = now;
-    /* şerit: kaydırma hızıyla hızlanır, geri kaydırınca tersine döner, yana yatar */
-    vel *= 0.9; rate += (1 + vel * 0.14 - rate) * 0.12;
-    if (track) {
-      var third = track.scrollWidth / 3;
-      pos = (pos + third / 28000 * dt * rate) % third; if (pos < 0) pos += third;
-      track.style.transform = 'translateX(' + (-pos).toFixed(2) + 'px)';
-      band.style.setProperty('--sk', (-vel * 0.09).toFixed(2) + 'deg');
-    }
-    /* imleç gecikmeli takip + arkasında toz kuyruğu */
-    if (fine) {
-      cx += (mx - cx) * 0.18; cy += (my - cy) * 0.18; cur.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px)';
-      var mv = Math.abs(mx - lmx) + Math.abs(my - lmy); lmx = mx; lmy = my;
-      if (mv > 2 && tail.length < 140) for (i = 0; i < Math.min(3, mv / 6); i++)
-        tail.push({ x: cx + (Math.random() - 0.5) * 6, y: cy + (Math.random() - 0.5) * 6, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 - 0.15, r: 0.6 + Math.random() * 0.9, o: 0.55 });
-      tctx.clearRect(0, 0, innerWidth, innerHeight);
-      for (i = tail.length - 1; i >= 0; i--) {
-        p = tail[i]; p.x += p.vx; p.y += p.vy; p.o -= 0.011;
-        if (p.o <= 0) { tail.splice(i, 1); continue; }
-        tctx.beginPath(); tctx.arc(p.x, p.y, p.r, 0, 6.283); tctx.fillStyle = 'rgba(214,194,154,' + p.o.toFixed(3) + ')'; tctx.fill();
-      }
-    }
-    /* toz */
-    if (dustOn && !document.hidden) {
-      var hr = c.getBoundingClientRect(), px = mx - hr.left, py = my - hr.top;
-      ctx.clearRect(0, 0, W, H);
-      for (var i = 0; i < ps.length; i++) {
-        var p = ps[i]; p.a += p.s;
-        var dx = px - p.x, dy = py - p.y, d = dx * dx + dy * dy;
-        if (d < 40000 && d > 1) { var f = (1 - Math.sqrt(d) / 200) * 0.0006; p.vx -= dx * f; p.vy -= dy * f; }
-        p.x += p.vx; p.y += p.vy; p.vx *= 0.995; p.vy *= 0.995;
-        if (p.y < -4 || p.x < -4 || p.x > W + 4) ps[i] = p = mote(false);
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283);
-        ctx.fillStyle = 'rgba(214,194,154,' + (0.18 + 0.5 * (0.5 + 0.5 * Math.sin(p.a))).toFixed(3) + ')'; ctx.fill();
-      }
-      /* toz yazı: boşta toplan, sırayla şekil değiştir, dağılınca sön */
-      if (!gather && now - idleAt > 5000) form(GLYPHS[gi++ % GLYPHS.length]);
-      else if (gather && now - glyphAt > 6000) form(GLYPHS[gi++ % GLYPHS.length]);
-      for (i = 0; i < extra.length; i++) {
-        p = extra[i]; p.a += p.s;
-        if (gather) { p.x += (p.tx - p.x) * 0.06; p.y += (p.ty - p.y) * 0.06; p.o = Math.min(1, p.o + 0.02); }
-        else { p.x += p.vx; p.y += p.vy; p.vx *= 0.98; p.vy *= 0.98; p.o -= 0.015; }
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.283);
-        ctx.fillStyle = 'rgba(214,194,154,' + (p.o * (0.3 + 0.5 * (0.5 + 0.5 * Math.sin(p.a)))).toFixed(3) + ')'; ctx.fill();
-      }
-      if (!gather && extra.length) extra = extra.filter(function (p) { return p.o > 0; });
-      /* toz avı + yakalama kıvılcımları */
-      if (game) tickGame(now, px, py);
-      for (i = bits.length - 1; i >= 0; i--) {
-        p = bits[i]; p.x += p.vx; p.y += p.vy; p.vx *= 0.92; p.vy *= 0.92; p.o -= 0.03;
-        if (p.o <= 0) { bits.splice(i, 1); continue; }
-        ctx.beginPath(); ctx.arc(p.x, p.y, 1.2, 0, 6.283); ctx.fillStyle = (p.gold ? 'rgba(214,194,154,' : 'rgba(242,239,233,') + p.o.toFixed(3) + ')'; ctx.fill();
-      }
-    }
-    /* proje amblemleri: görünür kartlarda toz hedefine süzülür, hafifçe kıpırdar, imleçten kaçar */
-    for (var k = 0; k < fields.length; k++) {
-      var f = fields[k]; if (!f.on || document.hidden) continue;
-      var fr = f.c.getBoundingClientRect(), fx = mx - fr.left, fy = my - fr.top, inView = f.el.classList.contains('in');
-      f.ctx.clearRect(0, 0, f.W, f.H);
-      for (i = 0; i < f.ps.length; i++) {
-        p = f.ps[i]; p.a += p.s;
-        if (!inView) continue;
-        var ddx = fx - p.x, ddy = fy - p.y, dd = ddx * ddx + ddy * ddy;
-        if (fine && dd < 8100 && dd > 1) { var ff = (1 - Math.sqrt(dd) / 90) * 0.5; p.vx -= ddx / Math.sqrt(dd) * ff; p.vy -= ddy / Math.sqrt(dd) * ff; }
-        p.vx += (p.tx + Math.sin(p.a * 3) * 2 - p.x) * 0.01; p.vy += (p.ty + Math.cos(p.a * 2.3) * 2 - p.y) * 0.01;
-        p.x += p.vx; p.y += p.vy; p.vx *= 0.9; p.vy *= 0.9; p.o = Math.min(1, p.o + 0.012);
-        f.ctx.beginPath(); f.ctx.arc(p.x, p.y, p.r, 0, 6.283);
-        f.ctx.fillStyle = 'rgba(214,194,154,' + (p.o * (0.25 + 0.45 * (0.5 + 0.5 * Math.sin(p.a)))).toFixed(3) + ')'; f.ctx.fill();
-      }
-    }
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-
-  /* ── yumuşak kaydırma, yatay projeler, 3B vitrin — kütüphaneler yalnız hareket açıkken yüklenir ── */
-  var CDN = 'https://cdn.jsdelivr.net/npm/';
-  function load(src) {
-    return new Promise(function (ok, no) {
-      var s = document.createElement('script'); s.src = CDN + src; s.onload = ok; s.onerror = no; document.head.appendChild(s);
-    });
-  }
-  load('gsap@3.13.0/dist/gsap.min.js').then(function () {
-    return Promise.all([load('gsap@3.13.0/dist/ScrollTrigger.min.js'), load('lenis@1.3.26/dist/lenis.min.js')]);
-  }).then(stage).catch(function () {}); /* CDN'e ulaşılamazsa site bugünkü dikey hâliyle kalır */
-
-  function stage() {
-    gsap.registerPlugin(ScrollTrigger);
-    var lenis = new Lenis({ anchors: true });
-    lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
-    gsap.ticker.lagSmoothing(0);
-
-    /* hero kaydırırken geri çekilir, kapanışta dev isim yükselir */
-    gsap.to('.hero-inner', { yPercent: 14, scale: 0.94, opacity: 0.25, ease: 'none', transformOrigin: '50% 0',
-      scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
-    gsap.from('.giant', { yPercent: 55, opacity: 0, ease: 'none',
-      scrollTrigger: { trigger: '.giant', start: 'top bottom', end: 'bottom bottom', scrub: true } });
-
-    /* geniş ekranda projeler sabitlenir ve yatay akar; daralınca matchMedia her şeyi geri alır */
-    var sec = document.getElementById('projeler'), rail = sec.querySelector('.hz-track');
-    var count = sec.querySelector('.hz-count'), n = rail.querySelectorAll('.proj').length;
-    gsap.matchMedia().add('(min-width: 1024px) and (min-height: 680px)', function () {
-      root.classList.add('hz');
-      var setW = function () { root.style.setProperty('--pw', sec.clientWidth + 'px'); };
-      setW(); ScrollTrigger.addEventListener('refreshInit', setW);
-      var gl = showcase(sec), at = 0;
-      gsap.to(rail, { x: function () { return -(rail.scrollWidth - sec.clientWidth); }, ease: 'none',
-        scrollTrigger: { trigger: sec, pin: true, scrub: 1, invalidateOnRefresh: true,
-          end: function () { return '+=' + (rail.scrollWidth - sec.clientWidth); },
-          snap: { snapTo: 1 / (n - 1), duration: { min: 0.2, max: 0.6 }, ease: 'power1.inOut' },
-          onUpdate: function (self) {
-            var i = Math.round(self.progress * (n - 1));
-            if (i !== at) { at = i; count.textContent = '0' + (i + 1) + ' / 0' + n; if (gl) gl.shape(i); }
-            if (gl) gl.spin = self.progress * (n - 1);
-          } } });
-      dispatchEvent(new Event('resize')); /* amblem tozları ve toz alanı yeni düzene göre ölçülsün */
-      return function () {
-        ScrollTrigger.removeEventListener('refreshInit', setW);
-        root.classList.remove('hz', 'nogl'); root.style.removeProperty('--pw');
-        if (gl) gl.stop();
-        count.textContent = '01 / 0' + n;
-        dispatchEvent(new Event('resize'));
-      };
-    });
-  }
-
-  /* ── 3B vitrin: ~7000 parçacık, her projede o projenin şekline dönüşür ── */
-  function unitDir() { var u = Math.random() * 2 - 1, t = Math.random() * 6.283, q = Math.sqrt(1 - u * u); return [q * Math.cos(t), q * Math.sin(t), u]; }
-  function jit(s) { return (Math.random() + Math.random() + Math.random() - 1.5) * s; }
-  function fill(n, gen) { var o = new Float32Array(n * 3); for (var i = 0; i < n; i++) o.set(gen(i), i * 3); return o; }
-  /* düz bir çizimi (glif, amblem) örnekleyip kalınlık vererek 3B yapar */
-  function slab(n, draw, depth) {
-    var pts = sample(256, 256, draw, 2, 5000);
-    return fill(n, function (i) { var p = pts[i % pts.length]; return [(p[0] - 128) / 110 + jit(0.01), -(p[1] - 128) / 110 + jit(0.01), (Math.random() - 0.5) * depth]; });
-  }
-  var SHAPES = [
-    function (n) { /* 01 RAG Eval: gömme uzayında yedi konu kümesi ve arada seyrek sorgular */
-      var C = []; for (var k = 0; k < 7; k++) C.push(unitDir().map(function (v) { return v * 0.62; }));
-      return fill(n, function (i) {
-        if (i % 7 === 0) { var d = unitDir(), r = Math.cbrt(Math.random()); return [d[0] * r, d[1] * r, d[2] * r]; }
-        var c = C[i % 7]; return [c[0] + jit(0.16), c[1] + jit(0.16), c[2] + jit(0.16)];
-      });
-    },
-    function (n) { /* 02 Match3 Lab: 3×3×3 elmas ızgarası */
-      return fill(n, function (i) {
-        var k = i % 27, a = -Math.log(Math.random()), b = -Math.log(Math.random()), c = -Math.log(Math.random()), s = 0.17 / (a + b + c);
-        return [(k % 3 - 1) * 0.6 + a * s * (Math.random() < 0.5 ? -1 : 1), ((k / 3 | 0) % 3 - 1) * 0.6 + b * s * (Math.random() < 0.5 ? -1 : 1),
-          ((k / 9 | 0) - 1) * 0.6 + c * s * (Math.random() < 0.5 ? -1 : 1)];
-      });
-    },
-    function (n) { /* 03 TMP Glyph Audit: Türkçe bir glif */
-      return slab(n, function (oc) { oc.font = 'italic 600 210px ' + serif; oc.fillText('Ğ', 128, 142); }, 0.26);
-    },
-    function (n) { /* 04 Bilim Dedektifi: büyüteç — halka ve sap */
-      return fill(n, function (i) {
-        if (i % 4) { var t = Math.random() * 6.283, f = Math.random() * 6.283, r = 0.52 + 0.07 * Math.cos(f);
-          return [-0.18 + r * Math.cos(t), 0.18 + r * Math.sin(t), 0.07 * Math.sin(f)]; }
-        var u = Math.random(), g = Math.random() * 6.283, along = 0.62 + u * 0.62, rr = 0.09 * Math.cos(g);
-        return [-0.18 + along * 0.707 + rr * 0.707, 0.18 - along * 0.707 + rr * 0.707, 0.09 * Math.sin(g)];
-      });
-    },
-    function (n) { /* 05 Code-Enigma: toplam işareti */
-      return slab(n, function (oc) { EMBLEMS[4](oc, 128, 128, 220); }, 0.26);
-    }
-  ];
-
-  function showcase(sec) {
-    var cv = sec.querySelector('.gl'), live = true, want = 0, api = { spin: 0, shape: function (i) { want = i; }, stop: function () { live = false; } };
-    var probe = document.createElement('canvas');
-    if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) { root.classList.add('nogl'); return null; }
-    import(CDN + 'three@0.180.0/build/three.module.min.js').then(function (T) { if (live) build(T); })
-      .catch(function () { if (live) { root.classList.add('nogl'); dispatchEvent(new Event('resize')); } });
-
-    function build(T) {
-      var N = 7000, dpr = Math.min(devicePixelRatio || 1, 2);
-      var renderer = new T.WebGLRenderer({ canvas: cv, alpha: true });
-      renderer.setPixelRatio(dpr);
-      var scene = new T.Scene(), cam = new T.PerspectiveCamera(35, 1, 0.1, 100); cam.position.z = 10;
-      var shapes = SHAPES.map(function (f) { return f(N); });
-      var pos = fill(N, function () { var d = unitDir(); return [d[0] * 4, d[1] * 4, d[2] * 4]; }), tgt = new Float32Array(N * 3);
-      var rnd = new Float32Array(N), speed = new Float32Array(N);
-      for (var i = 0; i < N; i++) { rnd[i] = Math.random(); speed[i] = 0.03 + rnd[i] * 0.05; }
-      var geo = new T.BufferGeometry();
-      geo.setAttribute('position', new T.BufferAttribute(pos, 3));
-      geo.setAttribute('aRnd', new T.BufferAttribute(rnd, 1));
-      var mat = new T.ShaderMaterial({
-        transparent: true, depthWrite: false, blending: T.AdditiveBlending,
-        uniforms: { uTime: { value: 0 }, uSize: { value: 28 * dpr } },
-        vertexShader: [
-          'attribute float aRnd; uniform float uTime; uniform float uSize; varying float vA;',
-          'void main() {',
-          '  vec3 p = position + 0.012 * vec3(sin(uTime * 1.3 + aRnd * 40.0), cos(uTime * 1.1 + aRnd * 30.0), sin(uTime * 0.9 + aRnd * 20.0));',
-          '  vec4 mv = modelViewMatrix * vec4(p, 1.0);',
-          '  gl_Position = projectionMatrix * mv;',
-          '  gl_PointSize = uSize * (0.5 + aRnd) / -mv.z;',
-          '  vA = 0.35 + 0.65 * (0.5 + 0.5 * sin(uTime * 2.0 + aRnd * 60.0));',
-          '}'].join('\n'),
-        fragmentShader: [
-          'varying float vA;',
-          'void main() {',
-          '  float d = length(gl_PointCoord - 0.5); if (d > 0.5) discard;',
-          '  gl_FragColor = vec4(0.839, 0.761, 0.604, smoothstep(0.5, 0.0, d) * vA * 0.5);',
-          '}'].join('\n')
-      });
-      var group = new T.Group(); group.add(new T.Points(geo, mat)); scene.add(group);
-
-      /* obje sağ sütunun üst boşluğuna oturur: spec satırlarının üstü, başlığın altı */
-      function fit() {
-        var w = sec.clientWidth, h = sec.clientHeight; if (!w || !h) return;
-        renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
-        var perPx = 2 * Math.tan(cam.fov * Math.PI / 360) * cam.position.z / h;
-        var spec = sec.querySelector('.spec'), pr = spec.parentNode.getBoundingClientRect(), sr = spec.getBoundingClientRect();
-        var top = 150, bot = spec.firstElementChild.getBoundingClientRect().top - pr.top - 36;
-        var cx = (sr.left + sr.right) / 2 - pr.left, cy = (top + bot) / 2, rad = Math.max(70, Math.min((bot - top) / 2, sr.width * 0.34));
-        group.position.set((cx - w / 2) * perPx, -(cy - h / 2) * perPx, 0);
-        group.scale.setScalar(rad * perPx);
-      }
-      fit(); addEventListener('resize', fit); ScrollTrigger.addEventListener('refresh', fit);
-
-      var on = false, shown = -1, t0 = performance.now();
-      var io = new IntersectionObserver(function (en) { on = en[0].isIntersecting; }); io.observe(sec);
-      function loop(now) {
-        if (!live) {
-          removeEventListener('resize', fit); ScrollTrigger.removeEventListener('refresh', fit); io.disconnect();
-          geo.dispose(); mat.dispose(); renderer.dispose(); return;
-        }
-        requestAnimationFrame(loop);
-        if (!on || document.hidden) return;
-        if (want !== shown) { shown = want; tgt.set(shapes[shown]); }
-        for (var i = 0; i < N * 3; i++) pos[i] += (tgt[i] - pos[i]) * speed[(i / 3) | 0];
-        geo.attributes.position.needsUpdate = true;
-        var t = (now - t0) / 1000, nx = fine ? mx / innerWidth - 0.5 : 0, ny = fine ? my / innerHeight - 0.5 : 0;
-        /* her proje geçişinde tam tur döner, durunca yüzü öne bakar; fareye hafifçe eğilir */
-        group.rotation.y += (Math.sin(t * 0.35) * 0.5 + api.spin * 6.283 + nx * 0.7 - group.rotation.y) * 0.08;
-        group.rotation.x += (Math.sin(t * 0.27) * 0.12 + ny * 0.45 - group.rotation.x) * 0.08;
-        mat.uniforms.uTime.value = t;
-        renderer.render(scene, cam);
-      }
-      requestAnimationFrame(loop);
-    }
-    return api;
-  }
-})();
-</script>
-</body>
+<div class="loader" role="status" aria-label="Yükleniyor" data-i18n-attr="aria-label:a.loading"><span class="loader-bar"></span></div></body>
 </html>

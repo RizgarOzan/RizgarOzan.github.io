@@ -1,0 +1,27 @@
+Sound effects in this folder
+============================
+
+All sources are public-domain dedications (CC0 1.0 or equivalent): no permission
+and no attribution needed. Credits are kept here anyway.
+Every file is a trimmed / filtered / mixed / loudness-normalised edit of the
+sources below, encoded to Ogg Opus (.ogg) and MP3 (.mp3). Build script and
+original downloads: C:\Users\forev\Downloads\kilic\audio\ (build.mjs).
+
+BigSoundBank.com, Joseph SARDIN, "Free and royalty-free":
+CC0 1.0 / WTFPL / public domain (https://bigsoundbank.com/licenses.html)
+  wind.*      Wind (Foley) #0595        https://bigsoundbank.com/wind-s0595.html
+              Whistling of the wind 1   https://bigsoundbank.com/whistling-of-the-wind-1-s0147.html
+  forge.*     Fireplace 5 #2857         https://bigsoundbank.com/fireplace-5-s2857.html
+              Big branching fire 1      https://bigsoundbank.com/big-branching-fire-1-s0987.html
+  hover1-4.*  Knife blade 1, 3, 6, 8    https://bigsoundbank.com/knife-blade-1-s2574.html
+                                        https://bigsoundbank.com/knife-blade-3-s2576.html
+                                        https://bigsoundbank.com/knife-blade-6-s2579.html
+                                        https://bigsoundbank.com/knife-blade-8-s2581.html
+  pull.*      Step on gravel #0085      https://bigsoundbank.com/step-on-gravel-s0085.html
+              Sword #0129               https://bigsoundbank.com/sword-s0129.html
+  plant.*     Jumping on dirt road 1    https://bigsoundbank.com/jumping-on-dirt-road-1-s1837.html
+              Fall of stone #1022       https://bigsoundbank.com/fall-of-stone-s1022.html
+  rattle.*    Heavy chain #0359         https://bigsoundbank.com/heavy-chain-s0359.html
+  descend.*   Tombstone opening #0580   https://bigsoundbank.com/tombstone-opening-s0580.html
+              Thunder 3 #3114           https://bigsoundbank.com/thunder-3-s3114.html
+  hammer1-4.* Anvil 1 #3589             https://bigsoundbank.com/anvil-1-s3589.html
