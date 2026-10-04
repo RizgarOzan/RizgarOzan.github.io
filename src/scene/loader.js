@@ -9,12 +9,25 @@ export const gltfLoader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 
 // Downloads go out a few at a time, lowest priority number first (then in the
 // order asked), so on a slow line the front sword arrives first instead of
-// everything arriving late together.
+// everything arriving late together. Priority LATER and up (the ruins, the smithy,
+// sharp copies fetched ahead) waits until nothing more urgent is waiting or on its
+// way: on a slow line a big file must not share the line with the swords.
+// Jobs asked for in the same moment are sorted before any of them starts.
 const MAX = 3;
-let active = 0;
+const LATER = 5;
+let active = 0, urgent = 0, queued = false;
 const waiting = [];
 function next() {
-  while (active < MAX && waiting.length) { active++; waiting.shift().run(); }
+  queued = false;
+  while (active < MAX && waiting.length) {
+    const job = waiting[0];
+    const later = job.priority >= LATER;
+    if (later && urgent > 0) return;
+    waiting.shift();
+    active++;
+    if (!later) urgent++;
+    job.run().finally(() => { active--; if (!later) urgent--; next(); });
+  }
 }
 // How fast files arrive, in bytes per second, from the big downloads finished so far
 // (Resource Timing; a cached file counts as fast). 0 until one is in.
@@ -30,9 +43,9 @@ export function linkSpeed() {
 
 export function loadGLB(url, priority = 5) {
   return new Promise((resolve, reject) => {
-    const job = { priority, run: () => gltfLoader.loadAsync(url).then(resolve, reject).finally(() => { active--; next(); }) };
+    const job = { priority, run: () => gltfLoader.loadAsync(url).then(resolve, reject) };
     const at = waiting.findIndex((j) => j.priority > priority);
     waiting.splice(at < 0 ? waiting.length : at, 0, job);
-    next();
+    if (!queued) { queued = true; setTimeout(next, 0); }
   });
 }
