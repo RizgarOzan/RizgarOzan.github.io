@@ -95,7 +95,7 @@ const EN = {
   'about.kicker': 'About',
   'about.lead': 'Game mechanics, data models, interfaces: I am a developer who likes working out how the parts fit together.',
   'about.p1': 'I live in Ankara, study at Hacettepe University and make games on the side. I have made a habit of measuring before I say something works.',
-  'about.facts': `<div><dt>Experience</dt><dd>Software engineering intern at Barko Elektronik, July to August 2026. In a team of two we set up an LLM stack that runs on the company’s own hardware and wrote data services with FastAPI and Docker. I connected the company portal to Active Directory.</dd></div>
+  'about.facts': `<div><dt>Experience</dt><dd>Software engineering intern at Barko Elektronik, July to August 2026. In a team of two we set up an LLM stack that runs on the company’s own hardware and wrote data services with FastAPI and Docker. We connected the company portal to Active Directory.</dd></div>
         <div><dt>Education</dt><dd>Hacettepe University, Computer Education and Instructional Technology. I graduate in June 2027.</dd></div>
         <div><dt>Focus</dt><dd>Turkish search and RAG (Python) · Game development (Unity, C#)</dd></div>
         <div><dt>Tools</dt><dd>Unity · C# · Python · React · JavaScript · Tailwind CSS · Git</dd></div>
