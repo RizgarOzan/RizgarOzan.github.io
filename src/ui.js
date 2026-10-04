@@ -18,7 +18,8 @@ let lastFocus = null;
 
 const sections = entries.filter((e) => e.slug);           // things with a panel
 const ABOUT = 'hakkimda';
-const PAGES = [ABOUT, 'yazilar', 'referanslar'];
+const PAGES = [ABOUT, 'yazilar'];
+const SOURCES = 'referanslar'; // the small drawer in the corner, not a page
 const FORGE = 'demirhane';
 const inForge = (e) => e?.place === 'forge';
 const groupOf = (slug) => sections.filter((e) => inForge(e) === inForge(entries.find((x) => x.slug === slug))).map((e) => e.slug);
@@ -90,7 +91,14 @@ function navigate(slug) {
   }
 }
 
+// Kaynaklar lives in a <details> drawer in the corner: its old route just opens it.
+function openSources() {
+  const d = $('details.sources');
+  if (d) { d.open = true; d.querySelector('summary').focus(); }
+}
+
 function route() {
+  if (currentSlug() === SOURCES) { history.replaceState(null, '', location.pathname + location.search); openSources(); }
   if (flat()) { const a = els.articles[currentSlug()]; if (a) a.scrollIntoView(); else window.scrollTo(0, 0); return; }
   if (!field) return;
   const slug = currentSlug();
@@ -155,6 +163,10 @@ export function init() {
     li.append(b, l, a);
     cl?.appendChild(li);
   });
+  // the Kaynaklar drawer closes on Esc or a click anywhere else
+  const src = $('details.sources');
+  document.addEventListener('pointerdown', (e) => { if (src?.open && !src.contains(e.target)) src.open = false; });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && src?.open) { src.open = false; src.querySelector('summary').focus(); } });
   els.articles = Object.fromEntries([...document.querySelectorAll('.entry')].map((a) => [a.id, a]));
   prepText();
   els.cue = $('.cue');
@@ -214,6 +226,8 @@ export function init() {
 
 
   const toggle = $('[data-mode-toggle]');
+  // the loader's "open the list" may have switched before this script was in
+  toggle.setAttribute('aria-pressed', String(body.classList.contains('is-list')));
   toggle.addEventListener('click', () => {
     body.classList.remove('pre-intro', 'pre-ui');
     const on = !body.classList.contains('is-list');
@@ -245,7 +259,7 @@ export function init() {
   if (kbd && /Mac|iPhone|iPad/.test(navigator.platform)) kbd.textContent = '⌘K';
   initPalette(paletteItems);
   document.addEventListener('rz:lang', relang);
-  toggle.textContent = t('Liste');
+  toggle.textContent = t(body.classList.contains('is-list') ? 'Sahne' : 'Liste');
 
   window.addEventListener('keydown', (ev) => {
     if (!field || body.classList.contains('is-list') || paletteOpen() || ev.target.closest?.('input, textarea')) return;
@@ -298,7 +312,7 @@ function paletteItems() {
     } },
     { label: 'GitHub', group: 'github.com/RizgarOzan', lang: 'en', keys: 'kod code', run: open('https://github.com/RizgarOzan') },
     { label: 'LinkedIn', group: 'linkedin.com/in/rizgarozan', lang: 'en', keys: 'iş work', run: open('https://www.linkedin.com/in/rizgarozan/') },
-    { label: t('Kaynaklar'), group: '', keys: 'referans lisans model atıf credits license', small: true, run: go('referanslar') },
+    { label: t('Kaynaklar'), group: '', keys: 'referans lisans model atıf credits license', small: true, run: openSources },
   ];
 }
 

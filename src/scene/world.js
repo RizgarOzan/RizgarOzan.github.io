@@ -311,16 +311,17 @@ function patchGround(material, uniforms, impact) {
   material.customProgramCacheKey = () => (impact ? 'ground-impact' : 'ground');
 }
 
-// The first view gets 1k copies (a third of the bytes); the 2k set replaces them
-// once everything visible has arrived (upgradeGround).
+// The first view gets tiny 256 px copies (90 KB for all three, so a slow line still
+// draws the field soon); the 1k set replaces them once the swords are in, and the 2k
+// set after that on a fast line (upgradeGround).
 const GROUND_DIR = 'assets/textures/brown_mud_rocks_01/';
 const GROUND_MAPS = { uGDiff: ['diff', true], uGNor: ['nor_gl', false], uGArm: ['arm', false] };
 function makeGroundUniforms(aniso) {
-  const t = (k, res) => tex(`${GROUND_DIR}${GROUND_MAPS[k][0]}_${res}.jpg`, GROUND_MAPS[k][1], aniso);
+  const t = (k) => tex(`${GROUND_DIR}${GROUND_MAPS[k][0]}_256.webp`, GROUND_MAPS[k][1], aniso);
   return {
-    uGDiff: { value: t('uGDiff', '1k') },
-    uGNor: { value: t('uGNor', '1k') },
-    uGArm: { value: t('uGArm', '1k') },
+    uGDiff: { value: t('uGDiff') },
+    uGNor: { value: t('uGNor') },
+    uGArm: { value: t('uGArm') },
     uGShadeA: { value: C.ground }, uGShadeB: { value: C.groundLight },
     uGNs: { value: 1.15 },
     // mean brightness of the crater's plain-earth vertex colour (#3b3429, linear)
@@ -446,14 +447,17 @@ const ruinIn = { value: 1 };
 
 const RUIN_STONE = new Set(['stone', 'stone_dark', 'stone_moss', 'stone_pale']);
 function loadRuins(world, parent, aniso, arrived) {
-  const dir = 'assets/textures/rock_surface/';
-  const map = tex(dir + 'diff_1k.jpg', true, aniso);
-  const nor = tex(dir + 'nor_gl_1k.jpg', false, aniso);
-  const arm = tex(dir + 'arm_1k.jpg', false, aniso);
   const patched = new Set();
   const centre = new THREE.Vector3();
-  // after the front sword, before the rest: the kingdom is most of the first view
-  return loadGLB('assets/env/ruins.glb', 0.5).then(async (gltf) => {
+  let map, nor, arm;
+  // after the swords: on a slow line they make the page, the ruins rise out of the fog later
+  return loadGLB('assets/env/ruins.glb', 5).then(async (gltf) => {
+    // 512 px, asked for only now so they never share the line with the first view:
+    // the ruins stand 12 m and more away, in haze
+    const dir = 'assets/textures/rock_surface/';
+    map = tex(dir + 'diff_512.webp', true, aniso);
+    nor = tex(dir + 'nor_gl_512.webp', false, aniso);
+    arm = tex(dir + 'arm_512.webp', false, aniso);
     const r = gltf.scene;
     // Smaller and farther than built: the blocks read as real masonry and the
     // kingdom sits across the valley instead of walling the field in.
@@ -1117,9 +1121,9 @@ export function createWorld(canvas) {
     // Set once the first frame is up: from then on the ruins rise out of the fog when they come.
     shown: false,
     ruins: null,
-    // Swap the 1k ground maps for the 2k set, uploaded a few per frame first.
-    async upgradeGround() {
-      const next = Object.fromEntries(Object.entries(GROUND_MAPS).map(([k, [name, srgb]]) => [k, tex(`${GROUND_DIR}${name}_2k.jpg`, srgb, aniso)]));
+    // Swap the ground maps for a sharper set ('1k' or '2k'), uploaded a few per frame first.
+    async upgradeGround(res) {
+      const next = Object.fromEntries(Object.entries(GROUND_MAPS).map(([k, [name, srgb]]) => [k, tex(`${GROUND_DIR}${name}_${res}.jpg`, srgb, aniso)]));
       await Promise.all(Object.values(next).map((t) => t.userData.loaded));
       if (Object.values(next).some((t) => !t.image)) return;
       await uploadTextures(api, Object.values(next));

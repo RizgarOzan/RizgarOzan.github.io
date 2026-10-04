@@ -4,8 +4,8 @@
 // GSAP timelines. Only one timeline is ever alive, so nothing overlaps.
 import * as THREE from 'three';
 import { gsap } from 'gsap';
-import { loadGLB } from './loader.js';
-import { warm } from './warm.js';
+import { loadGLB, linkSpeed } from './loader.js';
+import { warm, uploadTextures } from './warm.js';
 import { entries, slots as SLOT_POS } from '../data.js';
 import { collectSway } from './sway.js';
 
@@ -457,6 +457,27 @@ export function createField(world, { onOpened, onClosing, reducedMotion, audio }
     });
   });
 
+  // Sharp copies: the field stands on light copies (512 px textures). A sword's full set,
+  // assets/weapons/<id>-hd.glb (same meshes, same material names), is fetched when it is
+  // opened or, on a fast line, hovered; its maps are uploaded first, then swapped into the
+  // slot's materials in one go (same maps, so no shader changes).
+  const MAPS = ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'aoMap', 'emissiveMap'];
+  const sharp = {};
+  function sharpen(i, priority = 20) {
+    const s = slots[i];
+    if (!s || sharp[i]) return sharp[i];
+    sharp[i] = Promise.all([loadGLB(`assets/weapons/${s.entry.weapon}-hd.glb`, priority), s.ready]).then(async ([gltf]) => {
+      const byName = new Map();
+      gltf.scene.traverse((o) => { if (o.material) [].concat(o.material).forEach((m) => byName.set(m.name, m)); });
+      const pairs = [];
+      s.root.traverse((o) => { if (o.material) [].concat(o.material).forEach((m) => { if (byName.has(m.name)) pairs.push([m, byName.get(m.name)]); }); });
+      await uploadTextures(world, pairs.flatMap(([, h]) => MAPS.map((k) => h[k]).filter(Boolean)));
+      for (const [m, h] of pairs) for (const k of MAPS) if (m[k] && h[k]) m[k] = h[k];
+    }).catch((err) => console.error(`sharp copy of "${s.entry.weapon}" failed`, err));
+    return sharp[i];
+  }
+  const fastLine = () => linkSpeed() > 1e6;
+
   // ---------- camera rig ----------
   const rig = { pos: INTRO.pos.clone(), look: INTRO.look.clone(), shiftX: 0, shiftY: 0, shake: 0 };
   const isPortrait = () => window.innerWidth < window.innerHeight * 0.9;
@@ -640,6 +661,7 @@ export function createField(world, { onOpened, onClosing, reducedMotion, audio }
 
   function open(i) {
     const s = slots[i];
+    sharpen(i, 1);
     const pose = inspectPose(s);
     clearLineOfSight(i, pose);
     gsap.killTweensOf([rig.pos, rig.look]);
@@ -788,7 +810,7 @@ export function createField(world, { onOpened, onClosing, reducedMotion, audio }
   function update(t, dt) {
     if (state === 'home' || state === 'intro') {
       const p = pick();
-      if (p !== hovered && !externalHover) hovered = p;
+      if (p !== hovered && !externalHover) { hovered = p; if (p >= 0 && fastLine()) sharpen(p, 6); }
     }
     // The smithy loaded after the camera went down on the fallback pose: frame the real one.
     if (repose && !busy && (state === 'forge' || !below)) {
@@ -930,6 +952,8 @@ export function createField(world, { onOpened, onClosing, reducedMotion, audio }
     get asked() { return asked; },
     ready,
     isPlanted: (i) => !!slots[i]?.planted,
+    // every sword's sharp copy, one after another (main.js: only on a fast line)
+    async sharpenAll() { for (const s of slots) await sharpen(s.i); },
     get ndc() { return ndc; },
     attachForge(f) {
       forge = f;

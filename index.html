@@ -31,18 +31,19 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
 <script>
 // VERSION: bump it when publishing; the stylesheet and every module of ours load with ?v=VERSION.
-// three.js and GSAP are served from vendor/ (no CDN). If a module fails to load, or nothing has
-// started after 30 s, the page turns into the plain list instead of a blank loader.
+// three.js and GSAP are served from vendor/ (minified builds, no CDN). A slow line only makes the
+// loader wait longer (with a way out to the list); the page turns into the plain list on its own
+// only when a script fails to load or WebGL is missing.
 (function () {
-  var VERSION = '2026-10-04e';
+  var VERSION = '2026-10-05a';
   var lib = function (p) { return new URL('vendor/' + p, location.href).href; };
   var imports = {
-    three: lib('three/build/three.module.js'),
+    three: lib('three/build/three.module.min.js'),
     'three/addons/': lib('three/examples/jsm/'),
     gsap: lib('gsap/index.js')
   };
-  ['main', 'ui', 'i18n', 'data', 'palette', 'audio', 'clock', 'scene/world', 'scene/field', 'scene/forge', 'scene/warm', 'scene/loader', 'scene/sway']
-    .forEach(function (m) { var u = new URL('src/' + m + '.js', location.href).href; imports[u] = u + '?v=' + VERSION; });
+  var mods = ['main', 'ui', 'i18n', 'data', 'palette', 'audio', 'clock', 'scene/world', 'scene/field', 'scene/forge', 'scene/warm', 'scene/loader', 'scene/sway'];
+  mods.forEach(function (m) { var u = new URL('src/' + m + '.js', location.href).href; imports[u] = u + '?v=' + VERSION; });
   window.__rzFallback = function () {
     if (window.__rzStarted || !document.body) return;
     document.body.classList.remove('is-loading', 'pre-intro', 'pre-ui');
@@ -50,25 +51,38 @@
     var p = document.querySelector('.panel');
     if (p) p.removeAttribute('aria-hidden');
   };
-  setTimeout(window.__rzFallback, 30000);
+  // A library or one of our modules that throws while loading would leave the loader up forever.
+  window.addEventListener('error', function (e) {
+    if (!window.__rzStarted && /\/(vendor|src)\//.test(e.filename || '')) window.__rzFallback();
+  });
+  // "Open the list": before the scripts are in, just the class; after, the real toggle.
+  window.__rzList = function () {
+    var b = document.body, t = document.querySelector('[data-mode-toggle]');
+    if (window.__rzStarted && t) { if (!b.classList.contains('is-list')) t.click(); return; }
+    b.classList.add('is-list');
+    b.classList.remove('pre-intro', 'pre-ui');
+  };
+  // The scripts' share of the loader bar (up to 25 %), until main.js reports on its own.
+  var expect = mods.length + 14;
+  var poll = setInterval(function () {
+    var bar = document.querySelector('.loader-bar');
+    if (window.__rzStarted || !bar) { if (window.__rzStarted) clearInterval(poll); return; }
+    var n = performance.getEntriesByType('resource').filter(function (r) { return /\/(vendor|src)\//.test(r.name); }).length;
+    bar.style.width = Math.min(25, 2 + 23 * n / expect) + '%';
+  }, 300);
   document.write('<script type="importmap">' + JSON.stringify({ imports: imports }) + '<\/script>' +
     '<link rel="stylesheet" href="styles.css?v=' + VERSION + '">' +
     // the language switch on its own, so it works even when the scene's libraries never arrive
     '<script type="module" src="src/i18n.js?v=' + VERSION + '"><\/script>' +
+    '<script defer src="vendor/gsap/gsap.min.js" onerror="__rzFallback()"><\/script>' +
     '<script type="module" src="src/main.js?v=' + VERSION + '" onerror="__rzFallback()"><\/script>');
 })();
 </script>
 <noscript><link rel="stylesheet" href="styles.css"><style>body { overflow: auto; }</style></noscript>
-<!-- fetched alongside main.js instead of after it: the libraries, the 3D loader and the first view's ground -->
-<link rel="modulepreload" href="vendor/three/build/three.module.js">
+<!-- fetched alongside main.js instead of after it: the libraries the first frame needs -->
+<link rel="modulepreload" href="vendor/three/build/three.module.min.js">
 <link rel="modulepreload" href="vendor/three/examples/jsm/loaders/GLTFLoader.js">
 <link rel="modulepreload" href="vendor/three/examples/jsm/libs/meshopt_decoder.module.js">
-<link rel="modulepreload" href="vendor/three/examples/jsm/postprocessing/UnrealBloomPass.js">
-<link rel="modulepreload" href="vendor/gsap/gsap-core.js">
-<link rel="preload" href="assets/textures/brown_mud_rocks_01/diff_1k.jpg" as="fetch" crossorigin>
-<link rel="preload" href="assets/textures/brown_mud_rocks_01/nor_gl_1k.jpg" as="fetch" crossorigin>
-<link rel="preload" href="assets/textures/brown_mud_rocks_01/arm_1k.jpg" as="fetch" crossorigin>
-<link rel="preload" href="assets/weapons/buster.glb" as="fetch" crossorigin>
 </head>
 <body class="is-loading pre-intro pre-ui">
 <canvas id="scene" aria-hidden="true"></canvas>
@@ -188,9 +202,8 @@
       <img class="thumb thumb-wide" src="assets/thumbs/forge.webp" alt="" width="600" height="396" loading="lazy" decoding="async">
       <p class="kicker" data-i18n="anvil.kicker">Demirhane · Örste</p>
       <h2 data-i18n="anvil.h2">Örsteki iş</h2>
-      <p class="lead" data-i18n="anvil.lead">Şu an üzerinde çalıştığım, henüz duyurmadığım bir oyun.</p>
-      <p data-i18n="anvil.p1">Örsteki kızgın bıçak o oyun. Çekiç benim saatime göre çalışıyor: başındaysam iniyor, derste ya da uykudaysam örsün üstünde bekliyor.</p>
-      <p data-i18n="anvil.p2">Oyunu duyurduğumda adını ve ne olduğunu burada anlatacağım.</p>
+      <p class="lead" data-i18n="anvil.lead">Kişisel projeme bakıyorum.</p>
+      <p data-i18n="anvil.p1">Çekiç benim saatime göre iniyor; okuldaysam ya da uyuyorsam örsün üstünde bekliyor.</p>
     </article>
 
     <article class="entry" id="acik-kaynak">
@@ -239,11 +252,6 @@
       </ul>
     </article>
 
-    <article class="entry" id="referanslar">
-      <h2 class="small" data-i18n="credits.h2">Kaynaklar</h2>
-      <ul class="credits" data-credits></ul>
-      <p class="fine" data-i18n="credits.fine">Modeller, hayranların Sketchfab’de paylaştığı çalışmalar; yazarlarının Creative Commons lisanslarıyla kullanıyorum. Silah tasarımları ve isimleri ilgili oyunlara ve yayıncılarına ait, site ticari değil. Dokular Poly Haven’dan (CC0). Ses kaynakları <a href="assets/audio/CREDITS.txt">ayrıca listelendi</a>. Yazı tipleri Cormorant Garamond ve EB Garamond (OFL), sahne three.js ve GSAP ile çalışıyor.</p>
-    </article>
 
   </div>
   <div class="panel-foot">
@@ -262,7 +270,13 @@
     <a href="https://www.linkedin.com/in/rizgarozan/" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.1c0-1.22-.02-2.78-1.7-2.78-1.7 0-1.96 1.33-1.96 2.7V21h-4z"/></svg></a>
   </span>
 </aside>
-<a href="#/referanslar" class="sources" data-i18n="sources">kaynaklar</a>
+<details class="sources" id="referanslar">
+  <summary data-i18n="sources">kaynaklar</summary>
+  <div class="sources-box">
+    <ul class="credits" data-credits></ul>
+    <p class="fine" data-i18n="credits.fine">Modeller, hayranların Sketchfab’de paylaştığı çalışmalar; yazarlarının Creative Commons lisanslarıyla kullanıyorum. Silah tasarımları ve isimleri ilgili oyunlara ve yayıncılarına ait, site ticari değil. Dokular Poly Haven’dan (CC0). Ses kaynakları <a href="assets/audio/CREDITS.txt">ayrıca listelendi</a>. Yazı tipleri Cormorant Garamond ve EB Garamond (OFL), sahne three.js ve GSAP ile çalışıyor.</p>
+  </div>
+</details>
 <div class="cue" aria-hidden="true"><span class="cue-m" data-i18n="cue.m">Aşağıda: Demirhane</span><span class="cue-d" data-i18n="cue.d">Kaydırarak in</span> <span class="cue-a">↓</span></div>
 
 <div class="palette" hidden role="dialog" aria-modal="true" aria-label="Hızlı menü" data-i18n-attr="aria-label:a.palette">
@@ -273,5 +287,7 @@
   </div>
 </div>
 
-<div class="loader" role="status" aria-label="Yükleniyor" data-i18n-attr="aria-label:a.loading"><span class="loader-bar"></span></div></body>
+<div class="loader" role="status" aria-label="Yükleniyor" data-i18n-attr="aria-label:a.loading"><span class="loader-bar"></span>
+  <p class="loader-note"><span data-i18n="loading.note">Sahne yükleniyor</span> · <button type="button" class="link" onclick="__rzList()" data-i18n="loading.list">beklemeden listeyi aç</button></p>
+</div></body>
 </html>

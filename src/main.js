@@ -1,11 +1,11 @@
 import { gsap } from 'gsap';
 import { createWorld } from './scene/world.js';
 import { createField } from './scene/field.js';
-import { createForge } from './scene/forge.js';
 import { warm, warmPasses, settle } from './scene/warm.js';
 import * as ui from './ui.js';
 import { createAudio } from './audio.js';
 import { localNow, daylight } from './clock.js';
+import { linkSpeed } from './scene/loader.js';
 
 const body = document.body;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -109,7 +109,8 @@ async function start() {
     if (forgeStarted) return;
     forgeStarted = true;
     // createForge warms everything before it puts the smithy in the scene.
-    createForge(world, { audio, reducedMotion }).then((f) => {
+    // (its code too: fetched only now, so the first view's scripts are that much less)
+    import('./scene/forge.js').then(({ createForge }) => createForge(world, { audio, reducedMotion })).then((f) => {
       forge = f;
       field.attachForge(f);
       ui.attachForge(f);
@@ -121,8 +122,8 @@ async function start() {
 
   // Honest progress: the ground's maps, then the shaders (built off the main thread).
   let got = 0;
-  const step = () => ui.progress(0.1 + 0.6 * (++got / world.groundLoads.length));
-  ui.progress(0.1);
+  const step = () => ui.progress(0.25 + 0.45 * (++got / world.groundLoads.length));
+  ui.progress(0.25);
   await Promise.all(world.groundLoads.map((p) => p.then(step)));
   const first = Promise.all([
     warm(world, world.scene, { shadows: ['depth'], must: true }),
@@ -171,9 +172,17 @@ async function start() {
     })
     .then(() => settled)
     .then(() => new Promise((r) => idle(r, { timeout: 1500 })))
-    // phones and Save-Data keep the 1k ground: 5 MB more is not worth it on a small screen
-    .then(() => (lite ? null : world.upgradeGround()))
-    .then(() => setTimeout(() => idle(loadForge, { timeout: 2000 }), 1000))
+    // Sharper ground (1.4 MB) once the field is in. On a fast line (over 1 MB/s) the rest
+    // follows: the 2k ground (not on phones or Save-Data), every sword's sharp copy, and the
+    // smithy ahead of time. On a slow line those wait until they are asked for: a sword's
+    // sharp copy when it is opened, the smithy when the visitor heads down.
+    .then(() => world.upgradeGround('1k'))
+    .then(async () => {
+      if (linkSpeed() < 1e6) return;
+      if (!lite) await world.upgradeGround('2k');
+      await field.sharpenAll();
+      setTimeout(() => idle(loadForge, { timeout: 2000 }), 1000);
+    })
     .catch((err) => console.error('startup', err));
 
   // GSAP advances inside our frame loop, so every tween step lands on a rendered frame.

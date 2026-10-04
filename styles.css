@@ -191,6 +191,13 @@ body.is-open .entry.is-active .ln { opacity: 1; transform: none; transition-dela
 .loader { position: fixed; left: 50%; bottom: 50%; width: 160px; height: 1px; margin-left: -80px; background: var(--line); z-index: 9; transition: opacity 0.8s var(--ease); }
 .loader-bar { display: block; height: 100%; width: 0; background: var(--bone); transition: width 0.3s var(--ease); }
 body:not(.is-loading) .loader { opacity: 0; pointer-events: none; }
+/* on a slow line, after a few seconds: what is happening, and the way out to the list */
+.loader-note { position: absolute; left: 50%; top: 18px; transform: translateX(-50%); white-space: nowrap; margin: 0;
+  font: italic 400 14px/1 var(--sans); color: var(--dim); opacity: 0; animation: note-in 0.8s var(--ease) 2.5s forwards; }
+.loader-note .link { font: inherit; color: var(--mist); text-decoration: underline; text-underline-offset: 3px; }
+body.forge-wait .loader-note { display: none; }
+@keyframes note-in { to { opacity: 1; } }
+body.is-list.is-loading .top { opacity: 1; }
 /* down in the smithy before it has arrived: the same thin line, sweeping */
 body.forge-wait .loader { opacity: 0.7; transition-delay: 0.4s; }
 body.forge-wait .loader-bar { width: 30% !important; animation: forge-wait 1.4s ease-in-out infinite alternate; }
@@ -206,7 +213,8 @@ body.is-list, body.no-webgl { overflow: auto; height: auto; min-height: 100%;
 body.is-list #scene, body.no-webgl #scene, body.is-list .tag, body.no-webgl .tag,
 body.is-list .index, body.no-webgl .index, body.is-list .panel-close, body.no-webgl .panel-close,
 body.is-list .panel-foot, body.no-webgl .panel-foot, body.is-list .loader, body.no-webgl .loader,
-body.is-list .sources, body.no-webgl .sources, body.is-list .up, body.no-webgl .up { display: none; }
+body.is-list .up, body.no-webgl .up { display: none; }
+body.is-list .sources, body.no-webgl .sources { opacity: 1; visibility: visible; pointer-events: auto; }
 /* no scene to switch to or hear */
 body.no-webgl [data-mode-toggle], body.no-webgl [data-sound-toggle] { display: none; }
 body.is-list .top, body.no-webgl .top {
@@ -275,8 +283,16 @@ body.is-list .thumb-wide, body.no-webgl .thumb-wide { width: 220px; height: auto
 #referanslar .small { font-size: 26px; margin-bottom: 14px; }
 
 /* Sources: there for whoever looks for it, quiet for everyone else (faint, still readable). */
-.sources { position: fixed; left: 14px; bottom: 10px; z-index: 5; padding: 4px; font: italic 400 12px/1 var(--sans); color: var(--dim); opacity: 0.55; text-decoration: none; }
-.sources:hover, .sources:focus-visible { opacity: 1; color: var(--bone); }
+/* Kaynaklar: a small tab on the left edge; the list opens above it only when asked for */
+.sources { position: fixed; left: 0; bottom: 12px; z-index: 6; font: italic 400 12px/1 var(--sans); }
+.sources > summary { list-style: none; cursor: pointer; padding: 6px 10px 6px 12px; color: var(--dim); opacity: 0.6;
+  border: 1px solid var(--line); border-left: 0; border-radius: 0 3px 3px 0; background: rgba(7, 10, 23, 0.5); }
+.sources > summary::-webkit-details-marker { display: none; }
+.sources > summary:hover, .sources > summary:focus-visible, .sources[open] > summary { opacity: 1; color: var(--bone); }
+.sources-box { position: absolute; left: 12px; bottom: calc(100% + 8px); width: min(340px, calc(100vw - 28px)); max-height: 60vh; overflow: auto;
+  padding: 12px 16px 14px; background: rgba(7, 10, 23, 0.95); border: 1px solid var(--line); border-radius: 3px; font: 400 14px/1.4 var(--sans); }
+.sources-box .credits { margin: 0; }
+.sources-box .fine { margin-top: 12px !important; font-size: 12px; }
 
 /* The way back up from the smithy. */
 .up {
@@ -389,8 +405,11 @@ body:has(.palette.is-on) .cue { opacity: 0; }
   .cue { position: fixed; left: 18px; right: auto; bottom: 68px; font-size: 14px; }
   .cue-m { display: inline; }
   .cue-d { display: none; }
-  .sources { display: none; } /* phones: no free edge for it; Kaynaklar stays in the Ara menu and list mode */
   .up { bottom: 16px; }
+  /* the bottom edge is the project bar's: Kaynaklar becomes a small upright tab on the left edge */
+  body:not(.is-list):not(.no-webgl) .sources { bottom: 150px; }
+  body:not(.is-list):not(.no-webgl) .sources > summary { writing-mode: vertical-rl; transform: rotate(180deg); padding: 10px 5px; border-radius: 3px 0 0 3px; border-left: 1px solid var(--line); border-right: 0; }
+  body:not(.is-list):not(.no-webgl) .sources-box { left: 30px; bottom: 0; }
   .panel { top: auto; height: 62vh; width: 100%; transform: translateY(28px);
     background: linear-gradient(to bottom, rgba(7, 10, 23, 0) 0%, rgba(7, 10, 23, 0.9) 40px, rgba(7, 10, 23, 0.96) 100%); }
   .panel-body { padding: 56px 22px 16px; }

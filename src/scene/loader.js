@@ -16,6 +16,18 @@ const waiting = [];
 function next() {
   while (active < MAX && waiting.length) { active++; waiting.shift().run(); }
 }
+// How fast files arrive, in bytes per second, from the big downloads finished so far
+// (Resource Timing; a cached file counts as fast). 0 until one is in.
+export function linkSpeed() {
+  let bytes = 0, ms = 0;
+  for (const r of performance.getEntriesByType('resource')) {
+    if (r.encodedBodySize < 100000) continue;
+    bytes += r.encodedBodySize;
+    ms += Math.max(1, r.responseEnd - r.responseStart);
+  }
+  return ms ? (bytes / ms) * 1000 : 0;
+}
+
 export function loadGLB(url, priority = 5) {
   return new Promise((resolve, reject) => {
     const job = { priority, run: () => gltfLoader.loadAsync(url).then(resolve, reject).finally(() => { active--; next(); }) };

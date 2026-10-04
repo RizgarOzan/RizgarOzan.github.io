@@ -22,13 +22,13 @@ export function daylight(hour) {
 const WHERE = {
   tr: {
     sleep: 'Büyük ihtimalle uyuyorum; ocak kor hâlinde bekliyor.',
-    school: 'Büyük ihtimalle Hacettepe’deyim, derste.',
+    school: 'Akşam 5’e kadar okuldayım.',
     morning: 'Güne başlıyorum; ocağı yeni yaktım.',
     forge: 'Büyük ihtimalle örsün başındayım.',
   },
   en: {
     sleep: 'Probably asleep; the fire is down to embers.',
-    school: 'Probably at Hacettepe, in class.',
+    school: 'At school until 5 pm.',
     morning: 'Starting the day; I just lit the fire.',
     forge: 'Probably at the anvil.',
   },

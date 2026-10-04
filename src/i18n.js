@@ -29,6 +29,8 @@ const EN = {
   'a.search': 'Search',
   'a.results': 'Results',
   'a.loading': 'Loading',
+  'loading.note': 'Loading the scene',
+  'loading.list': 'open the list instead',
 
   'rag.kicker': '<span>01</span> AI',
   'rag.lead': 'An experiment where I measure which parts of a search system actually help with Turkish questions.',
@@ -74,9 +76,8 @@ const EN = {
 
   'anvil.kicker': 'Forge · On the anvil',
   'anvil.h2': 'On the anvil',
-  'anvil.lead': 'A game I am working on right now and have not announced yet.',
-  'anvil.p1': 'The glowing blade on the anvil is that game. The hammer keeps my hours: it swings while I am at it and rests on the anvil while I am in class or asleep.',
-  'anvil.p2': 'When I announce the game, its name and what it is will go here.',
+  'anvil.lead': 'Working on a personal project.',
+  'anvil.p1': 'The hammer keeps my hours; while I am at school or asleep it rests on the anvil.',
 
   'oss.kicker': 'Forge · Open source',
   'oss.h2': 'Open source contributions',
@@ -107,7 +108,6 @@ const EN = {
   'writing.lead': 'When I want to explain something I measured in a project at length, it goes here.',
   'writing.writings': '<li><a href="yazilar/turkce-bm25.html"><time datetime="2026-09-19">19 September 2026</time><b>The model that beat BM25 in Turkish</b><span>With my 58-question test set I checked whether an AI model can beat classic keyword matching (BM25) in Turkish search. The small multilingual model could not; the model trained for search did. The post is in Turkish.</span></a></li>',
 
-  'credits.h2': 'Credits',
   'credits.fine': 'The models are fan works shared on Sketchfab, used under their authors’ Creative Commons licenses. The weapon designs and names belong to their games and publishers; this site is not commercial. Textures come from Poly Haven (CC0). Sound sources are <a href="assets/audio/CREDITS.txt">listed separately</a>. The fonts are Cormorant Garamond and EB Garamond (OFL); the scene runs on three.js and GSAP.',
 };
 
