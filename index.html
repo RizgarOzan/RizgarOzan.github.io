@@ -35,7 +35,7 @@
 // A slow line only makes the loader wait longer (with a way out to the list); the page turns
 // into the plain list on its own only when a script fails to load or WebGL is missing.
 (function () {
-  var VERSION = '2026-10-05d';
+  var VERSION = '2026-10-05e';
   window.__rzFallback = function () {
     if (window.__rzStarted || !document.body) return;
     document.body.classList.remove('is-loading', 'pre-intro', 'pre-ui');
@@ -202,9 +202,9 @@
         <a class="btn primary" href="https://github.com/RizgarOzan"><span lang="en">GitHub</span> profilinde gör</a>
       </p>
       <p data-i18n="oss.p1">Çoğu, yapay zekâ arama sistemlerini değerlendiren kütüphanelerde ve Unity araçlarında. Aşağıdaki sayılar, proje sahiplerinin kabul edip birleştirdiği değişiklikler (PR).</p>
-      <!-- measured with gh on 2026-10-04 10:24 (Istanbul): PRs by RizgarOzan in repos he does not own; merged 71, distinct repos 22, open 32.
+      <!-- measured with gh on 2026-10-05 15:25 (Istanbul): PRs by RizgarOzan in repos he does not own; merged 80, distinct repos 24, open 31.
            Same numbers in src/i18n.js (oss.stats) and both CVs (tools/cv). -->
-      <p class="stats" data-i18n="oss.stats"><span><b>71</b> birleşen PR</span><span><b>22</b> proje</span><span><b>32</b> incelemede bekliyor</span></p>
+      <p class="stats" data-i18n="oss.stats"><span><b>80</b> birleşen PR</span><span><b>24</b> proje</span><span><b>31</b> incelemede bekliyor</span></p>
       <ul class="repos" lang="en" data-i18n="oss.repos">
         <li><b>MTEB</b><span>15 PR</span><em lang="tr">RAG işimin dayandığı retrieval değerlendirme kütüphanesi</em></li>
         <li><b>kornia</b><span>13 PR</span><em lang="tr">Bilgisayarlı görü kütüphanesi; sayısal hesaplardaki uç durum hataları</em></li>

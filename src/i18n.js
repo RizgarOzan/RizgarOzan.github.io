@@ -85,7 +85,7 @@ const EN = {
   'oss.actions': `<a class="btn primary" href="https://github.com/RizgarOzan">See them on ${GH}</a>`,
   'oss.p1': 'Most are in libraries that evaluate AI search systems, and in Unity tools. The numbers below count the changes (PRs) the maintainers accepted and merged.',
   // measured with gh on 2026-10-04 10:24 (Istanbul), same as index.html and the CVs
-  'oss.stats': '<span><b>71</b> merged PRs</span><span><b>22</b> projects</span><span><b>32</b> awaiting review</span>',
+  'oss.stats': '<span><b>80</b> merged PRs</span><span><b>24</b> projects</span><span><b>31</b> awaiting review</span>',
   'oss.repos': `<li><b>MTEB</b><span>15 PR</span><em>The retrieval benchmark library my RAG work builds on</em></li>
         <li><b>kornia</b><span>13 PR</span><em>Computer vision library; edge cases in numerical code</em></li>
         <li><b>LightRAG</b><span>4 PR</span><em>RAG framework; text parsing and Markdown fixes</em></li>
