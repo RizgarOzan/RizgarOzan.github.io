@@ -1,0 +1,4 @@
+Textures (re-encoded JPG, sizes as used on the site)
+
+brown_mud_rocks_01 - author: Poly Haven - https://polyhaven.com/a/brown_mud_rocks_01 - CC0 (diff/nor_gl/arm 2k; 1k copies shown first while the 2k load)
+rock_surface - author: Poly Haven - https://polyhaven.com/a/rock_surface - CC0 (diff/nor_gl/arm 1k)

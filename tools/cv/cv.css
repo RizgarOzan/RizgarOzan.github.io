@@ -1,0 +1,16 @@
+/* Same look as the owner's CVs (menajer/cv/build_cv.py CSS). */
+@page { size: A4; margin: 10mm 12mm; }
+/* 3 % smaller than the source so the merged content (one extra row) stays on one page */
+html { zoom: 0.97; }
+body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 8.8pt; line-height: 1.28; color: #1b1b1b; margin: 0; }
+h1 { font-size: 20pt; margin: 0; letter-spacing: .3px; } h1 span { color: #b5472a; }
+.role { color: #555; font-size: 10pt; margin: 2px 0 4px; }
+.contact { font-size: 8.8pt; color: #333; border-bottom: 2px solid #1b1b1b; padding-bottom: 6px; margin-bottom: 8px; }
+.contact a { color: #333; text-decoration: none; }
+h2 { font-size: 9.6pt; color: #b5472a; text-transform: uppercase; letter-spacing: 1.2px; margin: 8px 0 3px; border-bottom: 1px solid #ddd; padding-bottom: 2px; }
+.item { margin: 4px 0; page-break-inside: avoid; }
+.t { font-weight: 600; } .meta { color: #666; font-size: 8.2pt; } .metar { color: #666; font-size: 8.2pt; float: right; }
+.link { color: #8a3a22; font-size: 8.6pt; }
+ul { margin: 2px 0 0 16px; padding: 0; } li { margin: 1.5px 0; }
+.sk td { padding: 1px 14px 1px 0; vertical-align: top; font-size: 9.3pt; } .sk td:first-child { color: #666; white-space: nowrap; }
+.summary { margin: 4px 0 2px; }

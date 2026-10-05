@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sayfa bulunamadı · Rızgar Ozan</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#070a17">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23070a17'/%3E%3Cpath d='M32 6 L36 44 L32 58 L28 44 Z' fill='%23cfd8e6'/%3E%3Crect x='20' y='42' width='24' height='4' fill='%23cfd8e6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=EB+Garamond:ital@0;1&display=swap">
+<style>
+  :root { --bg: #070a17; --bone: #e6dcc3; --gold: #c9b183; --mist: #a7b0c8; --line: rgba(236, 230, 214, 0.14); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    display: grid; place-items: center; min-height: 100vh; padding: 24px 16px;
+    background: var(--bg) radial-gradient(ellipse 60% 50% at 72% 18%, rgba(143, 168, 240, 0.16), transparent 70%) no-repeat fixed;
+    color: var(--bone); font: 400 18px/1.6 'EB Garamond', Georgia, serif; text-align: center;
+  }
+  /* a lone blade, half sunk: the site's field, minus everything */
+  svg { display: block; margin: 0 auto 28px; width: 46px; height: auto; opacity: 0.85; }
+  h1 { margin: 0 0 10px; font: small-caps 500 clamp(34px, 6vw, 52px)/1.05 'Cormorant Garamond', Georgia, serif; letter-spacing: 0.02em; color: var(--gold); }
+  p { margin: 0 0 28px; font-style: italic; color: var(--mist); }
+  a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border: 1px solid var(--line); color: var(--bone); text-decoration: none;
+    font: small-caps 500 15px/1 'Cormorant Garamond', Georgia, serif; letter-spacing: 0.1em; transition: border-color 0.3s; }
+  a:hover, a:focus-visible { border-color: var(--gold); outline: none; }
+</style>
+</head>
+<body>
+<main>
+  <svg viewBox="0 0 40 120" aria-hidden="true">
+    <rect x="18.5" y="4" width="3" height="16" fill="#8a7b62"/>
+    <rect x="9" y="20" width="22" height="3" fill="#cfd8e6"/>
+    <path d="M16.5 23 L23.5 23 L22.5 88 L20 94 L17.5 88 Z" fill="#cfd8e6" opacity="0.9"/>
+    <path d="M2 92 Q20 84 38 92 L38 96 L2 96 Z" fill="#1a2140"/>
+  </svg>
+  <h1>Burada bir şey yok</h1>
+  <p>Aradığın sayfa ya taşındı ya da hiç olmadı.</p>
+  <a href="/">Tarlaya dön</a>
+</main>
+<script>
+// English for visitors who picked it on the site (i18n.js remembers it as rz-lang) or came with ?lang=en
+(function () {
+  var en = /[?&]lang=en(&|$)/.test(location.search);
+  try { en = en || localStorage.getItem('rz-lang') === 'en'; } catch (e) { /* storage blocked */ }
+  if (!en) return;
+  document.documentElement.lang = 'en';
+  document.title = 'Page not found · Rızgar Ozan';
+  document.querySelector('h1').textContent = 'Nothing here';
+  document.querySelector('p').textContent = 'The page you are looking for has moved, or never existed.';
+  var a = document.querySelector('a'); a.textContent = 'Back to the field'; a.href = '/?lang=en';
+})();
+</script>
+</body>
+</html>
