@@ -35,7 +35,7 @@
 // A slow line only makes the loader wait longer (with a way out to the list); the page turns
 // into the plain list on its own only when a script fails to load or WebGL is missing.
 (function () {
-  var VERSION = '2026-10-12c';
+  var VERSION = '2026-10-12d';
   window.__rzFallback = function () {
     if (window.__rzStarted || !document.body) return;
     document.body.classList.remove('is-loading', 'pre-intro', 'pre-ui');
@@ -143,16 +143,16 @@
       <img class="thumb" src="assets/thumbs/oathkeeper.webp" alt="" width="170" height="600" loading="lazy" decoding="async">
       <p class="kicker" data-i18n="ls.kicker"><span>03</span> <span lang="en">C++</span></p>
       <h2 lang="en">Lockstep Tactics</h2>
-      <p class="lead" data-i18n="ls.lead">Üç farklı derleyicide bit bit aynı sonucu veren, her push’ta bunu kanıtlayan bir C++ oyun simülasyonu.</p>
+      <p class="lead" data-i18n="ls.lead">Üç derleyicide bit bit aynı sonucu veren, her push’ta bunu kanıtlayan ve tarayıcıda yapay zekâya karşı oynanabilen bir C++ taktik oyunu.</p>
       <p class="actions" data-i18n="ls.actions">
-        <a class="btn primary" href="https://rizgarozan.github.io/lockstep-tactics/">Tarayıcıda izle</a>
+        <a class="btn primary" href="https://rizgarozan.github.io/lockstep-tactics/">Tarayıcıda oyna</a>
         <a class="btn" href="https://github.com/RizgarOzan/lockstep-tactics">Kodu <span lang="en">GitHub</span>’da gör</a>
       </p>
-      <p data-i18n="ls.p1">Çok oyunculu oyunlarda her makine aynı simülasyonu kendi başına koşturur; bir bit bile ayrışırsa oyun kopar. Bu projede simülasyonu kayan nokta yerine sabit noktalı sayılarla, kendi rastgele sayı üreticisiyle ve sıralaması tanımlı veri yapılarıyla yazdım. Her commit’te 1000 maç MSVC ve WebAssembly’de ayrı ayrı oynanıp hash’leri karşılaştırılıyor.</p>
+      <p data-i18n="ls.p1">Çok oyunculu oyunlarda her makine aynı simülasyonu kendi başına koşturur; bir bit bile ayrışırsa oyun kopar. Simülasyonu kayan nokta yerine sabit noktalı sayılarla, kendi rastgele sayı üreticisiyle ve sıralaması tanımlı veri yapılarıyla yazdım. Rakip yalnızca tamsayı kullanan küçük bir yapay zekâ; emirleri tekrar dosyasına herkesinki gibi giriyor. Her commit’te 1000 maç MSVC, Apple clang (arm64) ve WebAssembly’de ayrı ayrı oynanıp hash’leri karşılaştırılıyor.</p>
       <dl class="facts" data-i18n="ls.facts">
-        <div><dt>Ölçüm</dt><dd>1000 maçın 1000’i üç derleyicide aynı hash’te bitiyor. Kurallardan biri bilerek bozulunca gcc’de 881, tarayıcıda 860 maç ayrışıyor; MSVC’de hiçbiri. Yani “bende çalışıyor” yetmiyor.</dd></div>
-        <div><dt>Araçlar</dt><dd>Tekrar dosyası (tick başına hash) · ayrışmayı tick ve alan düzeyinde bulan araç (enjekte edilen 100 hatanın 100’ü) · raylib izleyici</dd></div>
-        <div><dt>Kullandıklarım</dt><dd>C++20 · CMake · MSVC / gcc / Emscripten · raylib · GitHub Actions</dd></div>
+        <div><dt>Ölçüm</dt><dd>1000 maçın 1000’i üç derleyicide aynı hash’te bitiyor; yapay zekâ rastgele oyuncuya karşı 978’ini kazanıyor. Kurallardan biri bilerek bozulunca gcc’de 881, tarayıcıda 860 maç ayrışıyor, MSVC’de hiçbiri; hash’e bir <span lang="en">size_t</span> girince 64 bit derleyiciler anlaşıyor, WebAssembly ilk tick’te kopuyor. Yani “bende çalışıyor” yetmiyor.</dd></div>
+        <div><dt>Araçlar</dt><dd>Tekrar dosyası (tick başına hash) · ayrışmayı tick ve alan düzeyinde bulan araç (enjekte edilen 100 hatanın 100’ü) · tarayıcıda oynanan raylib arayüzü; maçı tekrar dosyası olarak indiriyor</dd></div>
+        <div><dt>Kullandıklarım</dt><dd>C++20 · CMake · MSVC / clang / gcc / Emscripten · raylib · GitHub Actions</dd></div>
       </dl>
     </article>
 

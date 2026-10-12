@@ -52,13 +52,13 @@ const EN = {
         <div><dt>Built with</dt><dd>C# / .NET · Unity 6 · xUnit · WebGL</dd></div>`,
 
   'ls.kicker': '<span>03</span> <span lang="en">C++</span>',
-  'ls.lead': 'A C++ game simulation that gives bit-identical results on three compilers, and proves it on every push.',
-  'ls.actions': `<a class="btn primary" href="https://rizgarozan.github.io/lockstep-tactics/">Watch in the browser</a>
+  'ls.lead': 'A C++ tactics game that gives bit-identical results on three compilers, proves it on every push, and can be played against an AI in the browser.',
+  'ls.actions': `<a class="btn primary" href="https://rizgarozan.github.io/lockstep-tactics/">Play in the browser</a>
         <a class="btn" href="https://github.com/RizgarOzan/lockstep-tactics">Code on ${GH}</a>`,
-  'ls.p1': 'In a lockstep multiplayer game every machine runs the same simulation on its own; if a single bit drifts, the game falls apart. I wrote the simulation in fixed-point instead of float, with its own random number generator and containers whose order is defined. On every commit, 1000 matches are played under MSVC and under WebAssembly and their hashes compared.',
-  'ls.facts': `<div><dt>Measured</dt><dd>1000 of 1000 matches end on the same hash on three compilers. Break one rule on purpose and 881 matches drift on gcc and 860 in the browser, but none on MSVC: “works on my machine” is not enough.</dd></div>
-        <div><dt>Tools</dt><dd>Replay files with a hash per tick · a bisector that names the tick and the field of a desync (100 of 100 injected ones) · a raylib viewer</dd></div>
-        <div><dt>Built with</dt><dd>C++20 · CMake · MSVC / gcc / Emscripten · raylib · GitHub Actions</dd></div>`,
+  'ls.p1': 'In a lockstep multiplayer game every machine runs the same simulation on its own; if a single bit drifts, the game falls apart. I wrote the simulation in fixed-point instead of float, with its own random number generator and containers whose order is defined. The opponent is a small integer-only AI whose orders go into the replay like anyone else\u2019s. On every commit, 1000 matches are played under MSVC, Apple clang (arm64) and WebAssembly and their hashes compared.',
+  'ls.facts': `<div><dt>Measured</dt><dd>1000 of 1000 matches end on the same hash on three compilers; the AI wins 978 of them against the random player. Break one rule on purpose and 881 matches drift on gcc and 860 in the browser, but none on MSVC; put a size_t in the hash and the 64-bit compilers agree while WebAssembly breaks on tick 1. “Works on my machine” is not enough.</dd></div>
+        <div><dt>Tools</dt><dd>Replay files with a hash per tick · a bisector that names the tick and the field of a desync (100 of 100 injected ones) · a raylib viewer you play in the browser, which downloads the match as a replay</dd></div>
+        <div><dt>Built with</dt><dd>C++20 · CMake · MSVC / clang / gcc / Emscripten · raylib · GitHub Actions</dd></div>`,
   'sd.kicker': '<span>04</span> Game · team project',
   'sd.lead': 'A Unity game three of us are building: restaurant management welded to a turn-based RPG in one loop.',
   'sd.p1': 'A chef with an obsession and a violent streak hunts friendly creatures; killing or sparing them is the player’s call. The ingredients become dishes, the dishes feed customers, and the chef tries not to draw suspicion. Every day cycles through the hunt, the kitchen and the service.',

@@ -82,7 +82,7 @@
 <li>"MSVC'de çalışıyor" ile "gcc'de çalışıyor" ayrı iddialar. Konteyner hatası birinde görünmezdi, diğer ikisinde gürültülüydü.</li>
 <li>Float doğası gereği deterministik olmayan bir şey değil. İki derleme birleştirme, hassasiyet ya da kütüphane fonksiyonunda ayrıştığı an öyle oluyor, ve o anın ne zaman geleceğini sen kontrol etmiyorsun. Sabit nokta soruyu ortadan kaldırıyor.</li>
 </ul>
-<p>Yukarıdakilerin hepsi repodan tekrar üretilebilir: <code>cmake -S . -B build-risky -DLOCKSTEP_RISKY=unordered</code> (ya da <code>float</code>), <code>replay 1000 600</code>, normal derlemeyle karşılaştır. Her kuralın gerekçesi <a href="https://github.com/RizgarOzan/lockstep-tactics/tree/main/docs/notes">docs/notes/</a> altında; 06 numaralı not bu yazının uzun hâli. Maçı <a href="https://rizgarozan.github.io/lockstep-tactics/">tarayıcıda izleyebilirsin</a>.</p>
+<p>Yukarıdakilerin hepsi repodan tekrar üretilebilir: <code>cmake -S . -B build-risky -DLOCKSTEP_RISKY=unordered</code> (ya da <code>float</code>), <code>replay 1000 600</code>, normal derlemeyle karşılaştır. Her kuralın gerekçesi <a href="https://github.com/RizgarOzan/lockstep-tactics/tree/main/docs/notes">docs/notes/</a> altında; 06 numaralı not bu yazının uzun hâli. Maçı <a href="https://rizgarozan.github.io/lockstep-tactics/">tarayıcıda oynayabilirsin</a>.</p>
 </article>
 </main>
 </body>
