@@ -35,7 +35,7 @@
 // A slow line only makes the loader wait longer (with a way out to the list); the page turns
 // into the plain list on its own only when a script fails to load or WebGL is missing.
 (function () {
-  var VERSION = '2026-10-11a';
+  var VERSION = '2026-10-12a';
   window.__rzFallback = function () {
     if (window.__rzStarted || !document.body) return;
     document.body.classList.remove('is-loading', 'pre-intro', 'pre-ui');
@@ -139,9 +139,26 @@
       </dl>
     </article>
 
+    <article class="entry" id="lockstep-tactics">
+      <img class="thumb" src="assets/thumbs/oathkeeper.webp" alt="" width="170" height="600" loading="lazy" decoding="async">
+      <p class="kicker" data-i18n="ls.kicker"><span>03</span> <span lang="en">C++</span></p>
+      <h2 lang="en">Lockstep Tactics</h2>
+      <p class="lead" data-i18n="ls.lead">Üç farklı derleyicide bit bit aynı sonucu veren, her push’ta bunu kanıtlayan bir C++ oyun simülasyonu.</p>
+      <p class="actions" data-i18n="ls.actions">
+        <a class="btn primary" href="https://rizgarozan.github.io/lockstep-tactics/">Tarayıcıda izle</a>
+        <a class="btn" href="https://github.com/RizgarOzan/lockstep-tactics">Kodu <span lang="en">GitHub</span>’da gör</a>
+      </p>
+      <p data-i18n="ls.p1">Çok oyunculu oyunlarda her makine aynı simülasyonu kendi başına koşturur; bir bit bile ayrışırsa oyun kopar. Bu projede simülasyonu kayan nokta yerine sabit noktalı sayılarla, kendi rastgele sayı üreticisiyle ve sıralaması tanımlı veri yapılarıyla yazdım. Her commit’te 1000 maç MSVC ve WebAssembly’de ayrı ayrı oynanıp hash’leri karşılaştırılıyor.</p>
+      <dl class="facts" data-i18n="ls.facts">
+        <div><dt>Ölçüm</dt><dd>1000 maçın 1000’i üç derleyicide aynı hash’te bitiyor. Kurallardan biri bilerek bozulunca gcc’de 881, tarayıcıda 860 maç ayrışıyor; MSVC’de hiçbiri. Yani “bende çalışıyor” yetmiyor.</dd></div>
+        <div><dt>Araçlar</dt><dd>Tekrar dosyası (tick başına hash) · ayrışmayı tick ve alan düzeyinde bulan araç (enjekte edilen 100 hatanın 100’ü) · raylib izleyici</dd></div>
+        <div><dt>Kullandıklarım</dt><dd>C++20 · CMake · MSVC / gcc / Emscripten · raylib · GitHub Actions</dd></div>
+      </dl>
+    </article>
+
     <article class="entry" id="tmp-glyph-audit">
       <img class="thumb" src="assets/thumbs/revolver.webp" alt="" width="93" height="600" loading="lazy" decoding="async">
-      <p class="kicker" data-i18n="tmp.kicker"><span>03</span> <span lang="en">Unity</span> aracı</p>
+      <p class="kicker" data-i18n="tmp.kicker"><span>04</span> <span lang="en">Unity</span> aracı</p>
       <h2 lang="en">TMP Glyph Audit</h2>
       <p class="lead" data-i18n="tmp.lead">Oyundaki yazılarda fontta karşılığı olmayan harfleri, oyun çıkmadan bulan Unity paketi.</p>
       <p class="actions" data-i18n="tmp.actions">
@@ -157,7 +174,7 @@
 
     <article class="entry" id="bilim-dedektifi">
       <img class="thumb" src="assets/thumbs/master.webp" alt="" width="119" height="600" loading="lazy" decoding="async">
-      <p class="kicker" data-i18n="bd.kicker"><span>04</span> Oyun</p>
+      <p class="kicker" data-i18n="bd.kicker"><span>05</span> Oyun</p>
       <h2 lang="tr">Bilim Dedektifi</h2>
       <p class="lead" data-i18n="bd.lead">Gizemli bir ölümü araştıran bir dedektifin gözünden ilerleyen, eğitsel kısa bir macera oyunu.</p>
       <p class="actions" data-i18n="bd.actions">
@@ -173,7 +190,7 @@
 
     <article class="entry" id="code-enigma">
       <img class="thumb" src="assets/thumbs/zangetsu.webp" alt="" width="97" height="600" loading="lazy" decoding="async">
-      <p class="kicker" data-i18n="ce.kicker"><span>05</span> Web</p>
+      <p class="kicker" data-i18n="ce.kicker"><span>06</span> Web</p>
       <h2 lang="en">Code-Enigma</h2>
       <p class="lead" data-i18n="ce.lead">Matematik odaklı, öğrenciye göre şekillenen bir çalışma platformu.</p>
       <p class="actions" data-i18n="ce.actions">

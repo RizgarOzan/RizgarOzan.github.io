@@ -51,7 +51,15 @@ const EN = {
         <div><dt>Tools</dt><dd>Command line (validate · sim · curve · tune) · Unity level editor · simulator window</dd></div>
         <div><dt>Built with</dt><dd>C# / .NET · Unity 6 · xUnit · WebGL</dd></div>`,
 
-  'tmp.kicker': '<span>03</span> <span lang="en">Unity</span> tool',
+  'ls.kicker': '<span>03</span> <span lang="en">C++</span>',
+  'ls.lead': 'A C++ game simulation that gives bit-identical results on three compilers, and proves it on every push.',
+  'ls.actions': `<a class="btn primary" href="https://rizgarozan.github.io/lockstep-tactics/">Watch in the browser</a>
+        <a class="btn" href="https://github.com/RizgarOzan/lockstep-tactics">Code on ${GH}</a>`,
+  'ls.p1': 'In a lockstep multiplayer game every machine runs the same simulation on its own; if a single bit drifts, the game falls apart. I wrote the simulation in fixed-point instead of float, with its own random number generator and containers whose order is defined. On every commit, 1000 matches are played under MSVC and under WebAssembly and their hashes compared.',
+  'ls.facts': `<div><dt>Measured</dt><dd>1000 of 1000 matches end on the same hash on three compilers. Break one rule on purpose and 881 matches drift on gcc and 860 in the browser, but none on MSVC: “works on my machine” is not enough.</dd></div>
+        <div><dt>Tools</dt><dd>Replay files with a hash per tick · a bisector that names the tick and the field of a desync (100 of 100 injected ones) · a raylib viewer</dd></div>
+        <div><dt>Built with</dt><dd>C++20 · CMake · MSVC / gcc / Emscripten · raylib · GitHub Actions</dd></div>`,
+  'tmp.kicker': '<span>04</span> <span lang="en">Unity</span> tool',
   'tmp.lead': 'A Unity package that finds the letters your fonts cannot draw, before the game ships.',
   'tmp.actions': `<a class="btn primary" href="https://github.com/RizgarOzan/tmp-glyph-audit">Code on ${GH}</a>`,
   'tmp.p1': 'Unity draws text with TextMeshPro, and a letter the font lacks (like ğ or ş) shows up in the game as an empty box. The package scans every scene, every prefab and the text files loaded at runtime, follows each font’s fallback chain, and reports the missing letters.',
@@ -59,7 +67,7 @@ const EN = {
         <div><dt>Tests</dt><dd>24 xUnit and 5 EditMode tests</dd></div>
         <div><dt>Built with</dt><dd>C# · TextMeshPro · Unity 2023.2+ · open source, installed from a git URL (UPM)</dd></div>`,
 
-  'bd.kicker': '<span>04</span> Game',
+  'bd.kicker': '<span>05</span> Game',
   'bd.lead': 'A short educational adventure, seen through the eyes of a detective looking into a mysterious death.',
   'bd.actions': '<a class="btn primary" href="https://rizgarozan.itch.io/bilim-dedektifi">Download on <span lang="en">itch.io</span></a>',
   'bd.p1': 'We made it as a team for a course at Hacettepe. The game is free on itch.io.',
@@ -67,7 +75,7 @@ const EN = {
         <div><dt>Genre</dt><dd>Educational detective and mystery game</dd></div>
         <div><dt>Team</dt><dd>Hacettepe course project, made as a team</dd></div>`,
 
-  'ce.kicker': '<span>05</span> Web',
+  'ce.kicker': '<span>06</span> Web',
   'ce.lead': 'A math study platform that shapes itself around each student.',
   'ce.actions': `<a class="btn primary" href="https://github.com/ilkhanarda/Code-Enigma">Code on ${GH}</a>`,
   'ce.p1': 'I am building it with <span lang="tr">İlkhan Arda Akmaca</span>. I work on the interface: the personal dashboard, the charts where students compare themselves with their peers, the filters and the settings screens.',
