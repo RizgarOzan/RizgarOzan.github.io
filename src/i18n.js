@@ -59,7 +59,13 @@ const EN = {
   'ls.facts': `<div><dt>Measured</dt><dd>1000 of 1000 matches end on the same hash on three compilers. Break one rule on purpose and 881 matches drift on gcc and 860 in the browser, but none on MSVC: “works on my machine” is not enough.</dd></div>
         <div><dt>Tools</dt><dd>Replay files with a hash per tick · a bisector that names the tick and the field of a desync (100 of 100 injected ones) · a raylib viewer</dd></div>
         <div><dt>Built with</dt><dd>C++20 · CMake · MSVC / gcc / Emscripten · raylib · GitHub Actions</dd></div>`,
-  'tmp.kicker': '<span>04</span> <span lang="en">Unity</span> tool',
+  'sd.kicker': '<span>04</span> Game · team project',
+  'sd.lead': 'A Unity game three of us are building: restaurant management welded to a turn-based RPG in one loop.',
+  'sd.p1': 'A chef with an obsession and a violent streak hunts friendly creatures; killing or sparing them is the player’s call. The ingredients become dishes, the dishes feed customers, and the chef tries not to draw suspicion. Every day cycles through the hunt, the kitchen and the service.',
+  'sd.facts': `<div><dt>My part</dt><dd>The restaurant loop, customer AI, the quick-time moments, the overworld and the editor tools the team works with. Combat and the player character belong to my two teammates.</dd></div>
+        <div><dt>Status</dt><dd>The prototype went to a publisher; we are now building a demo at Steam Next Fest quality. The page link goes here once it is up.</dd></div>
+        <div><dt>Scale</dt><dd>273 scripts, 36k lines of C#, 225 editor tests (October 2026) · Unity 6 · 2D URP · 2.5D pixel art</dd></div>`,
+  'tmp.kicker': '<span>05</span> <span lang="en">Unity</span> tool',
   'tmp.lead': 'A Unity package that finds the letters your fonts cannot draw, before the game ships.',
   'tmp.actions': `<a class="btn primary" href="https://github.com/RizgarOzan/tmp-glyph-audit">Code on ${GH}</a>`,
   'tmp.p1': 'Unity draws text with TextMeshPro, and a letter the font lacks (like ğ or ş) shows up in the game as an empty box. The package scans every scene, every prefab and the text files loaded at runtime, follows each font’s fallback chain, and reports the missing letters.',
@@ -67,7 +73,7 @@ const EN = {
         <div><dt>Tests</dt><dd>24 xUnit and 5 EditMode tests</dd></div>
         <div><dt>Built with</dt><dd>C# · TextMeshPro · Unity 2023.2+ · open source, installed from a git URL (UPM)</dd></div>`,
 
-  'bd.kicker': '<span>05</span> Game',
+  'bd.kicker': '<span>06</span> Game',
   'bd.lead': 'A short educational adventure, seen through the eyes of a detective looking into a mysterious death.',
   'bd.actions': '<a class="btn primary" href="https://rizgarozan.itch.io/bilim-dedektifi">Download on <span lang="en">itch.io</span></a>',
   'bd.p1': 'We made it as a team for a course at Hacettepe. The game is free on itch.io.',
@@ -75,7 +81,7 @@ const EN = {
         <div><dt>Genre</dt><dd>Educational detective and mystery game</dd></div>
         <div><dt>Team</dt><dd>Hacettepe course project, made as a team</dd></div>`,
 
-  'ce.kicker': '<span>06</span> Web',
+  'ce.kicker': '<span>07</span> Web',
   'ce.lead': 'A math study platform that shapes itself around each student.',
   'ce.actions': `<a class="btn primary" href="https://github.com/ilkhanarda/Code-Enigma">Code on ${GH}</a>`,
   'ce.p1': 'I am building it with <span lang="tr">İlkhan Arda Akmaca</span>. I work on the interface: the personal dashboard, the charts where students compare themselves with their peers, the filters and the settings screens.',
@@ -114,7 +120,7 @@ const EN = {
   'writing.kicker': 'Writing',
   'writing.h2': 'Things I measured and wrote up',
   'writing.lead': 'When I want to explain something I measured in a project at length, it goes here.',
-  'writing.writings': '<li><a href="yazilar/turkce-bm25.html"><time datetime="2026-09-19">19 September 2026</time><b>The model that beat BM25 in Turkish</b><span>With my 58-question test set I checked whether an AI model can beat classic keyword matching (BM25) in Turkish search. The small multilingual model could not; the model trained for search did. The post is in Turkish.</span></a></li>',
+  'writing.writings': '<li><a href="yazilar/msvc-unordered-map.html"><time datetime="2026-10-12">12 October 2026</time><b>It worked on MSVC</b><span>I built my C++ simulation wrong on purpose, twice. The container bug broke no match on MSVC, 881 on gcc and 860 in the browser. Float was identical on all three compilers; a single compiler flag moved 12 matches.</span></a></li><li><a href="yazilar/turkce-bm25.html"><time datetime="2026-09-19">19 September 2026</time><b>The model that beat BM25 in Turkish</b><span>With my 58-question test set I checked whether an AI model can beat classic keyword matching (BM25) in Turkish search. The small multilingual model could not; the model trained for search did. The post is in Turkish.</span></a></li>',
 
   'credits.fine': 'The models are fan works shared on Sketchfab, used under their authors’ Creative Commons licenses. The weapon designs and names belong to their games and publishers; this site is not commercial. Textures come from Poly Haven (CC0). Sound sources are <a href="assets/audio/CREDITS.txt">listed separately</a>. The fonts are Cormorant Garamond and EB Garamond (OFL); the scene runs on three.js and GSAP.',
 };

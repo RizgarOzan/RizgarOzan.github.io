@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MSVC’de çalışıyordu: üç derleyiciden ikisinde görünen senkron hatası · Rızgar Ozan</title>
+<meta name="description" content="lockstep-tactics: simülasyonu bilerek iki kez yanlış derledim. unordered_map sırası MSVC’de görünmezken gcc’de 881, tarayıcıda 860 maçı ayrıştırdı; float üç derleyicide aynıydı, tek bayrakla 12 maç kaydı.">
+<link rel="canonical" href="https://rizgarozan.github.io/yazilar/msvc-unordered-map.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MSVC’de çalışıyordu">
+<meta property="og:description" content="Bilerek bozulmuş iki C++ derlemesi, 1000 maç: unordered_map hatası MSVC’de 0, gcc’de 881, WebAssembly’de 860 maçta görünüyor.">
+<meta property="og:url" content="https://rizgarozan.github.io/yazilar/msvc-unordered-map.html">
+<meta property="og:image" content="https://rizgarozan.github.io/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="tr_TR">
+<meta property="article:published_time" content="2026-10-12">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #0B0B0D; --panel: #121114; --ivory: #F2EFE9; --muted: #8E8B84; --soft: #B5B1A8;
+    --hair: #26262A; --champ: #D6C29A;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Instrument Sans', 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--soft); font: 17px/1.7 var(--sans); }
+  ::selection { background: var(--champ); color: var(--bg); }
+  a { color: var(--champ); text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--champ); outline-offset: 3px; }
+  main { max-width: 720px; margin: 0 auto; padding: 56px 16px 96px; }
+  .back { font: 500 12px/1 var(--mono); letter-spacing: 0.12em; text-decoration: none; }
+  h1 { font: 600 clamp(32px, 6vw, 48px)/1.1 var(--serif); color: var(--ivory); margin: 32px 0 12px; }
+  h2 { font: 600 28px/1.2 var(--serif); color: var(--ivory); margin: 48px 0 8px; }
+  strong { color: var(--ivory); }
+  em { color: var(--ivory); }
+  p > em:only-child { font: 13px/1.5 var(--mono); color: var(--muted); font-style: normal; }
+  code { font: 14px var(--mono); color: var(--ivory); background: var(--panel); padding: 1px 5px; }
+  .table { overflow-x: auto; margin: 20px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { border-bottom: 1px solid var(--hair); padding: 8px 10px; text-align: left; }
+  th { font: 500 12px var(--mono); letter-spacing: 0.06em; color: var(--muted); }
+  td { font-variant-numeric: tabular-nums; }
+  li { margin: 6px 0; }
+</style>
+</head>
+<body>
+<main>
+<a class="back" href="../">← RIZGAR OZAN</a>
+<article>
+<h1>MSVC'de çalışıyordu: üç derleyiciden yalnız ikisinde görünen senkron hatası</h1>
+<p><em>Rızgar Ozan · 2026-10-12 · <a href="https://github.com/RizgarOzan/lockstep-tactics/blob/main/docs/blog/2026-10-12-worked-on-msvc-en.md">English version</a></em></p>
+<p><a href="https://github.com/RizgarOzan/lockstep-tactics">lockstep-tactics</a> küçük bir C++20 taktik simülasyonu ve tek bir sözü var: aynı girdiler her derleyicide, her tick'te aynı durum hash'ini verir. Lockstep çok oyunculu oyunlar da tekrar kayıtları da bu sözün üstünde durur. Söylemesi kolay, kontrol etmesi zor. O yüzden repo bunu her push'ta kontrol ediyor: bin tohumlu maç Windows'ta MSVC ile, Linux'ta WebAssembly ile ayrı ayrı oynanıyor ve iki hash listesi karşılaştırılıyor.</p>
+<p>Kontrolün birkaç yüz kez geçmesi bana hiç başarısız olup olamayacağını söylemiyordu. Hiçbir yerde kırılmayan kural, batıl inanç gibi görünür. Ben de simülasyonu bilerek iki kez yanlış derleyip saydım.</p>
+<h2>Birinci kuralı kırmak: birimler <code>unordered_map</code> sırasıyla hareket etsin</h2>
+<p>Simülasyon birimleri kimliğe göre sıralı bir <code>std::vector</code>'de tutuyor ve o sırayla hareket ettiriyor. Bozuk derleme (<code>-DLOCKSTEP_RISKY=unordered</code>) onları bir <code>std::unordered_map</code>'e koyup onun üstünde dolaşıyor. Sıra, isabet zarı için hangi birimin hangi rastgele sayıyı alacağına karar verdiği için farklı sıra farklı maç demek.</p>
+<p>600 tick'lik 1.000 maçta, normal derlemeden farklı biten maç sayısı:</p>
+<div class="table"><table><tr><th>Derleyici</th><th>farklı biten maç</th></tr>
+<tr><td>MSVC 19.50 x64</td><td><strong>0</strong></td></tr>
+<tr><td>gcc 16 (libstdc++)</td><td>881</td></tr>
+<tr><td>Emscripten 6 / WebAssembly (libc++)</td><td>860</td></tr></table></div>
+<p>gcc ile WebAssembly <em>birbirinden</em> de 249 maçta ayrışıyor.</p>
+<p>İlginç sayı sıfır. MSVC'nin <code>unordered_map</code>'i elemanları ekleme sırasında bir listede tutuyor; altı küçük anahtar ve yeniden hash'leme olmayınca dolaşma tesadüfen kimlik sırasında çıkıyor, yani tam olarak güvenli sıra. Hata, Windows geliştiricilerinin çoğunun test ettiği derleyicide görünmez. Bütün birim testleri geçer. Bütün yerel tekrarlar tutar. Yayınla; ilk Linux ya da tarayıcı istemcisi maçların %86'sında ayrışır.</p>
+<p>Derleyiciler arası kontrolün, koşular arası kontrolden farkı bu: "bende çalışıyor" burada kelimesi kelimesine doğruydu.</p>
+<h2>İkinci kuralı kırmak: hareket <code>float</code> ile</h2>
+<p>Simülasyon her yerde Q16.16 sabit nokta kullanıyor; reponun 01 numaralı notu derleyicilerin float işlemlerini birleştirebileceğini ya da sırasını değiştirebileceğini söylüyor. İkinci bozuk derleme (<code>-DLOCKSTEP_RISKY=float</code>) birimleri hedefe giden doğru boyunca <code>float</code>, karekök ve bölmeyle yürütüp sonra sabit noktaya geri çeviriyor.</p>
+<div class="table"><table><tr><th></th><th>farklı biten maç</th></tr>
+<tr><td>MSVC, gcc, WebAssembly, herhangi iki çift</td><td><strong>0</strong> / 1000</td></tr></table></div>
+<p>Bunun kırılmasını bekliyordum, kırılmadı. Üç hedef de aynı yuvarlamayla IEEE skaler float kullanıyor, <code>sqrt</code> doğru yuvarlanıyor ve ISO C++ kipinde hiçbiri <code>a*b + c</code>'yi tek bir fused multiply-add'e birleştirmiyor. Bu üç derleyicide, bugün, float deterministikti.</p>
+<p>Sonra tek bir bayrak:</p>
+<div class="table"><table><tr><th></th><th>farklı biten maç</th></tr>
+<tr><td>gcc <code>-mfma -ffp-contract=fast</code> vs düz gcc, float derlemesi</td><td><strong>12</strong> / 1000</td></tr>
+<tr><td>aynı bayraklar, sabit nokta derlemesi</td><td>0 / 1000</td></tr></table></div>
+<p>Birleştirmeye izin verilince nesne dosyasına üç FMA komutu giriyor (bayraksız sıfır) ve on iki maç farklı bitiyor. Aynı bayraklarla derlenen sabit nokta sürümü hiç kıpırdamıyor: bayrağın dokunacağı bir float işlemi yok. Yani "float yok" kuralı bu derleyiciler için değil; henüz eklenmemiş derleme bayrağı, derleyici güncellemesi ya da ARM hedefi için var, ve sabit nokta o günleri olaysız geçiren şey.</p>
+<h2>Çıkardıklarım</h2>
+<ul>
+<li>Hiç başarısız olmamış bir determinizm kontrolü kanıtlanmamıştır. Kodu bilerek boz, kontrolün neyi yakaladığını say; repo iki bozuk derlemeyi de bir CMake seçeneği arkasında taşıyor, isteyen sayıları tekrar üretebilir.</li>
+<li>"MSVC'de çalışıyor" ile "gcc'de çalışıyor" ayrı iddialar. Konteyner hatası birinde görünmezdi, diğer ikisinde gürültülüydü.</li>
+<li>Float doğası gereği deterministik olmayan bir şey değil. İki derleme birleştirme, hassasiyet ya da kütüphane fonksiyonunda ayrıştığı an öyle oluyor, ve o anın ne zaman geleceğini sen kontrol etmiyorsun. Sabit nokta soruyu ortadan kaldırıyor.</li>
+</ul>
+<p>Yukarıdakilerin hepsi repodan tekrar üretilebilir: <code>cmake -S . -B build-risky -DLOCKSTEP_RISKY=unordered</code> (ya da <code>float</code>), <code>replay 1000 600</code>, normal derlemeyle karşılaştır. Her kuralın gerekçesi <a href="https://github.com/RizgarOzan/lockstep-tactics/tree/main/docs/notes">docs/notes/</a> altında; 06 numaralı not bu yazının uzun hâli. Maçı <a href="https://rizgarozan.github.io/lockstep-tactics/">tarayıcıda izleyebilirsin</a>.</p>
+</article>
+</main>
+</body>
+</html>

@@ -35,7 +35,7 @@
 // A slow line only makes the loader wait longer (with a way out to the list); the page turns
 // into the plain list on its own only when a script fails to load or WebGL is missing.
 (function () {
-  var VERSION = '2026-10-12a';
+  var VERSION = '2026-10-12b';
   window.__rzFallback = function () {
     if (window.__rzStarted || !document.body) return;
     document.body.classList.remove('is-loading', 'pre-intro', 'pre-ui');
@@ -156,9 +156,22 @@
       </dl>
     </article>
 
+    <article class="entry" id="suspicious-delicacies">
+      <img class="thumb" src="assets/thumbs/chaos.webp" alt="" width="174" height="600" loading="lazy" decoding="async">
+      <p class="kicker" data-i18n="sd.kicker"><span>04</span> Oyun · ekip projesi</p>
+      <h2 lang="en">Suspicious Delicacies</h2>
+      <p class="lead" data-i18n="sd.lead">Restoran işletmeciliğiyle sıra tabanlı RPG’yi tek döngüde birleştiren, üç kişiyle geliştirdiğimiz Unity oyunu.</p>
+      <p data-i18n="sd.p1">Takıntılı, şiddete meyilli bir şef dost canlısı yaratıkları avlıyor; onları öldürmek ya da bağışlamak oyuncunun kararı. Toplanan malzemelerle yemek pişiriyor, müşteri ağırlıyor ve şüpheyi üstüne çekmemeye çalışıyor. Her gün av, mutfak ve servis arasında dönüyor.</p>
+      <dl class="facts" data-i18n="sd.facts">
+        <div><dt>Benim payım</dt><dd>Restoran döngüsü, müşteri yapay zekâsı, hızlı tepki (QTE) anları, dünya haritası ve ekibin kullandığı editör araçları. Savaş ve oyuncu karakteri diğer iki arkadaşımda.</dd></div>
+        <div><dt>Durum</dt><dd>Prototip bir yayıncıya gitti; şimdi <span lang="en">Steam Next Fest</span> kalitesinde bir demo hazırlıyoruz. Sayfası açılınca linki buraya gelecek.</dd></div>
+        <div><dt>Ölçek</dt><dd>273 script, 36 bin satır C#, 225 editör testi (Ekim 2026) · Unity 6 · 2D URP · 2.5D piksel sanatı</dd></div>
+      </dl>
+    </article>
+
     <article class="entry" id="tmp-glyph-audit">
       <img class="thumb" src="assets/thumbs/revolver.webp" alt="" width="93" height="600" loading="lazy" decoding="async">
-      <p class="kicker" data-i18n="tmp.kicker"><span>04</span> <span lang="en">Unity</span> aracı</p>
+      <p class="kicker" data-i18n="tmp.kicker"><span>05</span> <span lang="en">Unity</span> aracı</p>
       <h2 lang="en">TMP Glyph Audit</h2>
       <p class="lead" data-i18n="tmp.lead">Oyundaki yazılarda fontta karşılığı olmayan harfleri, oyun çıkmadan bulan Unity paketi.</p>
       <p class="actions" data-i18n="tmp.actions">
@@ -174,7 +187,7 @@
 
     <article class="entry" id="bilim-dedektifi">
       <img class="thumb" src="assets/thumbs/master.webp" alt="" width="119" height="600" loading="lazy" decoding="async">
-      <p class="kicker" data-i18n="bd.kicker"><span>05</span> Oyun</p>
+      <p class="kicker" data-i18n="bd.kicker"><span>06</span> Oyun</p>
       <h2 lang="tr">Bilim Dedektifi</h2>
       <p class="lead" data-i18n="bd.lead">Gizemli bir ölümü araştıran bir dedektifin gözünden ilerleyen, eğitsel kısa bir macera oyunu.</p>
       <p class="actions" data-i18n="bd.actions">
@@ -190,7 +203,7 @@
 
     <article class="entry" id="code-enigma">
       <img class="thumb" src="assets/thumbs/zangetsu.webp" alt="" width="97" height="600" loading="lazy" decoding="async">
-      <p class="kicker" data-i18n="ce.kicker"><span>06</span> Web</p>
+      <p class="kicker" data-i18n="ce.kicker"><span>07</span> Web</p>
       <h2 lang="en">Code-Enigma</h2>
       <p class="lead" data-i18n="ce.lead">Matematik odaklı, öğrenciye göre şekillenen bir çalışma platformu.</p>
       <p class="actions" data-i18n="ce.actions">
@@ -253,6 +266,7 @@
       <h2 data-i18n="writing.h2">Ölçüp yazdıklarım</h2>
       <p class="lead" data-i18n="writing.lead">Bir projede ölçtüğüm şeyi uzun uzun anlatmak istediğimde buraya yazıyorum.</p>
       <ul class="writings" data-i18n="writing.writings">
+        <li><a href="yazilar/msvc-unordered-map.html"><time datetime="2026-10-12">12 Ekim 2026</time><b>MSVC’de çalışıyordu</b><span>C++ simülasyonumu bilerek iki kez yanlış derledim. Veri yapısı hatası MSVC’de hiçbir maçı bozmadı, gcc’de 881’ini, tarayıcıda 860’ını bozdu. Float ise üç derleyicide aynıydı; tek bir derleyici bayrağı 12 maçı kaydırdı.</span></a></li>
         <li><a href="yazilar/turkce-bm25.html"><time datetime="2026-09-19">19 Eylül 2026</time><b>Türkçe’de BM25’i yenen model</b><span>Türkçe aramada klasik kelime eşleştirmeyi (BM25) bir yapay zekâ modelinin geçip geçemediğine 58 soruluk test setimle baktım. Küçük çok dilli model geçemedi, arama için eğitilmiş model geçti.</span></a></li>
       </ul>
     </article>
