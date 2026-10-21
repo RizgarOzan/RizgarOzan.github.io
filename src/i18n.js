@@ -61,6 +61,7 @@ const EN = {
         <div><dt>Built with</dt><dd>C++20 · CMake · MSVC / clang / gcc / Emscripten · raylib · GitHub Actions</dd></div>`,
   'sd.kicker': '<span>04</span> Game · team project',
   'sd.lead': 'A Unity game three of us are building: restaurant management welded to a turn-based RPG in one loop.',
+  'sd.actions': '<a class="btn primary" href="https://drive.google.com/drive/folders/1sIkthGHMpalGORdFpKf-c-Et6PoN4gqY">Project folder (<span lang="en">Google Drive</span>)</a>',
   'sd.p1': 'A chef with an obsession and a violent streak hunts friendly creatures; killing or sparing them is the player’s call. The ingredients become dishes, the dishes feed customers, and the chef tries not to draw suspicion. Every day cycles through the hunt, the kitchen and the service.',
   'sd.facts': `<div><dt>My part</dt><dd>The restaurant loop, customer AI, the quick-time moments, the overworld and the editor tools the team works with. Combat and the player character belong to my two teammates.</dd></div>
         <div><dt>Status</dt><dd>The prototype went to a publisher; we are now building a demo at Steam Next Fest quality. The page link goes here once it is up.</dd></div>

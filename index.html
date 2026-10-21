@@ -35,7 +35,7 @@
 // A slow line only makes the loader wait longer (with a way out to the list); the page turns
 // into the plain list on its own only when a script fails to load or WebGL is missing.
 (function () {
-  var VERSION = '2026-10-12d';
+  var VERSION = '2026-10-21a';
   window.__rzFallback = function () {
     if (window.__rzStarted || !document.body) return;
     document.body.classList.remove('is-loading', 'pre-intro', 'pre-ui');
@@ -161,6 +161,9 @@
       <p class="kicker" data-i18n="sd.kicker"><span>04</span> Oyun · ekip projesi</p>
       <h2 lang="en">Suspicious Delicacies</h2>
       <p class="lead" data-i18n="sd.lead">Restoran işletmeciliğiyle sıra tabanlı RPG’yi tek döngüde birleştiren, üç kişiyle geliştirdiğimiz Unity oyunu.</p>
+      <p class="actions" data-i18n="sd.actions">
+        <a class="btn primary" href="https://drive.google.com/drive/folders/1sIkthGHMpalGORdFpKf-c-Et6PoN4gqY">Proje klasörü (<span lang="en">Google Drive</span>)</a>
+      </p>
       <p data-i18n="sd.p1">Takıntılı, şiddete meyilli bir şef dost canlısı yaratıkları avlıyor; onları öldürmek ya da bağışlamak oyuncunun kararı. Toplanan malzemelerle yemek pişiriyor, müşteri ağırlıyor ve şüpheyi üstüne çekmemeye çalışıyor. Her gün av, mutfak ve servis arasında dönüyor.</p>
       <dl class="facts" data-i18n="sd.facts">
         <div><dt>Benim payım</dt><dd>Restoran döngüsü, müşteri yapay zekâsı, hızlı tepki (QTE) anları, dünya haritası ve ekibin kullandığı editör araçları. Savaş ve oyuncu karakteri diğer iki arkadaşımda.</dd></div>
