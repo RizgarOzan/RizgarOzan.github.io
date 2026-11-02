@@ -47,7 +47,7 @@ const EN = {
   'm3.actions': `<a class="btn primary" href="https://rizgarozan.github.io/match3-lab/">Play in the browser</a>
         <a class="btn" href="https://github.com/RizgarOzan/match3-lab">Code on ${GH}</a>`,
   'm3.p1': 'I wrote the game rules in plain C#, apart from Unity, so the same rules run in the game, in the tests and in the bots. Levels live in a simple format you can write by hand. Bots play every level thousands of times and turn its difficulty into a number.',
-  'm3.facts': `<div><dt>Measured</dt><dd>6 levels, 1000 bot games each. The win rates of a greedy and a random bot draw the difficulty curve.</dd></div>
+  'm3.facts': `<div><dt>Measured</dt><dd>7 levels, 1000 bot games each. The win rates of a greedy and a random bot draw the difficulty curve.</dd></div>
         <div><dt>Tools</dt><dd>Command line (validate · sim · curve · tune) · Unity level editor · simulator window</dd></div>
         <div><dt>Built with</dt><dd>C# / .NET · Unity 6 · xUnit · WebGL</dd></div>`,
 
@@ -56,7 +56,7 @@ const EN = {
   'ls.actions': `<a class="btn primary" href="https://rizgarozan.github.io/lockstep-tactics/">Play in the browser</a>
         <a class="btn" href="https://github.com/RizgarOzan/lockstep-tactics">Code on ${GH}</a>`,
   'ls.p1': 'In a lockstep multiplayer game every machine runs the same simulation on its own; if a single bit drifts, the game falls apart. I wrote the simulation in fixed-point instead of float, with its own random number generator and containers whose order is defined. The opponent is a small integer-only AI whose orders go into the replay like anyone else\u2019s. On every commit, 1000 matches are played under MSVC, Apple clang (arm64) and WebAssembly and their hashes compared.',
-  'ls.facts': `<div><dt>Measured</dt><dd>1000 of 1000 matches end on the same hash on three compilers; the AI wins 978 of them against the random player. Break one rule on purpose and 881 matches drift on gcc and 860 in the browser, but none on MSVC; put a size_t in the hash and the 64-bit compilers agree while WebAssembly breaks on tick 1. “Works on my machine” is not enough.</dd></div>
+  'ls.facts': `<div><dt>Measured</dt><dd>1000 of 1000 matches end on the same hash on three compilers; the AI wins 998 of them against the random player. Break one rule on purpose and 995 matches drift on gcc and 996 in the browser, but none on MSVC; put a size_t in the hash and the 64-bit compilers agree while WebAssembly breaks on tick 1. “Works on my machine” is not enough.</dd></div>
         <div><dt>Tools</dt><dd>Replay files with a hash per tick · a bisector that names the tick and the field of a desync (100 of 100 injected ones) · a raylib viewer you play in the browser, which downloads the match as a replay</dd></div>
         <div><dt>Built with</dt><dd>C++20 · CMake · MSVC / clang / gcc / Emscripten · raylib · GitHub Actions</dd></div>`,
   'sd.kicker': '<span>04</span> Game · team project',
@@ -100,7 +100,7 @@ const EN = {
   'oss.actions': `<a class="btn primary" href="https://github.com/RizgarOzan">See them on ${GH}</a>`,
   'oss.p1': 'Most are in libraries that evaluate AI search systems, and in Unity tools. The numbers below count the changes (PRs) the maintainers accepted and merged.',
   // measured with gh on 2026-10-11 11:10 (Istanbul), same as index.html and the CVs
-  'oss.stats': '<span><b>106</b> merged PRs</span><span><b>34</b> projects</span><span><b>27</b> awaiting review</span>',
+  'oss.stats': '<span><b>152</b> merged PRs</span><span><b>40</b> projects</span><span><b>14</b> awaiting review</span>',
   'oss.repos': `<li><b>MTEB</b><span>15 PR</span><em>The retrieval benchmark library my RAG work builds on</em></li>
         <li><b>kornia</b><span>13 PR</span><em>Computer vision library; edge cases in numerical code</em></li>
         <li><b>LightRAG</b><span>4 PR</span><em>RAG framework; text parsing and Markdown fixes</em></li>
