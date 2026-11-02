@@ -133,7 +133,7 @@
       </p>
       <p data-i18n="m3.p1">Oyunun kurallarını Unity’den bağımsız, saf C# ile yazdım; aynı kurallar oyunda da testlerde de botlarda da çalışıyor. Seviyeler elle yazılabilen sade bir biçimde duruyor. Botlar her seviyeyi binlerce kez oynayıp zorluğu sayıya döküyor.</p>
       <dl class="facts" data-i18n="m3.facts">
-        <div><dt>Ölçüm</dt><dd>6 seviye, her biri 1000 bot oyunuyla. Açgözlü ve rastgele botun kazanma oranları zorluk eğrisini çiziyor.</dd></div>
+        <div><dt>Ölçüm</dt><dd>7 seviye, her biri 1000 bot oyunuyla. Açgözlü ve rastgele botun kazanma oranları zorluk eğrisini çiziyor.</dd></div>
         <div><dt>Araçlar</dt><dd>Komut satırı (validate · sim · curve · tune) · Unity seviye editörü · simülatör penceresi</dd></div>
         <div><dt>Kullandıklarım</dt><dd>C# / .NET · Unity 6 · xUnit · WebGL</dd></div>
       </dl>
@@ -150,7 +150,7 @@
       </p>
       <p data-i18n="ls.p1">Çok oyunculu oyunlarda her makine aynı simülasyonu kendi başına koşturur; bir bit bile ayrışırsa oyun kopar. Simülasyonu kayan nokta yerine sabit noktalı sayılarla, kendi rastgele sayı üreticisiyle ve sıralaması tanımlı veri yapılarıyla yazdım. Rakip yalnızca tamsayı kullanan küçük bir yapay zekâ; emirleri tekrar dosyasına herkesinki gibi giriyor. Her commit’te 1000 maç MSVC, Apple clang (arm64) ve WebAssembly’de ayrı ayrı oynanıp hash’leri karşılaştırılıyor.</p>
       <dl class="facts" data-i18n="ls.facts">
-        <div><dt>Ölçüm</dt><dd>1000 maçın 1000’i üç derleyicide aynı hash’te bitiyor; yapay zekâ rastgele oyuncuya karşı 978’ini kazanıyor. Kurallardan biri bilerek bozulunca gcc’de 881, tarayıcıda 860 maç ayrışıyor, MSVC’de hiçbiri; hash’e bir <span lang="en">size_t</span> girince 64 bit derleyiciler anlaşıyor, WebAssembly ilk tick’te kopuyor. Yani “bende çalışıyor” yetmiyor.</dd></div>
+        <div><dt>Ölçüm</dt><dd>1000 maçın 1000’i üç derleyicide aynı hash’te bitiyor; yapay zekâ rastgele oyuncuya karşı 998’ini kazanıyor. Kurallardan biri bilerek bozulunca gcc’de 995, tarayıcıda 996 maç ayrışıyor, MSVC’de hiçbiri; hash’e bir <span lang="en">size_t</span> girince 64 bit derleyiciler anlaşıyor, WebAssembly ilk tick’te kopuyor. Yani “bende çalışıyor” yetmiyor.</dd></div>
         <div><dt>Araçlar</dt><dd>Tekrar dosyası (tick başına hash) · ayrışmayı tick ve alan düzeyinde bulan araç (enjekte edilen 100 hatanın 100’ü) · tarayıcıda oynanan raylib arayüzü; maçı tekrar dosyası olarak indiriyor</dd></div>
         <div><dt>Kullandıklarım</dt><dd>C++20 · CMake · MSVC / clang / gcc / Emscripten · raylib · GitHub Actions</dd></div>
       </dl>
@@ -235,9 +235,9 @@
         <a class="btn primary" href="https://github.com/RizgarOzan"><span lang="en">GitHub</span> profilinde gör</a>
       </p>
       <p data-i18n="oss.p1">Çoğu, yapay zekâ arama sistemlerini değerlendiren kütüphanelerde ve Unity araçlarında. Aşağıdaki sayılar, proje sahiplerinin kabul edip birleştirdiği değişiklikler (PR).</p>
-      <!-- measured with gh on 2026-10-11 11:10 (Istanbul): PRs by RizgarOzan in repos he does not own; merged 106, distinct repos 34, open 27.
+      <!-- measured with gh on 2026-11-02 16:50 (Istanbul): PRs by RizgarOzan in repos he does not own; merged 152, distinct repos 40, open 14.
            Same numbers in src/i18n.js (oss.stats) and both CVs (tools/cv). -->
-      <p class="stats" data-i18n="oss.stats"><span><b>106</b> birleşen PR</span><span><b>34</b> proje</span><span><b>27</b> incelemede bekliyor</span></p>
+      <p class="stats" data-i18n="oss.stats"><span><b>152</b> birleşen PR</span><span><b>40</b> proje</span><span><b>14</b> incelemede bekliyor</span></p>
       <ul class="repos" lang="en" data-i18n="oss.repos">
         <li><b>MTEB</b><span>15 PR</span><em lang="tr">RAG işimin dayandığı retrieval değerlendirme kütüphanesi</em></li>
         <li><b>kornia</b><span>13 PR</span><em lang="tr">Bilgisayarlı görü kütüphanesi; sayısal hesaplardaki uç durum hataları</em></li>
