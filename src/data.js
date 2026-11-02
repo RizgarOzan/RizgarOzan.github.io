@@ -10,12 +10,15 @@
 // glow:   emissive multiplier for blades whose light should carry across the field.
 // env:    reflection boost for very dark blades, so black steel still reads at night.
 // roughMin: floor on the model's roughness, for chrome parts that would mirror the bright sky as a white blot.
+// hd:     false when there is no <id>-hd.glb, so opening the sword keeps its light copy.
 //
 // place: 'field' (a sword planted outside) or 'forge' (a station in the
 //        underground smithy below the field, reached by scrolling down).
 export const entries = [
   { slug: 'turkish-rag-eval', label: 'Turkish RAG Eval', weapon: 'buster', accent: '#cfd8e6', pose: { lean: -16, pitch: 6, yaw: 18 }, sink: 0.34 },
   { slug: 'match3-lab', label: 'Match3 Lab', weapon: 'rebellion', accent: '#e2614c', pose: { lean: 7, pitch: 2, yaw: -10 }, sink: 0.3, env: 1.6 },
+  { slug: 'lockstep-tactics', label: 'Lockstep Tactics', weapon: 'oathkeeper', accent: '#f2e6c4', pose: { lean: -8, pitch: 3, yaw: 12 }, sink: 0.3, hd: false },
+  { slug: 'suspicious-delicacies', label: 'Suspicious Delicacies', weapon: 'chaos', accent: '#ff7a3d', pose: { lean: 10, pitch: 4, yaw: -15 }, sink: 0.28, scale: 1.3, glow: 1.5, hd: false },
   { slug: 'tmp-glyph-audit', label: 'TMP Glyph Audit', weapon: 'revolver', accent: '#a7c4ff', pose: { lean: -6, pitch: 3, yaw: 8 }, sink: 0.26, scale: 1.15, roughMin: 0.32 },
   { slug: 'bilim-dedektifi', label: 'Bilim Dedektifi', weapon: 'master', accent: '#8a7bff', pose: { lean: 0, pitch: 0, yaw: 0 }, sink: 0.3, scale: 1.5, env: 4 },
   { slug: 'code-enigma', label: 'Code-Enigma', weapon: 'zangetsu', accent: '#c9ccd6', pose: { lean: 9, pitch: 4, yaw: 20 }, sink: 0.26, scale: 1.2, env: 7 },
@@ -24,7 +27,7 @@ export const entries = [
 ];
 
 // Favourite blades with no project yet: they hang unfinished on the smithy wall.
-export const rack = ['oathkeeper', 'purenail', 'chaos'];
+export const rack = ['purenail'];
 
 // Where each field sword stands (x, z): rank 1 in front, a shallow V behind.
 export const slots = [
@@ -33,6 +36,8 @@ export const slots = [
   [1.25, -0.3],
   [-2.3, -1.5],
   [2.3, -1.5],
+  [-3.3, -2.9],
+  [3.3, -2.9],
 ];
 
 // Model credits for the "Referanslar" page (Sketchfab, Creative Commons).

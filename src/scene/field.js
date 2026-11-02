@@ -468,7 +468,7 @@ export function createField(world, { onOpened, onClosing, reducedMotion, audio }
   const sharp = {};
   function sharpen(i, priority = 20) {
     const s = slots[i];
-    if (!s || sharp[i]) return sharp[i];
+    if (!s || sharp[i] || s.entry.hd === false) return sharp[i];
     sharp[i] = Promise.all([loadGLB(`assets/weapons/${s.entry.weapon}-hd.glb`, priority), s.ready]).then(async ([gltf]) => {
       const byName = new Map(), hdMesh = new Map();
       gltf.scene.traverse((o) => {

@@ -51,7 +51,22 @@ const EN = {
         <div><dt>Tools</dt><dd>Command line (validate · sim · curve · tune) · Unity level editor · simulator window</dd></div>
         <div><dt>Built with</dt><dd>C# / .NET · Unity 6 · xUnit · WebGL</dd></div>`,
 
-  'tmp.kicker': '<span>03</span> <span lang="en">Unity</span> tool',
+  'ls.kicker': '<span>03</span> <span lang="en">C++</span>',
+  'ls.lead': 'A C++ tactics game that gives bit-identical results on three compilers, proves it on every push, and can be played against an AI in the browser.',
+  'ls.actions': `<a class="btn primary" href="https://rizgarozan.github.io/lockstep-tactics/">Play in the browser</a>
+        <a class="btn" href="https://github.com/RizgarOzan/lockstep-tactics">Code on ${GH}</a>`,
+  'ls.p1': 'In a lockstep multiplayer game every machine runs the same simulation on its own; if a single bit drifts, the game falls apart. I wrote the simulation in fixed-point instead of float, with its own random number generator and containers whose order is defined. The opponent is a small integer-only AI whose orders go into the replay like anyone else\u2019s. On every commit, 1000 matches are played under MSVC, Apple clang (arm64) and WebAssembly and their hashes compared.',
+  'ls.facts': `<div><dt>Measured</dt><dd>1000 of 1000 matches end on the same hash on three compilers; the AI wins 978 of them against the random player. Break one rule on purpose and 881 matches drift on gcc and 860 in the browser, but none on MSVC; put a size_t in the hash and the 64-bit compilers agree while WebAssembly breaks on tick 1. “Works on my machine” is not enough.</dd></div>
+        <div><dt>Tools</dt><dd>Replay files with a hash per tick · a bisector that names the tick and the field of a desync (100 of 100 injected ones) · a raylib viewer you play in the browser, which downloads the match as a replay</dd></div>
+        <div><dt>Built with</dt><dd>C++20 · CMake · MSVC / clang / gcc / Emscripten · raylib · GitHub Actions</dd></div>`,
+  'sd.kicker': '<span>04</span> Game · team project',
+  'sd.lead': 'A Unity game three of us are building: restaurant management welded to a turn-based RPG in one loop.',
+  'sd.actions': '<a class="btn primary" href="https://drive.google.com/drive/folders/1sIkthGHMpalGORdFpKf-c-Et6PoN4gqY">Project folder (<span lang="en">Google Drive</span>)</a>',
+  'sd.p1': 'A chef with an obsession and a violent streak hunts friendly creatures; killing or sparing them is the player’s call. The ingredients become dishes, the dishes feed customers, and the chef tries not to draw suspicion. Every day cycles through the hunt, the kitchen and the service.',
+  'sd.facts': `<div><dt>My part</dt><dd>The restaurant loop, customer AI, the quick-time moments, the overworld and the editor tools the team works with. Combat and the player character belong to my two teammates.</dd></div>
+        <div><dt>Status</dt><dd>The prototype went to a publisher; we are now building a demo at Steam Next Fest quality. The page link goes here once it is up.</dd></div>
+        <div><dt>Scale</dt><dd>273 scripts, 36k lines of C#, 225 editor tests (October 2026) · Unity 6 · 2D URP · 2.5D pixel art</dd></div>`,
+  'tmp.kicker': '<span>05</span> <span lang="en">Unity</span> tool',
   'tmp.lead': 'A Unity package that finds the letters your fonts cannot draw, before the game ships.',
   'tmp.actions': `<a class="btn primary" href="https://github.com/RizgarOzan/tmp-glyph-audit">Code on ${GH}</a>`,
   'tmp.p1': 'Unity draws text with TextMeshPro, and a letter the font lacks (like ğ or ş) shows up in the game as an empty box. The package scans every scene, every prefab and the text files loaded at runtime, follows each font’s fallback chain, and reports the missing letters.',
@@ -59,7 +74,7 @@ const EN = {
         <div><dt>Tests</dt><dd>24 xUnit and 5 EditMode tests</dd></div>
         <div><dt>Built with</dt><dd>C# · TextMeshPro · Unity 2023.2+ · open source, installed from a git URL (UPM)</dd></div>`,
 
-  'bd.kicker': '<span>04</span> Game',
+  'bd.kicker': '<span>06</span> Game',
   'bd.lead': 'A short educational adventure, seen through the eyes of a detective looking into a mysterious death.',
   'bd.actions': '<a class="btn primary" href="https://rizgarozan.itch.io/bilim-dedektifi">Download on <span lang="en">itch.io</span></a>',
   'bd.p1': 'We made it as a team for a course at Hacettepe. The game is free on itch.io.',
@@ -67,7 +82,7 @@ const EN = {
         <div><dt>Genre</dt><dd>Educational detective and mystery game</dd></div>
         <div><dt>Team</dt><dd>Hacettepe course project, made as a team</dd></div>`,
 
-  'ce.kicker': '<span>05</span> Web',
+  'ce.kicker': '<span>07</span> Web',
   'ce.lead': 'A math study platform that shapes itself around each student.',
   'ce.actions': `<a class="btn primary" href="https://github.com/ilkhanarda/Code-Enigma">Code on ${GH}</a>`,
   'ce.p1': 'I am building it with <span lang="tr">İlkhan Arda Akmaca</span>. I work on the interface: the personal dashboard, the charts where students compare themselves with their peers, the filters and the settings screens.',
@@ -84,8 +99,8 @@ const EN = {
   'oss.lead': 'Fixes for bugs I found in open source projects I use, sent back to their maintainers.',
   'oss.actions': `<a class="btn primary" href="https://github.com/RizgarOzan">See them on ${GH}</a>`,
   'oss.p1': 'Most are in libraries that evaluate AI search systems, and in Unity tools. The numbers below count the changes (PRs) the maintainers accepted and merged.',
-  // measured with gh on 2026-10-04 10:24 (Istanbul), same as index.html and the CVs
-  'oss.stats': '<span><b>80</b> merged PRs</span><span><b>24</b> projects</span><span><b>31</b> awaiting review</span>',
+  // measured with gh on 2026-10-11 11:10 (Istanbul), same as index.html and the CVs
+  'oss.stats': '<span><b>106</b> merged PRs</span><span><b>34</b> projects</span><span><b>27</b> awaiting review</span>',
   'oss.repos': `<li><b>MTEB</b><span>15 PR</span><em>The retrieval benchmark library my RAG work builds on</em></li>
         <li><b>kornia</b><span>13 PR</span><em>Computer vision library; edge cases in numerical code</em></li>
         <li><b>LightRAG</b><span>4 PR</span><em>RAG framework; text parsing and Markdown fixes</em></li>
@@ -106,7 +121,7 @@ const EN = {
   'writing.kicker': 'Writing',
   'writing.h2': 'Things I measured and wrote up',
   'writing.lead': 'When I want to explain something I measured in a project at length, it goes here.',
-  'writing.writings': '<li><a href="yazilar/turkce-bm25.html"><time datetime="2026-09-19">19 September 2026</time><b>The model that beat BM25 in Turkish</b><span>With my 58-question test set I checked whether an AI model can beat classic keyword matching (BM25) in Turkish search. The small multilingual model could not; the model trained for search did. The post is in Turkish.</span></a></li>',
+  'writing.writings': '<li><a href="yazilar/msvc-unordered-map.html"><time datetime="2026-10-12">12 October 2026</time><b>It worked on MSVC</b><span>I built my C++ simulation wrong on purpose, twice. The container bug broke no match on MSVC, 881 on gcc and 860 in the browser. Float was identical on all three compilers; a single compiler flag moved 12 matches.</span></a></li><li><a href="yazilar/turkce-bm25.html"><time datetime="2026-09-19">19 September 2026</time><b>The model that beat BM25 in Turkish</b><span>With my 58-question test set I checked whether an AI model can beat classic keyword matching (BM25) in Turkish search. The small multilingual model could not; the model trained for search did. The post is in Turkish.</span></a></li>',
 
   'credits.fine': 'The models are fan works shared on Sketchfab, used under their authors’ Creative Commons licenses. The weapon designs and names belong to their games and publishers; this site is not commercial. Textures come from Poly Haven (CC0). Sound sources are <a href="assets/audio/CREDITS.txt">listed separately</a>. The fonts are Cormorant Garamond and EB Garamond (OFL); the scene runs on three.js and GSAP.',
 };
